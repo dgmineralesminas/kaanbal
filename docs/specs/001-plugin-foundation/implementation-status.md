@@ -3,10 +3,10 @@
 SPEC: SPEC-001 — Plugin Foundation
 
 Branch: feature/spec-001-plugin-foundation
-Current commit: HEAD (audit candidate)
+Current commit: a9e91ec (audit candidate)
 
-Status: Ready for audit
-Ready for audit: Yes
+Status: Ready for review
+Ready for audit: No
 Current audit round: 1
 
 ## Human Approval
@@ -46,8 +46,8 @@ Git:
 ## Tasks
 
 Total: 22
-Done: 21
-In Progress: 1
+Done: 22
+In Progress: 0
 Pending: 0
 Blocked: 0
 Not Applicable: 0
@@ -114,9 +114,15 @@ None.
 
 ## Open Findings
 
-None.
+- CODE-002 — cobertura automatizada pendiente para la rama incompatible de `Plugin::boot()`; no bloqueante, pendiente de decisión humana.
 
-No audit round has been executed.
+Recommendations pending human review:
+
+- ARCH-REC-001, ARCH-REC-002
+- CODE-REC-001, CODE-REC-002, CODE-REC-003, CODE-REC-004
+- SEC-REC-001
+
+Audit round 1: PASS. No blocking findings.
 
 ---
 
@@ -134,4 +140,4 @@ Pending.
 
 ## Notes
 
-SPEC-001 tiene evidencia manual y automatizada de integración real. El candidato estable para auditoría es el commit `HEAD` de esta rama; no debe cambiar durante la ronda 1.
+SPEC-001 tiene evidencia manual y automatizada de integración real. La ronda 1 auditó el commit `a9e91ec`; sus tres veredictos no reportaron blockers. CODE-001 se resolvió al sincronizar el conteo de tasks con `tasks.md`. CODE-002 y las recomendaciones permanecen no bloqueantes para decisión humana.
