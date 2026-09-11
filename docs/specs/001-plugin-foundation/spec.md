@@ -1,6 +1,6 @@
 # SPEC-001 — Plugin Foundation
 
-Status: Draft
+Status: Ready for implementation
 
 ## 1. Objetivo
 

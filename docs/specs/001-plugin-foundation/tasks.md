@@ -10,7 +10,7 @@ Las tasks deben implementarse únicamente después de aprobación humana de la S
 
 ## TASK-001 — Inspeccionar el entorno de desarrollo
 
-Status: Pending
+Status: Done
 
 Covers:
 - RNF-007
@@ -46,7 +46,7 @@ Resumen en `implementation-status.md`.
 
 ## TASK-002 — Configurar Composer y PSR-4
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -71,7 +71,7 @@ Una clase bajo `src/` puede resolverse mediante Composer.
 
 ## TASK-003 — Crear archivo principal del plugin
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -102,7 +102,7 @@ WordPress reconoce el plugin y PHP no reporta errores de sintaxis.
 
 ## TASK-004 — Implementar bootstrap principal
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-005
@@ -124,7 +124,7 @@ Kaanbal activo inicializa el bootstrap sin fatal errors.
 
 ## TASK-005 — Implementar verificación de requisitos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -151,7 +151,7 @@ Pruebas unitarias/integración correspondientes.
 
 ## TASK-006 — Implementar lifecycle de activación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -181,7 +181,7 @@ Activación y reactivación completan sin duplicados ni fatal errors.
 
 ## TASK-007 — Implementar lifecycle de desactivación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -203,7 +203,7 @@ Desactivar no elimina persistencia ni genera errores fatales.
 
 ## TASK-008 — Implementar versionado de plugin y schema
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -229,7 +229,7 @@ Pruebas sobre lectura y persistencia de versiones.
 
 ## TASK-009 — Implementar Schema Manager base
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -256,7 +256,7 @@ Ejecutar repetidamente mantiene estado consistente.
 
 ## TASK-010 — Implementar registro simple de servicios
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-013
@@ -280,7 +280,7 @@ Servicios configurados se inicializan en orden predecible.
 
 ## TASK-011 — Crear infraestructura de tests unitarios
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -305,7 +305,7 @@ Suite unit ejecutable.
 
 ## TASK-012 — Crear infraestructura de tests de integración
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -327,7 +327,7 @@ Al menos una prueba de integración real puede ejecutarse si el entorno lo permi
 
 ## TASK-013 — Crear pruebas de activación y reactivación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -349,7 +349,7 @@ Tests correspondientes pasan.
 
 ## TASK-014 — Crear prueba de desactivación segura
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -363,7 +363,7 @@ La desactivación preserva persistencia.
 
 ## TASK-015 — Crear prueba sin WooCommerce
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -381,7 +381,7 @@ Kaanbal carga sin WooCommerce activo.
 
 ## TASK-016 — Configurar PHP syntax quality check
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -399,7 +399,7 @@ Check ejecutable sobre código propio.
 
 ## TASK-017 — Configurar PHPCS cuando sea compatible
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -421,7 +421,7 @@ Registrar:
 
 ## TASK-018 — Configurar PHPStan cuando sea compatible
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -443,7 +443,7 @@ Registrar:
 
 ## TASK-019 — Configurar scripts de quality gate
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -465,7 +465,7 @@ Los comandos ejecutables reportan correctamente resultados.
 
 ## TASK-020 — Ejecutar suite y quality gate final
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -489,7 +489,7 @@ No existen mandatory checks fallando.
 
 ## TASK-021 — Actualizar estado de implementación
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -518,7 +518,7 @@ Actualizar:
 
 ## TASK-022 — Preparar candidato para auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
