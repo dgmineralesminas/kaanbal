@@ -3,9 +3,9 @@
 SPEC: SPEC-001 — Plugin Foundation
 
 Branch: feature/spec-001-plugin-foundation
-Current commit: a9e91ec (audit candidate)
+Current commit: 7b9d1b0 (merge completion)
 
-Status: Ready for review
+Status: Completed
 Ready for audit: No
 Current audit round: 1
 
@@ -134,10 +134,10 @@ None.
 
 ## Human Review
 
-Pending.
+Approved — 2026-09-11
 
 ---
 
 ## Notes
 
-SPEC-001 tiene evidencia manual y automatizada de integración real. La ronda 1 auditó el commit `a9e91ec`; sus tres veredictos no reportaron blockers. CODE-001 se resolvió al sincronizar el conteo de tasks con `tasks.md`. CODE-002 y las recomendaciones permanecen no bloqueantes para decisión humana.
+SPEC-001 tiene evidencia manual y automatizada de integración real. La ronda 1 auditó el commit `a9e91ec`; sus tres veredictos no reportaron blockers. CODE-001 se resolvió al sincronizar el conteo de tasks con `tasks.md`. CODE-002 y las recomendaciones permanecen no bloqueantes para decisiones futuras. La aprobación humana y el merge local a `main` se completaron en `7b9d1b0`.
