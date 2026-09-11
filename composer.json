@@ -1,0 +1,45 @@
+{
+  "name": "kaanbal/kaanbal",
+  "description": "Kaanbal LMS plugin foundation for WordPress.",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "php-stubs/wordpress-stubs": "^6.8",
+    "phpstan/phpstan": "^2.1",
+    "phpunit/phpunit": "^10.5",
+    "squizlabs/php_codesniffer": "^3.11",
+    "wp-coding-standards/wpcs": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Kaanbal\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Kaanbal\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit --configuration phpunit.xml.dist",
+    "test:integration": "php tests/Integration/wordpress-lifecycle.php",
+    "lint": "find src tests -name '*.php' -print0 | xargs -0 -n1 php -l",
+    "cs": "phpcs --warning-severity=0 --standard=phpcs.xml.dist",
+    "analyse": "phpstan analyse --configuration=phpstan.neon --memory-limit=512M",
+    "quality": [
+      "@lint",
+      "@test",
+      "@cs",
+      "@analyse"
+    ]
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "sort-packages": true
+  }
+}
