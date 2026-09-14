@@ -1,6 +1,6 @@
 # SPEC-002 — Courses and Curriculum
 
-Status: Draft
+Status: Approved
 
 ## 1. Objetivo
 

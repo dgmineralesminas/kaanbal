@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Kaanbal\Bootstrap;
 
+use Kaanbal\Courses\CoursesModule;
+
 final class Plugin
 {
     private static bool $booted = false;
@@ -22,7 +24,9 @@ final class Plugin
         }
 
         self::$booted = true;
-        ( new ServiceRegistry() )->registerAll();
+        $services = new ServiceRegistry();
+        $services->add(new CoursesModule());
+        $services->registerAll();
     }
 
     private static function registerRequirementsNotice(RequirementResult $requirements): void

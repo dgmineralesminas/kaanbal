@@ -502,7 +502,33 @@ Lessons ordered
 
 ---
 
-## 21. Riesgos Técnicos
+## 21. Decisiones de Implementación
+
+### DEC-008 — Visibilidad de los CPT
+
+Los tres CPT son administrativos: `public` y REST quedan desactivados, mientras
+`show_ui` permanece activo. Esto evita exponer rutas frontend antes de la SPEC
+correspondiente.
+
+### DEC-009 — Relaciones y orden
+
+Las relaciones se persisten en `_kaanbal_course_id` y `_kaanbal_module_id`.
+Las consultas ordenan por `menu_order ASC, ID ASC`; `ID` define el desempate
+determinista.
+
+### DEC-010 — Autorización administrativa
+
+Los CPT usan el modelo nativo `post` con `map_meta_cap`. Los handlers verifican
+`edit_post`, nonce, autosave y revisiones; no requieren `manage_options`.
+
+### DEC-011 — Fuente YouTube
+
+Se persiste únicamente el ID canónico de once caracteres. Se aceptan el ID
+directo, URLs `watch`, cortas `youtu.be` y `embed`.
+
+---
+
+## 22. Riesgos Técnicos
 
 ### TECH-001
 
@@ -524,7 +550,7 @@ Parser YouTube excesivamente permisivo puede guardar fuentes inválidas.
 
 ---
 
-## 22. Decisiones
+## 23. Decisiones
 
 ### DEC-001
 
@@ -558,7 +584,7 @@ No se implementa Course Builder avanzado.
 
 ---
 
-## 23. Condición de Finalización
+## 24. Condición de Finalización
 
 SPEC-002 estará lista para auditoría cuando:
 

@@ -2,21 +2,21 @@
 
 SPEC: SPEC-002 — Courses and Curriculum
 
-Branch: Not created
-Current commit: N/A
+Branch: feature/spec-002-courses-and-curriculum
+Current commit: Pending stable audit-candidate commit
 
-Status: Draft
+Status: Audit remediations complete; commit pending
 Ready for audit: No
-Current audit round: 0
+Current audit round: 1
 
 ## Human Approval
 
-SPEC approved for implementation: No
+SPEC approved for implementation: Yes
 
 ## Dependencies
 
 SPEC-001 status:
-NOT VERIFIED
+Completed and merged into main
 
 SPEC-001 required:
 Yes
@@ -26,9 +26,9 @@ Yes
 ## Tasks
 
 Total: 29
-Done: 0
+Done: 29
 In Progress: 0
-Pending: 29
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -38,53 +38,53 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — 15 tests, 19 assertions`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — lifecycle and curriculum integration against local WordPress`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse`
 
 Manual Verification:
 
-`NOT RUN`
+`PASS — authenticated browser inspection of Course, Module and Lesson editors; no console errors or warnings`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED
+AC-001: IMPLEMENTED AND INTEGRATION-TESTED
+AC-002: IMPLEMENTED AND INTEGRATION-TESTED
+AC-003: IMPLEMENTED AND INTEGRATION-TESTED
+AC-004: IMPLEMENTED AND INTEGRATION-TESTED
+AC-005: IMPLEMENTED AND INTEGRATION-TESTED
+AC-006: IMPLEMENTED AND INTEGRATION-TESTED
+AC-007: IMPLEMENTED AND INTEGRATION-TESTED
+AC-008: IMPLEMENTED AND INTEGRATION-TESTED
+AC-009: IMPLEMENTED AND UNIT/INTEGRATION-TESTED
+AC-010: IMPLEMENTED AND UNIT/INTEGRATION-TESTED
+AC-011: IMPLEMENTED AND INTEGRATION-TESTED
+AC-012: IMPLEMENTED AND INTEGRATION-TESTED
+AC-013: IMPLEMENTED AND INTEGRATION-TESTED
+AC-014: IMPLEMENTED AND INTEGRATION-TESTED
+AC-015: IMPLEMENTED AND INTEGRATION-TESTED
+AC-016: IMPLEMENTED AND INTEGRATION-TESTED
+AC-017: IMPLEMENTED; source scope reviewed
 
 ---
 
@@ -96,29 +96,46 @@ None currently recorded.
 
 ## Open Findings
 
-None.
+CODE-003: Pending closure when the stable audit-candidate commit is created.
 
-No audit round has been executed.
+CODE-REC-005: Resolved — integration test covers nonexistent course and module IDs.
+
+CODE-REC-006: Resolved — plan section numbering is unique.
+
+CODE-REC-007: Resolved — clearing either video field clears the stored video pair.
 
 ---
 
 ## Change Requests
 
-None.
+Round-1 preliminary audit remediation is complete and validated. The candidate
+must now be committed before a binding audit verdict can be issued.
 
 ---
 
 ## Human Review
 
-Pending.
+Stable candidate commit pending before reopening audit round 1.
+
+## Manual Verification
+
+- [x] Ver la lista de cursos: Si
+- [x] Crear cursos: Si
+- [x] Editar cursos: Si
+- [x] Eliminar cursos: Si
+- [x] Ver la lista de módulos: Si
+- [x] Crear módulos: Si
+- [x] Editar módulos: Si
+- [x] Eliminar módulos: Si
+- [x] Ver la lista de lecciones: Si
+- [x] Crear lecciones: Si
+- [x] Editar lecciones: Si
+- [x] Eliminar lecciones: Si
 
 ---
 
 ## Notes
 
-SPEC-002 has been defined but is not yet approved for implementation.
-
-Implementation must not begin until:
-
-1. SPEC-001 satisfies the project dependency requirements.
-2. SPEC-002 receives explicit human approval.
+Implementation uses administrative-only CPTs, native post capabilities and
+validated metadata. No WooCommerce, enrollment, progress, quiz or certificate
+logic was introduced.

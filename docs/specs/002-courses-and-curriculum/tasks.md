@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Ready for audit
 
 La implementación debe comenzar únicamente después de:
 
@@ -13,7 +13,7 @@ La implementación debe comenzar únicamente después de:
 
 ## TASK-001 — Registrar Course CPT
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -34,7 +34,7 @@ Registrar `kaanbal_course` con configuración adecuada para administración.
 
 ## TASK-002 — Implementar metadata de Course
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -55,7 +55,7 @@ Guardar y recuperar metadata correctamente.
 
 ## TASK-003 — Registrar Module CPT
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -69,7 +69,7 @@ Covers:
 
 ## TASK-004 — Implementar relación Module → Course
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -92,7 +92,7 @@ Relaciones válidas persisten; relaciones inválidas son rechazadas.
 
 ## TASK-005 — Implementar orden de módulos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-005
@@ -110,7 +110,7 @@ Consulta devuelve orden determinista.
 
 ## TASK-006 — Registrar Lesson CPT
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -124,7 +124,7 @@ Covers:
 
 ## TASK-007 — Implementar relación Lesson → Module
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -144,7 +144,7 @@ Validar:
 
 ## TASK-008 — Implementar orden de lecciones
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -158,7 +158,7 @@ Lecciones recuperadas de forma determinista.
 
 ## TASK-009 — Implementar modelo de fuente de video
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -174,7 +174,7 @@ Definir proveedor y source sin acoplar Curriculum directamente a YouTube.
 
 ## TASK-010 — Implementar YouTubeVideoProvider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -194,7 +194,7 @@ Unit tests.
 
 ## TASK-011 — Rechazar fuentes/proveedores no válidos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -208,7 +208,7 @@ Providers desconocidos no se consideran válidos.
 
 ## TASK-012 — Implementar consultas de módulos por curso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-005
@@ -224,7 +224,7 @@ Resultado ordenado y limitado al curso correspondiente.
 
 ## TASK-013 — Implementar consultas de lecciones por módulo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -240,7 +240,7 @@ Resultado ordenado y limitado al módulo.
 
 ## TASK-014 — Implementar CurriculumService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -260,7 +260,7 @@ Course → Modules → Lessons correcto.
 
 ## TASK-015 — Resolver Course desde Lesson
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -274,7 +274,7 @@ Lesson → Module → Course.
 
 ## TASK-016 — Implementar UI administrativa de Course
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -287,7 +287,7 @@ Permitir administrar metadata requerida.
 
 ## TASK-017 — Implementar UI administrativa de Module
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -301,7 +301,7 @@ Permitir seleccionar curso y orden.
 
 ## TASK-018 — Implementar UI administrativa de Lesson
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -321,7 +321,7 @@ Permitir:
 
 ## TASK-019 — Implementar seguridad de handlers administrativos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -341,7 +341,7 @@ Validar:
 
 ## TASK-020 — Implementar pruebas de CPT
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -356,7 +356,7 @@ Tests de integración pasan.
 
 ## TASK-021 — Implementar pruebas de relaciones
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -372,7 +372,7 @@ Casos positivos y negativos.
 
 ## TASK-022 — Implementar pruebas de ordering
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-005
@@ -386,7 +386,7 @@ Incluye casos con mismo `menu_order`.
 
 ## TASK-023 — Implementar pruebas de YouTube provider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -406,7 +406,7 @@ Incluir:
 
 ## TASK-024 — Implementar pruebas de CurriculumService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -426,7 +426,7 @@ Incluir:
 
 ## TASK-025 — Implementar pruebas de capabilities
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -439,7 +439,7 @@ Usuario autorizado vs no autorizado.
 
 ## TASK-026 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -453,7 +453,7 @@ Confirmar que SPEC-002 no implementa accidentalmente funcionalidades futuras.
 
 ## TASK-027 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -474,7 +474,7 @@ según tooling disponible.
 
 ## TASK-028 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -495,7 +495,7 @@ Registrar:
 
 ## TASK-029 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done

@@ -21,3 +21,10 @@ if (! function_exists('update_option')) {
         return true;
     }
 }
+
+if (! function_exists('wp_parse_url')) {
+    function wp_parse_url(string $url, int $component = -1): array|string|int|null|false
+    {
+        return parse_url($url, $component);
+    }
+}
