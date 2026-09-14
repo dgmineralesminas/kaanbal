@@ -3,10 +3,10 @@
 SPEC: SPEC-002 — Courses and Curriculum
 
 Branch: feature/spec-002-courses-and-curriculum
-Current commit: Pending stable audit-candidate commit
+Current implementation commit: 6a66d49ea40703961a9048d3440fa92f513f9b29
 
-Status: Audit remediations complete; commit pending
-Ready for audit: No
+Status: Ready for audit
+Ready for audit: Yes
 Current audit round: 1
 
 ## Human Approval
@@ -96,7 +96,7 @@ None currently recorded.
 
 ## Open Findings
 
-CODE-003: Pending closure when the stable audit-candidate commit is created.
+None.
 
 CODE-REC-005: Resolved — integration test covers nonexistent course and module IDs.
 
@@ -108,14 +108,17 @@ CODE-REC-007: Resolved — clearing either video field clears the stored video p
 
 ## Change Requests
 
-Round-1 preliminary audit remediation is complete and validated. The candidate
-must now be committed before a binding audit verdict can be issued.
+CODE-003: Resolved by stable implementation commit
+`6a66d49ea40703961a9048d3440fa92f513f9b29`.
+
+CODE-REC-005, CODE-REC-006 and CODE-REC-007: Resolved and validated before
+the stable implementation commit.
 
 ---
 
 ## Human Review
 
-Stable candidate commit pending before reopening audit round 1.
+Ready to reopen audit round 1 against the stable implementation commit.
 
 ## Manual Verification
 
