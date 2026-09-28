@@ -76,5 +76,13 @@ final class EnrollmentSchemaMigration implements SchemaMigration
                 UNIQUE KEY enrollment_source_item (enrollment_id, source_type, order_item_id, product_id)
             ) {$charset_collate};"
         );
+
+        // dbDelta() reports no errors, so confirm the tables exist before the schema
+        // version is recorded.
+        foreach (array($product_courses, $enrollments, $sources) as $table) {
+            if ($table !== $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)))) {
+                throw new \RuntimeException(esc_html(sprintf('The Kaanbal table %s could not be created.', $table)));
+            }
+        }
     }
 }

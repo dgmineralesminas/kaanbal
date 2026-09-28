@@ -30,9 +30,9 @@ final class SchemaManager
             return;
         }
 
-        if (2 <= $this->targetVersion && $this->migration instanceof SchemaMigration) {
-            $this->migration->install();
-        }
+        // The version is stored only after the migration succeeds, so a failed
+        // migration is retried on the next request instead of being skipped forever.
+        $this->migration?->install();
 
         $this->options->update(self::OPTION_NAME, $this->targetVersion);
     }

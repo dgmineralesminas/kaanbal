@@ -34,6 +34,8 @@ $previous_post = $_POST;
 $previous_user_id = get_current_user_id();
 
 try {
+    global $wpdb;
+
     Activator::activate();
     do_action('init');
 
@@ -91,6 +93,19 @@ try {
 
     if (array() !== $product_courses->findCoursesByProduct($product_ids[1])) {
         throw new RuntimeException('Product-course associations were saved without a valid nonce and capability.');
+    }
+
+    // AC-019 — a valid nonce is not enough: a user who cannot edit the product is rejected.
+    wp_set_current_user($customer_id);
+    $_POST = array(
+        'kaanbal_product_courses_nonce' => wp_create_nonce('kaanbal_save_product_courses'),
+        'kaanbal_course_ids'            => array((string) $course_id),
+        'kaanbal_listed_course_ids'     => array((string) $course_id),
+    );
+    $meta_box->save($product_ids[1]);
+
+    if (array() !== $product_courses->findCoursesByProduct($product_ids[1])) {
+        throw new RuntimeException('A user without the edit_post capability changed product-course associations.');
     }
 
     wp_set_current_user((int) $administrator_ids[0]);
@@ -193,6 +208,36 @@ try {
     $final_order->update_status('processing');
     assertEnrollmentState($customer_id, $course_id, 4, 'active');
 
+    // CODE-004 — re-granting a revoked source reuses the row and records the new grant time.
+    $revoked_source_filter = array(
+        'order_id'   => $reactivation_order->get_id(),
+        'product_id' => $product_ids[0],
+    );
+    $wpdb->update($wpdb->prefix . 'kaanbal_enrollment_sources', array('granted_at' => '2000-01-01 00:00:00'), $revoked_source_filter);
+    $reactivation_order->update_status('processing');
+    assertEnrollmentState($customer_id, $course_id, 4, 'active');
+    $regranted_source = $wpdb->get_row(
+        $wpdb->prepare(
+            'SELECT granted_at, revoked_at FROM %i WHERE order_id = %d AND product_id = %d',
+            $wpdb->prefix . 'kaanbal_enrollment_sources',
+            $reactivation_order->get_id(),
+            $product_ids[0]
+        ),
+        ARRAY_A
+    );
+
+    if (! is_array($regranted_source) || null !== $regranted_source['revoked_at'] || '2000-01-01 00:00:00' === $regranted_source['granted_at']) {
+        throw new RuntimeException('Re-granting a revoked source did not clear revoked_at and record the new grant time.');
+    }
+
+    // Re-processing a source that is already valid keeps its original grant time.
+    $wpdb->update($wpdb->prefix . 'kaanbal_enrollment_sources', array('granted_at' => '2001-01-01 00:00:00'), $revoked_source_filter);
+    $reactivation_order->update_status('completed');
+
+    if ('2001-01-01 00:00:00' !== $wpdb->get_var($wpdb->prepare('SELECT granted_at FROM %i WHERE order_id = %d AND product_id = %d', $wpdb->prefix . 'kaanbal_enrollment_sources', $reactivation_order->get_id(), $product_ids[0]))) {
+        throw new RuntimeException('Re-processing a valid source changed its grant time.');
+    }
+
     $guest_order = wc_create_order();
     $guest_order->add_product($product_a, 1);
     $guest_order->calculate_totals();
@@ -201,6 +246,18 @@ try {
     $guest_order->update_status('processing');
 
     assertEnrollmentState($customer_id, $course_id, 4, 'active');
+
+    // CODE-005 — the guest order explains, once, why no access was granted.
+    $guest_order->update_status('completed');
+    assertKaanbalNoteCount($guest_order->get_id(), 1);
+
+    // Following the note's instructions grants access.
+    $guest_order = wc_get_order($guest_order->get_id());
+    $guest_order->set_customer_id($customer_id);
+    $guest_order->save();
+    $guest_order->update_status('processing');
+    assertEnrollmentState($customer_id, $course_id, 5, 'active');
+    assertKaanbalNoteCount($guest_order->get_id(), 1);
 
     // CODE-003 — saving a product through its real form must not drop associations to
     // courses that are not published, and the form must offer every assignable course.
@@ -586,5 +643,17 @@ function assertProductCourses(ProductCourseRepository $product_courses, int $pro
 
     if ($expected !== $product_courses->findCoursesByProduct($product_id)) {
         throw new RuntimeException(esc_html($message));
+    }
+}
+
+function assertKaanbalNoteCount(int $order_id, int $expected): void
+{
+    $notes = array_filter(
+        wc_get_order_notes(array('order_id' => $order_id)),
+        static fn (object $note): bool => str_starts_with((string) $note->content, 'Kaanbal:')
+    );
+
+    if ($expected !== count($notes)) {
+        throw new RuntimeException(esc_html(sprintf('Expected %d Kaanbal order notes, found %d.', $expected, count($notes))));
     }
 }

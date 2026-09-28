@@ -56,7 +56,14 @@ final class WooCommerceModule implements BootableService
             return;
         }
 
-        $this->grant_courses->grant(new WooCommerceOrderAdapter($order));
+        $adapter = new WooCommerceOrderAdapter($order);
+
+        if (GrantCoursesFromOrder::GUEST_ORDER_WITH_COURSES === $this->grant_courses->grant($adapter)) {
+            $adapter->addNoteOnce(
+                '_kaanbal_guest_order_notice',
+                __('Kaanbal: this order includes courses but has no customer account, so no course access was granted. Assign the order to a customer, then set its status to Processing or Completed again to grant access.', 'kaanbal')
+            );
+        }
     }
 
     public function revokeCourses(int $order_id): void

@@ -41,6 +41,21 @@ final class WooCommerceOrderAdapter
         return $items;
     }
 
+    /**
+     * Adds a private order note only the first time $key is used on this order, so
+     * processing and completed do not repeat it.
+     */
+    public function addNoteOnce(string $key, string $note): void
+    {
+        if ('' !== (string) $this->order->get_meta($key)) {
+            return;
+        }
+
+        $this->order->add_order_note($note);
+        $this->order->update_meta_data($key, '1');
+        $this->order->save_meta_data();
+    }
+
     /** @return list<int> */
     public function productIds(): array
     {
