@@ -6,6 +6,7 @@ namespace Kaanbal\Tests\Unit;
 
 use Kaanbal\Bootstrap\Activator;
 use Kaanbal\Bootstrap\Deactivator;
+use Kaanbal\Bootstrap\Version;
 use PHPUnit\Framework\TestCase;
 
 final class LifecycleTest extends TestCase
@@ -20,7 +21,7 @@ final class LifecycleTest extends TestCase
         Activator::activate();
         Activator::activate();
 
-        self::assertSame(1, $GLOBALS['kaanbal_test_options']['kaanbal_db_version']);
+        self::assertSame(Version::DATABASE_SCHEMA, $GLOBALS['kaanbal_test_options']['kaanbal_db_version']);
         self::assertCount(1, $GLOBALS['kaanbal_test_options']);
     }
 
@@ -29,6 +30,6 @@ final class LifecycleTest extends TestCase
         Activator::activate();
         Deactivator::deactivate();
 
-        self::assertSame(1, $GLOBALS['kaanbal_test_options']['kaanbal_db_version']);
+        self::assertSame(Version::DATABASE_SCHEMA, $GLOBALS['kaanbal_test_options']['kaanbal_db_version']);
     }
 }

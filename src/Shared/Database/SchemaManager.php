@@ -13,6 +13,7 @@ final class SchemaManager
     public function __construct(
         private readonly OptionStore $options,
         private readonly int $targetVersion = Version::DATABASE_SCHEMA,
+        private readonly ?SchemaMigration $migration = null,
     ) {
     }
 
@@ -27,6 +28,10 @@ final class SchemaManager
 
         if ($installedVersion >= $this->targetVersion) {
             return;
+        }
+
+        if (2 <= $this->targetVersion && $this->migration instanceof SchemaMigration) {
+            $this->migration->install();
         }
 
         $this->options->update(self::OPTION_NAME, $this->targetVersion);

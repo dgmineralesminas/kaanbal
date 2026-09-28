@@ -5,6 +5,7 @@ declare(strict_types=1);
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $GLOBALS['kaanbal_test_options'] = array();
+$GLOBALS['kaanbal_test_actions'] = array();
 
 if (! function_exists('get_option')) {
     function get_option(string $key, mixed $fallback = false): mixed
@@ -26,5 +27,18 @@ if (! function_exists('wp_parse_url')) {
     function wp_parse_url(string $url, int $component = -1): array|string|int|null|false
     {
         return parse_url($url, $component);
+    }
+}
+
+if (! function_exists('add_action')) {
+    function add_action(string $hook_name, callable $callback, int $priority = 10, int $accepted_args = 1): bool
+    {
+        $GLOBALS['kaanbal_test_actions'][$hook_name][] = array(
+            'callback'      => $callback,
+            'priority'      => $priority,
+            'accepted_args' => $accepted_args,
+        );
+
+        return true;
     }
 }

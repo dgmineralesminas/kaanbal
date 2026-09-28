@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kaanbal\Bootstrap;
 
 use Kaanbal\Courses\CoursesModule;
+use Kaanbal\WooCommerce\WooCommerceModule;
 
 final class Plugin
 {
@@ -24,8 +25,10 @@ final class Plugin
         }
 
         self::$booted = true;
+        Activator::installSchema();
         $services = new ServiceRegistry();
         $services->add(new CoursesModule());
+        $services->add(new WooCommerceModule());
         $services->registerAll();
     }
 
