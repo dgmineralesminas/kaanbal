@@ -119,6 +119,10 @@ try {
     if (array() !== $product_courses->findCoursesByProduct($course_id)) {
         throw new RuntimeException('An association was saved for a non-product post.');
     }
+
+    // Later fixtures insert products, which fires save_post_product; a leftover form payload
+    // with a valid nonce would silently attach courses to every new product.
+    $_POST = array();
     $product_courses->attachCourse($product_ids[1], $course_id);
 
     $product_a = wc_get_product($product_ids[0]);
@@ -197,6 +201,63 @@ try {
     $guest_order->update_status('processing');
 
     assertEnrollmentState($customer_id, $course_id, 4, 'active');
+
+    // CODE-003 — saving a product through its real form must not drop associations to
+    // courses that are not published, and the form must offer every assignable course.
+    $form_product_id   = createProductFixture('WooCommerce metabox product');
+    $product_ids[]     = $form_product_id;
+    $draft_course_id   = createCourseFixture('WooCommerce draft course');
+    $future_course_id  = createCourseFixture('WooCommerce scheduled course');
+    $trashed_form_course_id = createCourseFixture('WooCommerce trashed associated course');
+    $unassociated_trash_id  = createCourseFixture('WooCommerce trashed unassociated course');
+    $extra_course_ids  = array_merge($extra_course_ids, array($draft_course_id, $future_course_id, $trashed_form_course_id, $unassociated_trash_id));
+
+    $product_courses->attachCourse($form_product_id, $draft_course_id);
+    $product_courses->attachCourse($form_product_id, $trashed_form_course_id);
+    wp_update_post(array('ID' => $draft_course_id, 'post_status' => 'draft'));
+    wp_update_post(array('ID' => $future_course_id, 'post_status' => 'future', 'post_date' => gmdate('Y-m-d H:i:s', time() + WEEK_IN_SECONDS), 'post_date_gmt' => gmdate('Y-m-d H:i:s', time() + WEEK_IN_SECONDS)));
+    wp_trash_post($trashed_form_course_id);
+    wp_trash_post($unassociated_trash_id);
+
+    // Editing anything else on the product and saving keeps the existing associations.
+    submitProductCourseForm($meta_box, $form_product_id);
+    assertProductCourses($product_courses, $form_product_id, array($draft_course_id, $trashed_form_course_id), 'Saving the product form dropped associations to unpublished courses.');
+
+    // The editor sees the associated trashed course, checked and labelled, instead of a hidden association.
+    ob_start();
+    $meta_box->render(get_post($form_product_id));
+    $form_html = (string) ob_get_clean();
+
+    if (1 !== preg_match('/value="' . $trashed_form_course_id . '"\s+checked=/', $form_html) || ! str_contains($form_html, 'In trash')) {
+        throw new RuntimeException('The product form hides an associated trashed course.');
+    }
+
+    // A scheduled course is offered by the form and can be associated.
+    submitProductCourseForm($meta_box, $form_product_id, array($future_course_id));
+    assertProductCourses($product_courses, $form_product_id, array($draft_course_id, $future_course_id, $trashed_form_course_id), 'A scheduled course could not be associated from the product form.');
+
+    // Unchecking a listed course removes only that association.
+    submitProductCourseForm($meta_box, $form_product_id, array(), array($draft_course_id));
+    assertProductCourses($product_courses, $form_product_id, array($future_course_id, $trashed_form_course_id), 'Unchecking a course did not remove exactly that association.');
+
+    // A trashed course that was not associated cannot be newly attached.
+    $_POST = array(
+        'kaanbal_product_courses_nonce' => wp_create_nonce('kaanbal_save_product_courses'),
+        'kaanbal_course_ids'            => array((string) $unassociated_trash_id, (string) $future_course_id),
+        'kaanbal_listed_course_ids'     => array((string) $future_course_id, (string) $trashed_form_course_id),
+    );
+    $meta_box->save($form_product_id);
+    assertProductCourses($product_courses, $form_product_id, array($future_course_id), 'The form attached a trashed course or kept an unchecked listed course.');
+
+    // Courses that the submitted form did not list are never detached.
+    $product_courses->attachCourse($form_product_id, $draft_course_id);
+    $_POST = array(
+        'kaanbal_product_courses_nonce' => wp_create_nonce('kaanbal_save_product_courses'),
+        'kaanbal_course_ids'            => array(),
+        'kaanbal_listed_course_ids'     => array((string) $future_course_id),
+    );
+    $meta_box->save($form_product_id);
+    assertProductCourses($product_courses, $form_product_id, array($draft_course_id), 'A course that the form did not list was detached.');
 
     // AC-008 / SC-007 — one product grants several courses (bundle).
     $bundle_course_ids = array(
@@ -460,4 +521,70 @@ function createOrderFixture(int $customer_id): WC_Order
     }
 
     return $order;
+}
+
+/**
+ * Renders the product metabox, reads its inputs as a browser would and saves them.
+ *
+ * @param list<int> $check   Course IDs to check in addition to the rendered state.
+ * @param list<int> $uncheck Course IDs to uncheck.
+ */
+function submitProductCourseForm(ProductCourseMetaBox $meta_box, int $product_id, array $check = array(), array $uncheck = array()): void
+{
+    $product = get_post($product_id);
+
+    if (! $product instanceof WP_Post) {
+        throw new RuntimeException('The product fixture could not be loaded for the metabox form.');
+    }
+
+    ob_start();
+    $meta_box->render($product);
+    $html = (string) ob_get_clean();
+
+    preg_match_all('/<input\b[^>]*>/i', $html, $inputs);
+    $post = array('kaanbal_course_ids' => array(), 'kaanbal_listed_course_ids' => array());
+
+    foreach ($inputs[0] as $input) {
+        preg_match('/\bname="([^"]*)"/', $input, $name);
+        preg_match('/\bvalue="([^"]*)"/', $input, $value);
+        preg_match('/\btype="([^"]*)"/', $input, $type);
+        $name  = $name[1] ?? '';
+        $value = html_entity_decode($value[1] ?? '');
+
+        if ('checkbox' === ($type[1] ?? '')) {
+            $is_checked = 1 === preg_match('/\bchecked=/', $input);
+            $is_checked = ($is_checked || in_array((int) $value, $check, true)) && ! in_array((int) $value, $uncheck, true);
+
+            if ($is_checked) {
+                $post['kaanbal_course_ids'][] = $value;
+            }
+
+            continue;
+        }
+
+        if ('kaanbal_listed_course_ids[]' === $name) {
+            $post['kaanbal_listed_course_ids'][] = $value;
+        } elseif ('' !== $name && ! str_ends_with($name, '[]')) {
+            $post[$name] = $value;
+        }
+    }
+
+    foreach ($check as $course_id) {
+        if (! in_array((string) $course_id, $post['kaanbal_listed_course_ids'], true)) {
+            throw new RuntimeException('The product form does not offer an assignable course.');
+        }
+    }
+
+    $_POST = $post;
+    $meta_box->save($product_id);
+}
+
+/** @param list<int> $expected */
+function assertProductCourses(ProductCourseRepository $product_courses, int $product_id, array $expected, string $message): void
+{
+    sort($expected);
+
+    if ($expected !== $product_courses->findCoursesByProduct($product_id)) {
+        throw new RuntimeException(esc_html($message));
+    }
 }

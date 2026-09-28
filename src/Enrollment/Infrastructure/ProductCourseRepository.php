@@ -105,13 +105,22 @@ final class ProductCourseRepository
         );
     }
 
-    /** @param list<int> $course_ids */
-    public function syncCourses(int $product_id, array $course_ids): void
+    /**
+     * Makes the product grant exactly the selected courses among the managed ones.
+     *
+     * Associations to courses outside $managed_course_ids are never removed, so a form
+     * only detaches the courses it actually displayed.
+     *
+     * @param list<int> $course_ids         Courses that must be associated.
+     * @param list<int> $managed_course_ids Courses the caller is allowed to detach.
+     */
+    public function syncCourses(int $product_id, array $course_ids, array $managed_course_ids): void
     {
-        $course_ids = array_values(array_unique(array_filter(array_map('absint', $course_ids))));
-        $existing   = $this->findCoursesByProduct($product_id);
+        $course_ids         = array_values(array_unique(array_filter(array_map('absint', $course_ids))));
+        $managed_course_ids = array_values(array_unique(array_filter(array_map('absint', $managed_course_ids))));
+        $existing           = $this->findCoursesByProduct($product_id);
 
-        foreach (array_diff($existing, $course_ids) as $course_id) {
+        foreach (array_intersect(array_diff($existing, $course_ids), $managed_course_ids) as $course_id) {
             $this->detachCourse($product_id, $course_id);
         }
 
