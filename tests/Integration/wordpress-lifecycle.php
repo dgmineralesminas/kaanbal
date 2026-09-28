@@ -40,13 +40,13 @@ try {
     Kaanbal\Bootstrap\Activator::activate();
     Kaanbal\Bootstrap\Activator::activate();
 
-    if (1 !== (int) get_option($option_name)) {
+    if (Kaanbal\Bootstrap\Version::DATABASE_SCHEMA !== (int) get_option($option_name)) {
         throw new RuntimeException('Kaanbal activation did not persist the expected schema version.');
     }
 
     Kaanbal\Bootstrap\Deactivator::deactivate();
 
-    if (1 !== (int) get_option($option_name)) {
+    if (Kaanbal\Bootstrap\Version::DATABASE_SCHEMA !== (int) get_option($option_name)) {
         throw new RuntimeException('Kaanbal deactivation removed the schema version.');
     }
 

@@ -26,6 +26,7 @@ use Kaanbal\WooCommerce\Presentation\Admin\ProductCourseMetaBox;
 
 $customer_id = null;
 $course_id   = null;
+$extra_course_ids = array();
 $product_ids = array();
 $order_ids   = array();
 // phpcs:ignore WordPress.Security.NonceVerification.Missing -- The fixture preserves the request payload before testing authorized and unauthorized saves.
@@ -197,6 +198,111 @@ try {
 
     assertEnrollmentState($customer_id, $course_id, 4, 'active');
 
+    // AC-008 / SC-007 — one product grants several courses (bundle).
+    $bundle_course_ids = array(
+        createCourseFixture('WooCommerce bundle course 1'),
+        createCourseFixture('WooCommerce bundle course 2'),
+        createCourseFixture('WooCommerce bundle course 3'),
+    );
+    $extra_course_ids  = array_merge($extra_course_ids, $bundle_course_ids);
+    $bundle_product_id = createProductFixture('WooCommerce bundle product');
+    $product_ids[]     = $bundle_product_id;
+
+    foreach ($bundle_course_ids as $bundle_course_id) {
+        $product_courses->attachCourse($bundle_product_id, $bundle_course_id);
+    }
+
+    $bundle_order   = createOrderFixture($customer_id);
+    $order_ids[]    = $bundle_order->get_id();
+    $bundle_item_id = (int) $bundle_order->add_product(loadProductFixture($bundle_product_id), 1);
+    $bundle_order->calculate_totals();
+    $bundle_order->save();
+    $bundle_order->update_status('processing');
+
+    foreach ($bundle_course_ids as $bundle_course_id) {
+        assertEnrollmentState($customer_id, $bundle_course_id, 1, 'active');
+        // AC-007 / SC-006 — the source keeps order, order item and product references.
+        assertSourceTraceability($customer_id, $bundle_course_id, $bundle_order->get_id(), $bundle_product_id, $bundle_item_id);
+    }
+
+    // AC-009 / SC-008 — two products of the same order grant the same course.
+    $overlap_course_id  = createCourseFixture('WooCommerce overlapping course');
+    $extra_course_ids[] = $overlap_course_id;
+    $overlap_product_ids = array(
+        createProductFixture('WooCommerce overlapping product A'),
+        createProductFixture('WooCommerce overlapping product B'),
+    );
+    $product_ids = array_merge($product_ids, $overlap_product_ids);
+
+    foreach ($overlap_product_ids as $overlap_product_id) {
+        $product_courses->attachCourse($overlap_product_id, $overlap_course_id);
+    }
+
+    $overlap_order = createOrderFixture($customer_id);
+    $order_ids[]   = $overlap_order->get_id();
+    $overlap_items = array();
+
+    foreach ($overlap_product_ids as $overlap_product_id) {
+        $overlap_items[$overlap_product_id] = (int) $overlap_order->add_product(loadProductFixture($overlap_product_id), 1);
+    }
+
+    $overlap_order->calculate_totals();
+    $overlap_order->save();
+    $overlap_order->update_status('processing');
+    assertEnrollmentState($customer_id, $overlap_course_id, 2, 'active');
+
+    foreach ($overlap_items as $overlap_product_id => $overlap_item_id) {
+        assertSourceTraceability($customer_id, $overlap_course_id, $overlap_order->get_id(), $overlap_product_id, $overlap_item_id);
+    }
+
+    $overlap_order->update_status('completed');
+    assertEnrollmentState($customer_id, $overlap_course_id, 2, 'active');
+
+    // AC-004 / SC-004 — a product without courses is academically ignored and WooCommerce continues.
+    $enrollments_before    = countEnrollmentsForUser($customer_id);
+    $no_course_product_id  = createProductFixture('WooCommerce product without courses');
+    $product_ids[]         = $no_course_product_id;
+    $no_course_order       = createOrderFixture($customer_id);
+    $order_ids[]           = $no_course_order->get_id();
+    $no_course_order->add_product(loadProductFixture($no_course_product_id), 1);
+    $no_course_order->calculate_totals();
+    $no_course_order->save();
+    $no_course_order->update_status('processing');
+    $no_course_order->update_status('completed');
+
+    if ($enrollments_before !== countEnrollmentsForUser($customer_id)) {
+        throw new RuntimeException('A product without courses created an enrollment.');
+    }
+
+    if ('completed' !== wc_get_order($no_course_order->get_id())->get_status()) {
+        throw new RuntimeException('WooCommerce did not complete an order containing a product without courses.');
+    }
+
+    // EC-003 — associations to trashed or deleted courses do not produce enrollments.
+    $trashed_course_id  = createCourseFixture('WooCommerce trashed course');
+    $deleted_course_id  = createCourseFixture('WooCommerce deleted course');
+    $extra_course_ids[] = $trashed_course_id;
+    $orphan_product_id  = createProductFixture('WooCommerce product with removed courses');
+    $product_ids[]      = $orphan_product_id;
+    $product_courses->attachCourse($orphan_product_id, $trashed_course_id);
+    $product_courses->attachCourse($orphan_product_id, $deleted_course_id);
+    wp_trash_post($trashed_course_id);
+    wp_delete_post($deleted_course_id, true);
+
+    $orphan_order = createOrderFixture($customer_id);
+    $order_ids[]  = $orphan_order->get_id();
+    $orphan_order->add_product(loadProductFixture($orphan_product_id), 1);
+    $orphan_order->calculate_totals();
+    $orphan_order->save();
+    $orphan_order->update_status('processing');
+
+    assertNoEnrollment($customer_id, $trashed_course_id);
+    assertNoEnrollment($customer_id, $deleted_course_id);
+
+    if ($enrollments_before !== countEnrollmentsForUser($customer_id)) {
+        throw new RuntimeException('An association to a removed course created an enrollment.');
+    }
+
     echo "WooCommerce enrollment integration: PASS\n";
 } finally {
     global $wpdb;
@@ -204,14 +310,20 @@ try {
     $_POST = $previous_post;
     wp_set_current_user($previous_user_id);
 
-    if ($wpdb instanceof wpdb && is_int($customer_id) && is_int($course_id)) {
-        $sources     = $wpdb->prefix . 'kaanbal_enrollment_sources';
-        $enrollments = $wpdb->prefix . 'kaanbal_enrollments';
-        $enrollment_id = $wpdb->get_var($wpdb->prepare('SELECT id FROM %i WHERE user_id = %d AND course_id = %d', $enrollments, $customer_id, $course_id));
+    if ($wpdb instanceof wpdb && is_int($customer_id)) {
+        $sources        = $wpdb->prefix . 'kaanbal_enrollment_sources';
+        $enrollments    = $wpdb->prefix . 'kaanbal_enrollments';
+        $enrollment_ids = $wpdb->get_col($wpdb->prepare('SELECT id FROM %i WHERE user_id = %d', $enrollments, $customer_id));
 
-        if (is_numeric($enrollment_id)) {
+        foreach ($enrollment_ids as $enrollment_id) {
             $wpdb->delete($sources, array('enrollment_id' => (int) $enrollment_id), array('%d'));
             $wpdb->delete($enrollments, array('id' => (int) $enrollment_id), array('%d'));
+        }
+    }
+
+    if ($wpdb instanceof wpdb) {
+        foreach ($product_ids as $product_id) {
+            $wpdb->delete($wpdb->prefix . 'kaanbal_product_courses', array('product_id' => (int) $product_id), array('%d'));
         }
     }
 
@@ -229,6 +341,10 @@ try {
 
     if (is_int($course_id)) {
         wp_delete_post($course_id, true);
+    }
+
+    foreach ($extra_course_ids as $extra_course_id) {
+        wp_delete_post($extra_course_id, true);
     }
 
     if (is_int($customer_id)) {
@@ -253,4 +369,95 @@ function assertEnrollmentState(int $user_id, int $course_id, int $source_count, 
     if ($source_count !== $actual_source_count) {
         throw new RuntimeException('The enrollment source count does not match the expected count.');
     }
+}
+
+function assertNoEnrollment(int $user_id, int $course_id): void
+{
+    global $wpdb;
+
+    $enrollments = $wpdb->prefix . 'kaanbal_enrollments';
+
+    if (null !== $wpdb->get_var($wpdb->prepare('SELECT id FROM %i WHERE user_id = %d AND course_id = %d', $enrollments, $user_id, $course_id))) {
+        throw new RuntimeException('An unexpected enrollment was created.');
+    }
+}
+
+function countEnrollmentsForUser(int $user_id): int
+{
+    global $wpdb;
+
+    return (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d', $wpdb->prefix . 'kaanbal_enrollments', $user_id));
+}
+
+function assertSourceTraceability(int $user_id, int $course_id, int $order_id, int $product_id, int $order_item_id): void
+{
+    global $wpdb;
+
+    $enrollments = $wpdb->prefix . 'kaanbal_enrollments';
+    $sources     = $wpdb->prefix . 'kaanbal_enrollment_sources';
+    $source_id   = $wpdb->get_var(
+        $wpdb->prepare(
+            'SELECT s.id FROM %i s INNER JOIN %i e ON e.id = s.enrollment_id WHERE e.user_id = %d AND e.course_id = %d AND s.source_type = %s AND s.order_id = %d AND s.product_id = %d AND s.order_item_id = %d AND s.revoked_at IS NULL',
+            $sources,
+            $enrollments,
+            $user_id,
+            $course_id,
+            'woocommerce',
+            $order_id,
+            $product_id,
+            $order_item_id
+        )
+    );
+
+    if (null === $source_id) {
+        throw new RuntimeException('The WooCommerce source does not keep the order, product and order item references.');
+    }
+}
+
+function createCourseFixture(string $title): int
+{
+    $course_id = wp_insert_post(array('post_type' => 'kaanbal_course', 'post_title' => $title, 'post_status' => 'publish'));
+
+    if (0 === $course_id || is_wp_error($course_id)) {
+        throw new RuntimeException('A course fixture could not be created.');
+    }
+
+    return (int) $course_id;
+}
+
+function createProductFixture(string $title): int
+{
+    $product_id = wp_insert_post(array('post_type' => 'product', 'post_title' => $title, 'post_status' => 'publish'));
+
+    if (0 === $product_id || is_wp_error($product_id)) {
+        throw new RuntimeException('A product fixture could not be created.');
+    }
+
+    wp_set_object_terms($product_id, 'simple', 'product_type');
+    update_post_meta($product_id, '_regular_price', '100');
+    update_post_meta($product_id, '_price', '100');
+
+    return (int) $product_id;
+}
+
+function loadProductFixture(int $product_id): WC_Product
+{
+    $product = wc_get_product($product_id);
+
+    if (! $product instanceof WC_Product) {
+        throw new RuntimeException('A product fixture could not be loaded.');
+    }
+
+    return $product;
+}
+
+function createOrderFixture(int $customer_id): WC_Order
+{
+    $order = wc_create_order(array('customer_id' => $customer_id));
+
+    if (! $order instanceof WC_Order) {
+        throw new RuntimeException('An order fixture could not be created.');
+    }
+
+    return $order;
 }
