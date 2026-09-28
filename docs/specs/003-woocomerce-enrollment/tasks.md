@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Fixing audit findings
 
 Dependencias:
 
@@ -544,7 +544,7 @@ No se implementa:
 
 ## TASK-035 — Ejecutar Quality Gate
 
-Status: In Progress
+Status: Done
 
 Covers:
 - Definition of Done
@@ -566,7 +566,7 @@ Covers:
 
 ## TASK-037 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done

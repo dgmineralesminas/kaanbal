@@ -2,12 +2,12 @@
 
 SPEC: SPEC-003 — WooCommerce Enrollment
 
-Branch: Not created
-Current commit: 876b391
+Branch: feature/spec-003-woocommerce-enrollment
+Current implementation commit: 3adde8c7000ee07028b7b87645ec9fcef4035280
 
-Status: Ready for audit
-Ready for audit: Yes
-Current audit round: 0
+Status: Fixing audit findings
+Ready for audit: No
+Current audit round: 1
 
 ## Human Approval
 
@@ -31,9 +31,9 @@ Installed version 11.1.1; active integration test pending explicit fixture autho
 ## Tasks
 
 Total: 37
-Done: 35
-In Progress: 1
-Pending: 1
+Done: 37
+In Progress: 0
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -47,7 +47,7 @@ PHP Syntax:
 
 Unit Tests:
 
-`PASS — 15 tests, 19 assertions`
+`PASS — 16 tests, 21 assertions`
 
 Integration Tests:
 
@@ -133,9 +133,13 @@ Manual authenticated verification of the product metabox is pending.
 
 ## Open Findings
 
-None.
+Audit round 1 — Claude Code: FAIL (`audits/round-1/code-audit.md`, audited against the uncommitted working tree on top of `001496c`).
 
-No audit round has been executed.
+- CODE-001 — Blocking — Fixed, pending auditor verification: implementation committed as `3adde8c` on `feature/spec-003-woocommerce-enrollment`; SPEC-002 audit change committed separately (`6e6b9fb`).
+- CODE-002 — Blocking — OPEN: integration fixture lacks bundle (AC-008), overlapping products in one order (AC-009), product without courses (AC-004) and deleted course (EC-003) cases.
+- CODE-003 to CODE-008 — Non-blocking — OPEN.
+
+Qwen and Mimo round-1 audits: not yet executed.
 
 ---
 
@@ -153,4 +157,4 @@ Pending.
 
 ## Notes
 
-The WooCommerce fixture cleaned all temporary users after execution. The remaining work is manual admin verification and preparing a stable audit commit.
+The WooCommerce fixture cleaned all temporary users after execution. The remaining work is manual admin verification and remediation of CODE-002 before requesting a new audit pass.
