@@ -630,7 +630,7 @@ No es necesario crear una segunda matrícula.
 
 ---
 
-### EC-010 — Dos items del mismo producto
+### EC-011 — Dos items del mismo producto
 
 La implementación debe evitar fuentes duplicadas equivalentes y conservar trazabilidad razonable.
 
