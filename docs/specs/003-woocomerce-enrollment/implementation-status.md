@@ -3,7 +3,7 @@
 SPEC: SPEC-003 — WooCommerce Enrollment
 
 Branch: feature/spec-003-woocommerce-enrollment
-Current implementation commit: d2e4a7763bbafc7b6693754d64b0e08f702aa56d
+Current implementation commit: 8e3b9a31db080f8397126c78f9f610daee937c38
 
 Status: Ready for audit
 Ready for audit: Yes
@@ -137,11 +137,12 @@ Audit round 1 — Claude Code: FAIL (`audits/round-1/code-audit.md`, audited aga
 
 - CODE-001 — Blocking — Fixed, pending auditor verification: implementation committed as `3adde8c` on `feature/spec-003-woocommerce-enrollment`; SPEC-002 audit change committed separately (`6e6b9fb`).
 - CODE-002 — Blocking — Fixed, pending auditor verification: `d2e4a77` adds bundle (AC-008), overlapping products in one order (AC-009), product without courses (AC-004), trashed/deleted course (EC-003) and source traceability (AC-007) cases. Each new assertion was checked to fail against a deliberately broken implementation (grant only the first course, skip course validation, process only the first item, drop order_item_id); production code is unchanged.
-- CODE-003 to CODE-008 — Non-blocking — OPEN.
+- CODE-003 — Non-blocking — Fixed, pending auditor verification: `8e3b9a3` lists every assignable course plus existing associations in the product metabox (with status labels) and only detaches the courses the submitted form displayed; trashed courses can stay associated but cannot be newly attached. Covered by integration tests that submit the rendered form.
+- CODE-004 to CODE-008 — Non-blocking — OPEN.
 
 Additional fix in `d2e4a77`: `tests/Integration/wordpress-lifecycle.php` (SPEC-001) still expected schema version 1 after the SPEC-003 bump to 2 and failed; it now uses `Version::DATABASE_SCHEMA`.
 
-Next pass: reopen audit round 1 against `d2e4a77`.
+Next pass: reopen audit round 1 against `8e3b9a3`.
 
 Qwen and Mimo round-1 audits: not yet executed.
 
