@@ -5,7 +5,7 @@ SPEC: SPEC-003 — WooCommerce Enrollment
 Branch: feature/spec-003-woocommerce-enrollment
 Current implementation commit: 481c4574f37abde80fc75d58f63d7ab4e3a84ff5
 
-Status: Ready for audit
+Status: Completed
 Ready for audit: Yes
 Current audit round: 1
 
