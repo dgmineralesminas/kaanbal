@@ -5,7 +5,7 @@ SPEC: SPEC-004 — Course Access and Player
 Branch: feature/spec-004-course-access-and-player
 Current commit: N/A
 
-Status: Ready for implementation
+Status: In implementation
 Ready for audit: No
 Current audit round: 0
 
@@ -31,9 +31,9 @@ Completed
 ## Tasks
 
 Total: 33
-Done: 0
+Done: 32
 In Progress: 0
-Pending: 33
+Pending: 1
 Blocked: 0
 Not Applicable: 0
 
@@ -43,66 +43,66 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — 29 tests, 46 assertions`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — course-access-player, courses-curriculum and woocommerce-enrollment fixtures against local WordPress + WooCommerce`
 
 Frontend/Access Tests:
 
-`NOT RUN`
+`PASS — active/completed/revoked/missing/anonymous access, Course/Lesson IDOR, 404 content handling, templates, YouTube and no enrollment writes`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — anonymous, unenrolled and revoked users receive 403 without curriculum context; forged Course/Lesson requests receive 404; YouTube embeds are constructed only from normalized IDs`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (outside sandbox; local PHPStan socket required)`
 
 Manual Verification:
 
-`NOT RUN`
+`NOT RUN — visual browser verification of the new frontend remains pending.`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED  
-AC-018: NOT IMPLEMENTED  
-AC-019: NOT IMPLEMENTED  
-AC-020: NOT IMPLEMENTED  
-AC-021: NOT IMPLEMENTED  
-AC-022: NOT IMPLEMENTED
+AC-001: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-002: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-003: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-004: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-005: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-006: IMPLEMENTED AND INTEGRATION-TESTED
+AC-007: IMPLEMENTED AND INTEGRATION-TESTED
+AC-008: IMPLEMENTED AND INTEGRATION-TESTED
+AC-009: IMPLEMENTED AND INTEGRATION-TESTED
+AC-010: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-011: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-012: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-013: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-014: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-015: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-016: IMPLEMENTED AND INTEGRATION-TESTED
+AC-017: IMPLEMENTED AND INTEGRATION-TESTED
+AC-018: IMPLEMENTED AND INTEGRATION-TESTED
+AC-019: IMPLEMENTED AND INTEGRATION-TESTED
+AC-020: IMPLEMENTED AND INTEGRATION-TESTED
+AC-021: IMPLEMENTED AND INTEGRATION-TESTED
+AC-022: IMPLEMENTED AND INTEGRATION-TESTED
 
 ---
 
@@ -141,7 +141,7 @@ None currently recorded.
 
 ## Open Findings
 
-None.
+None. TASK-033 remains pending until the implementation has a stable commit suitable for audit.
 
 No audit round has been executed.
 
@@ -155,17 +155,10 @@ None.
 
 ## Human Review
 
-Pending.
+Ready for implementation
 
 ---
 
 ## Notes
 
-SPEC-004 has been defined but is not yet approved for implementation.
-
-Implementation must not begin until:
-
-1. SPEC-001 is completed.
-2. SPEC-002 is completed.
-3. SPEC-003 is completed.
-4. SPEC-004 receives explicit human approval.
+The routing decision is recorded as DEC-008 in `plan.md`. The implementation is ready to be committed; visual browser verification remains pending and must be reported separately from the automated results.

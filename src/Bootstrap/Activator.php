@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kaanbal\Bootstrap;
 
+use Kaanbal\Access\PlayerModule;
 use Kaanbal\Shared\Database\EnrollmentSchemaMigration;
 use Kaanbal\Shared\Database\SchemaManager;
 use Kaanbal\Shared\Database\WordPressOptionStore;
@@ -13,6 +14,8 @@ final class Activator
     public static function activate(): void
     {
         self::installSchema();
+        PlayerModule::registerRewriteRules();
+        flush_rewrite_rules();
     }
 
     public static function installSchema(): void

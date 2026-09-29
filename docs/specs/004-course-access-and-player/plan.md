@@ -672,6 +672,17 @@ YouTube es el único player soportado inicialmente.
 
 No se escribe progreso.
 
+## DEC-008
+
+El frontend usa rutas virtuales registradas por el plugin y resueltas con `template_include`:
+
+```text
+/courses/{course-slug}/
+/courses/{course-slug}/lesson/{lesson-slug}/
+```
+
+La autorización y la validación Course/Lesson ocurren antes de elegir el template. Una request no autorizada responde `403`; contenido inexistente o una combinación cruzada responde `404`. Los templates pertenecen al plugin y usan `get_header()`/`get_footer()` para conservar compatibilidad con cualquier theme.
+
 ---
 
 # 35. Condición de Finalización

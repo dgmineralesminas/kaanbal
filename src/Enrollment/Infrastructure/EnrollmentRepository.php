@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Kaanbal\Enrollment\Infrastructure;
 
-final class EnrollmentRepository
+use Kaanbal\Enrollment\Application\EnrollmentLookup;
+
+final class EnrollmentRepository implements EnrollmentLookup
 {
     private readonly \wpdb $database;
 

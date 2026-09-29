@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kaanbal\Bootstrap;
 
 use Kaanbal\Courses\CoursesModule;
+use Kaanbal\Access\PlayerModule;
 use Kaanbal\WooCommerce\WooCommerceModule;
 
 final class Plugin
@@ -36,6 +37,7 @@ final class Plugin
 
         $services = new ServiceRegistry();
         $services->add(new CoursesModule());
+        $services->add(new PlayerModule());
         $services->add(new WooCommerceModule());
         $services->registerAll();
     }
