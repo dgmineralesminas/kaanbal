@@ -11,6 +11,8 @@ use Kaanbal\Courses\Application\CurriculumService;
 use Kaanbal\Courses\Infrastructure\ContentTypes;
 use Kaanbal\Courses\Infrastructure\CurriculumRepository;
 use Kaanbal\Enrollment\Infrastructure\EnrollmentRepository;
+use Kaanbal\Progress\Application\CourseProgressService;
+use Kaanbal\Progress\Infrastructure\LessonProgressRepository;
 
 final class FrontendRouter
 {
@@ -23,17 +25,21 @@ final class FrontendRouter
 
     private readonly LessonNavigationService $navigation;
 
+    private readonly CourseProgressService $progress;
+
     private readonly string $templates_path;
 
     public function __construct(
         ?CurriculumService $curriculum = null,
         ?CourseAccessService $access = null,
         ?LessonNavigationService $navigation = null,
-        ?string $templates_path = null
+        ?string $templates_path = null,
+        ?CourseProgressService $progress = null
     ) {
         $this->curriculum = $curriculum ?? new CurriculumService(new CurriculumRepository());
         $this->access     = $access ?? new CourseAccessService(new EnrollmentRepository());
         $this->navigation = $navigation ?? new LessonNavigationService();
+        $this->progress = $progress ?? new CourseProgressService($this->curriculum, new LessonProgressRepository());
         $this->templates_path = $templates_path ?? dirname(__DIR__, 4) . '/templates/frontend/';
     }
 
@@ -111,7 +117,10 @@ final class FrontendRouter
             return array(
                 'template' => 'course',
                 'status'   => 200,
-                'context'  => array('curriculum' => $curriculum),
+                'context'  => array(
+                    'curriculum' => $curriculum,
+                    'progress'   => $this->progress->forCourse($user_id, $course->ID),
+                ),
             );
         }
 
@@ -136,6 +145,7 @@ final class FrontendRouter
                 'module'     => $hierarchy['module'],
                 'lesson'     => $lesson,
                 'navigation' => $this->navigation->forLesson($lesson->ID, $curriculum),
+                'progress'   => $this->progress->forCourse($user_id, $course->ID),
             ),
         );
     }

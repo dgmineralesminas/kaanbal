@@ -134,6 +134,34 @@
 	font-size: clamp(1.8rem, 3vw, 2.65rem);
 }
 
+.kaanbal-course__progress {
+	max-width: 520px;
+	margin: -4px 0 24px;
+}
+
+.kaanbal-course__progress p {
+	margin: 0 0 10px;
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 800;
+}
+
+.kaanbal-course__progress-track {
+	height: 10px;
+	overflow: hidden;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.kaanbal-course__progress-track span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, #168a4e, #68df9d);
+	box-shadow: 0 0 18px rgba(104, 223, 157, 0.38);
+	transition: width 220ms ease;
+}
+
 .kaanbal-curriculum__module {
 	padding: clamp(20px, 3vw, 32px);
 	border: 1px solid var(--ecc-border, #2a2f2a);
@@ -191,6 +219,15 @@
 	font-weight: 800;
 	line-height: 1;
 	white-space: nowrap;
+}
+
+.kaanbal-curriculum__module .is-completed a::before {
+	color: #74e8aa;
+}
+
+.kaanbal-curriculum__module .is-completed .kaanbal-curriculum__play {
+	background: rgba(22, 138, 78, 0.22);
+	color: #8bf0b7;
 }
 
 .kaanbal-curriculum__module a::before {
@@ -389,6 +426,47 @@
 .kaanbal-lesson__course a:hover,
 .kaanbal-lesson__navigation a:hover {
 	color: var(--ecc-primary-light, #9b8cff);
+}
+
+.kaanbal-course a:visited,
+.kaanbal-lesson a:visited {
+	color: #cfe5ff !important;
+}
+
+.kaanbal-lesson__completion {
+	margin-top: 28px;
+}
+
+.kaanbal-lesson__completion p {
+	margin: 0;
+	color: #6ee7a7;
+	font-weight: 800;
+}
+
+.kaanbal-lesson__complete-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 18px;
+	border: 1px solid #42c97a;
+	border-radius: var(--ecc-radius-btn, 10px);
+	background: #168a4e !important;
+	color: #ffffff !important;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.kaanbal-lesson__complete-button:hover {
+	border-color: #72e6a5;
+	background: #0f713e !important;
+	transform: translateY(-2px);
+}
+
+.kaanbal-lesson__complete-button:focus-visible {
+	outline: 3px solid #72e6a5;
+	outline-offset: 4px;
 }
 
 .kaanbal-lesson__navigation a:hover {

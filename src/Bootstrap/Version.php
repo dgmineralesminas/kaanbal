@@ -8,5 +8,5 @@ final class Version
 {
     public const PLUGIN = '0.1.0';
 
-    public const DATABASE_SCHEMA = 2;
+    public const DATABASE_SCHEMA = 3;
 }

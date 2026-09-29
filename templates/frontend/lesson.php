@@ -8,6 +8,7 @@ $curriculum = $context['curriculum'] ?? null;
 $module     = $context['module'] ?? null;
 $lesson     = $context['lesson'] ?? null;
 $navigation = $context['navigation'] ?? null;
+$progress   = $context['progress'] ?? null;
 
 if (! $course instanceof \WP_Post || ! is_array($curriculum) || ! $module instanceof \WP_Post || ! $lesson instanceof \WP_Post || ! is_array($navigation)) {
     return;
@@ -16,6 +17,7 @@ if (! $course instanceof \WP_Post || ! is_array($curriculum) || ! $module instan
 $provider = (string) get_post_meta($lesson->ID, '_kaanbal_video_provider', true);
 $source   = (string) get_post_meta($lesson->ID, '_kaanbal_video_source', true);
 $player   = (new \Kaanbal\Access\Application\YouTubeEmbedRenderer())->render($provider, $source, get_the_title($lesson));
+$is_completed = $progress instanceof \Kaanbal\Progress\Application\CourseProgress && $progress->isLessonCompleted($lesson->ID);
 
 get_header();
 ?>
@@ -33,6 +35,19 @@ get_header();
                 <?php endif; ?>
                 <div class="kaanbal-lesson__content">
                     <?php echo wp_kses_post(apply_filters('the_content', $lesson->post_content)); ?>
+                </div>
+                <div class="kaanbal-lesson__completion">
+                    <?php if ($is_completed) : ?>
+                        <p><?php esc_html_e('✓ Lección completada', 'kaanbal'); ?></p>
+                    <?php else : ?>
+                        <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
+                            <input type="hidden" name="action" value="kaanbal_complete_lesson">
+                            <input type="hidden" name="course_id" value="<?php echo esc_attr((string) $course->ID); ?>">
+                            <input type="hidden" name="lesson_id" value="<?php echo esc_attr((string) $lesson->ID); ?>">
+                            <?php wp_nonce_field('kaanbal_complete_lesson_' . $lesson->ID, '_kaanbal_nonce'); ?>
+                            <button class="kaanbal-lesson__complete-button" type="submit"><span aria-hidden="true">✓</span> <?php esc_html_e('Marcar como completada', 'kaanbal'); ?></button>
+                        </form>
+                    <?php endif; ?>
                 </div>
                 <nav class="kaanbal-lesson__navigation" aria-label="<?php esc_attr_e('Lesson navigation', 'kaanbal'); ?>">
                     <?php if ($navigation['previous'] instanceof \WP_Post) : ?>

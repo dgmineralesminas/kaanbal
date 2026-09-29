@@ -1,6 +1,6 @@
 # SPEC-005 — Student Progress
 
-Status: Draft
+Status: Ready for implementation
 
 ## 1. Objetivo
 

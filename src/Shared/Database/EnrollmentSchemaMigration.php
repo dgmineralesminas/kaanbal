@@ -26,6 +26,7 @@ final class EnrollmentSchemaMigration implements SchemaMigration
         $product_courses = $wpdb->prefix . 'kaanbal_product_courses';
         $enrollments     = $wpdb->prefix . 'kaanbal_enrollments';
         $sources         = $wpdb->prefix . 'kaanbal_enrollment_sources';
+        $progress        = $wpdb->prefix . 'kaanbal_lesson_progress';
 
         dbDelta(
             "CREATE TABLE {$product_courses} (
@@ -77,9 +78,24 @@ final class EnrollmentSchemaMigration implements SchemaMigration
             ) {$charset_collate};"
         );
 
+        dbDelta(
+            "CREATE TABLE {$progress} (
+                id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+                user_id bigint(20) unsigned NOT NULL,
+                lesson_id bigint(20) unsigned NOT NULL,
+                completed_at datetime NOT NULL,
+                created_at datetime NOT NULL,
+                updated_at datetime NOT NULL,
+                PRIMARY KEY  (id),
+                KEY user_id (user_id),
+                KEY lesson_id (lesson_id),
+                UNIQUE KEY user_lesson (user_id, lesson_id)
+            ) {$charset_collate};"
+        );
+
         // dbDelta() reports no errors, so confirm the tables exist before the schema
         // version is recorded.
-        foreach (array($product_courses, $enrollments, $sources) as $table) {
+        foreach (array($product_courses, $enrollments, $sources, $progress) as $table) {
             if ($table !== $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)))) {
                 throw new \RuntimeException(esc_html(sprintf('The Kaanbal table %s could not be created.', $table)));
             }

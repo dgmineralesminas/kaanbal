@@ -6,6 +6,7 @@ namespace Kaanbal\Bootstrap;
 
 use Kaanbal\Courses\CoursesModule;
 use Kaanbal\Access\PlayerModule;
+use Kaanbal\Progress\ProgressModule;
 use Kaanbal\WooCommerce\WooCommerceModule;
 
 final class Plugin
@@ -38,6 +39,7 @@ final class Plugin
         $services = new ServiceRegistry();
         $services->add(new CoursesModule());
         $services->add(new PlayerModule());
+        $services->add(new ProgressModule());
         $services->add(new WooCommerceModule());
         $services->registerAll();
     }

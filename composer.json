@@ -28,6 +28,7 @@
     "test:integration": "php tests/Integration/wordpress-lifecycle.php",
     "test:integration:curriculum": "php tests/Integration/courses-curriculum.php",
     "test:integration:player": "php tests/Integration/course-access-player.php",
+    "test:integration:progress": "php tests/Integration/student-progress.php",
     "test:integration:woocommerce": "php tests/Integration/woocommerce-enrollment.php",
     "lint": "find src tests -name '*.php' -print0 | xargs -0 -n1 php -l",
     "cs": "phpcs --warning-severity=0 --standard=phpcs.xml.dist",
