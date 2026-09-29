@@ -69,6 +69,7 @@ try {
 
     $course_a_id = $create_post('kaanbal_course', 'Player course A');
     $course_b_id = $create_post('kaanbal_course', 'Player course B');
+    $course_without_modules_id = $create_post('kaanbal_course', 'Player course without modules');
     $module_a_id = $create_post('kaanbal_module', 'Player module A');
     $module_empty_id = $create_post('kaanbal_module', 'Player empty module', 1);
     $module_b_id = $create_post('kaanbal_module', 'Player module B');
@@ -121,16 +122,18 @@ try {
     };
 
     $insert_enrollment($active_user, $course_a_id, 'active');
+    $insert_enrollment($active_user, $course_without_modules_id, 'active');
     $insert_enrollment($completed_user, $course_b_id, 'completed');
     $insert_enrollment($revoked_user, $course_a_id, 'revoked');
 
     $course_a = get_post($course_a_id);
     $course_b = get_post($course_b_id);
+    $course_without_modules = get_post($course_without_modules_id);
     $lesson_a_one = get_post($lesson_a_one_id);
     $lesson_a_two = get_post($lesson_a_two_id);
     $lesson_b = get_post($lesson_b_id);
 
-    if (! $course_a instanceof WP_Post || ! $course_b instanceof WP_Post || ! $lesson_a_one instanceof WP_Post || ! $lesson_a_two instanceof WP_Post || ! $lesson_b instanceof WP_Post) {
+    if (! $course_a instanceof WP_Post || ! $course_b instanceof WP_Post || ! $course_without_modules instanceof WP_Post || ! $lesson_a_one instanceof WP_Post || ! $lesson_a_two instanceof WP_Post || ! $lesson_b instanceof WP_Post) {
         throw new RuntimeException('The player fixture content could not be retrieved.');
     }
 
@@ -146,6 +149,10 @@ try {
         throw new RuntimeException('An active enrollment could not open the ordered course view.');
     }
 
+    if (array($module_a_id, $module_empty_id) !== array_map(static fn (array $module_item): int => $module_item['module']->ID, $course_response['context']['curriculum']['modules'])) {
+        throw new RuntimeException('The course modules are not ordered as defined by the curriculum.');
+    }
+
     Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($course_response['context']);
     ob_start();
     require dirname(__DIR__, 2) . '/templates/frontend/course.php';
@@ -153,6 +160,21 @@ try {
 
     if (! str_contains($course_markup, 'Player course A') || ! str_contains($course_markup, 'Player empty module') || ! str_contains($course_markup, 'Comienza tu curso') || ! str_contains($course_markup, 'Reproducir')) {
         throw new RuntimeException('The authorized course template did not render course and empty-module content.');
+    }
+
+    $course_without_modules_response = $router->resolve($course_without_modules->post_name, null, $active_user);
+
+    if (200 !== $course_without_modules_response['status'] || 'course' !== $course_without_modules_response['template'] || array() !== $course_without_modules_response['context']['curriculum']['modules']) {
+        throw new RuntimeException('An active enrollment could not open a published course without modules.');
+    }
+
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($course_without_modules_response['context']);
+    ob_start();
+    require dirname(__DIR__, 2) . '/templates/frontend/course.php';
+    $course_without_modules_markup = (string) ob_get_clean();
+
+    if (! str_contains($course_without_modules_markup, 'Player course without modules')) {
+        throw new RuntimeException('The course template could not render a published course without modules.');
     }
 
     $lesson_response = $router->resolve($course_a->post_name, $lesson_a_one->post_name, $active_user);
@@ -168,6 +190,36 @@ try {
 
     if (! str_contains($lesson_markup, 'Player lesson A one') || ! str_contains($lesson_markup, 'youtube-nocookie.com/embed/dQw4w9WgXcQ') || ! str_contains($lesson_markup, 'aria-current="page"') || ! str_contains($lesson_markup, 'Player lesson A two')) {
         throw new RuntimeException('The authorized lesson template did not render its protected content and video player.');
+    }
+
+    $lesson_two_response = $router->resolve($course_a->post_name, $lesson_a_two->post_name, $active_user);
+
+    if (200 !== $lesson_two_response['status'] || 'lesson' !== $lesson_two_response['template']) {
+        throw new RuntimeException('An active enrollment could not freely open the second lesson.');
+    }
+
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($lesson_two_response['context']);
+    ob_start();
+    require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
+    $lesson_two_markup = (string) ob_get_clean();
+
+    if (! str_contains($lesson_two_markup, 'Player lesson A two') || ! str_contains($lesson_two_markup, 'Player module A') || ! str_contains($lesson_two_markup, 'Protected player content.')) {
+        throw new RuntimeException('The second lesson template did not render its title, module and content.');
+    }
+
+    $lesson_without_video_response = $router->resolve($course_b->post_name, $lesson_b->post_name, $completed_user);
+
+    if (200 !== $lesson_without_video_response['status'] || 'lesson' !== $lesson_without_video_response['template']) {
+        throw new RuntimeException('A completed enrollment could not open a lesson without video.');
+    }
+
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($lesson_without_video_response['context']);
+    ob_start();
+    require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
+    $lesson_without_video_markup = (string) ob_get_clean();
+
+    if (! str_contains($lesson_without_video_markup, 'Player lesson B') || str_contains($lesson_without_video_markup, 'kaanbal-player')) {
+        throw new RuntimeException('The lesson template did not render a text-only lesson correctly.');
     }
 
     $before = $wpdb->get_row(
@@ -194,6 +246,18 @@ try {
         if (403 !== $response['status'] || 'access-denied' !== $response['template'] || array_key_exists('curriculum', $response['context'])) {
             throw new RuntimeException('Unauthorized access revealed protected course content.');
         }
+
+        $lesson_response = $router->resolve($course_a->post_name, $lesson_a_one->post_name, $denied_user);
+
+        if (403 !== $lesson_response['status'] || 'access-denied' !== $lesson_response['template'] || array_key_exists('lesson', $lesson_response['context']) || array_key_exists('curriculum', $lesson_response['context']) || array_key_exists('course', $lesson_response['context'])) {
+            throw new RuntimeException('Unauthorized lesson access revealed protected content.');
+        }
+    }
+
+    $cross_enrollment_response = $router->resolve($course_b->post_name, $lesson_b->post_name, $active_user);
+
+    if (403 !== $cross_enrollment_response['status'] || 'access-denied' !== $cross_enrollment_response['template']) {
+        throw new RuntimeException('An enrollment in another course granted access to a protected lesson.');
     }
 
     if (404 !== $router->resolve($course_a->post_name, $lesson_b->post_name, $active_user)['status']) {

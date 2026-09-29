@@ -38,4 +38,23 @@ final class LessonNavigationServiceTest extends TestCase
             (new LessonNavigationService())->forLesson(99, $curriculum)
         );
     }
+
+    public function testItReturnsNoNeighborsForTheOnlyLesson(): void
+    {
+        $only_lesson = (object) array('ID' => 10);
+        $curriculum  = array(
+            'course'  => (object) array('ID' => 100),
+            'modules' => array(
+                array(
+                    'module'  => (object) array('ID' => 1),
+                    'lessons' => array($only_lesson),
+                ),
+            ),
+        );
+
+        self::assertSame(
+            array('previous' => null, 'next' => null),
+            (new LessonNavigationService())->forLesson(10, $curriculum)
+        );
+    }
 }

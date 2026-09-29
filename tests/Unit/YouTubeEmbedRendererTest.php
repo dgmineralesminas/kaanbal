@@ -32,6 +32,7 @@ final class YouTubeEmbedRendererTest extends TestCase
     {
         return array(
             'unsupported provider' => array('vimeo', '12345678901'),
+            'empty provider and source' => array('', ''),
             'arbitrary iframe'     => array('youtube', '<iframe src="https://example.test"></iframe>'),
             'invalid source'       => array('youtube', 'not-a-video-id'),
         );
