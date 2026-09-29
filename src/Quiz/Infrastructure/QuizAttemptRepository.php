@@ -57,7 +57,7 @@ final class QuizAttemptRepository
                 $attempt_number = null === $latest ? 1 : ((int) $latest + 1);
                 $result = $this->database->insert(
                     $this->tableName(),
-                    array('user_id' => $user_id, 'course_id' => $course_id, 'quiz_id' => $quiz_id, 'attempt_number' => $attempt_number, 'status' => $score->passed ? 'passed' : 'failed', 'score' => $score->percentage, 'passed' => $score->passed ? 1 : 0, 'started_at' => $now, 'completed_at' => $now, 'created_at' => $now, 'updated_at' => $now)
+                    array('user_id' => $user_id, 'course_id' => $course_id, 'quiz_id' => $quiz_id, 'attempt_number' => $attempt_number, 'status' => $score->passed ? 'passed' : 'failed', 'score' => number_format($score->percentage, 2, '.', ''), 'passed' => $score->passed ? 1 : 0, 'started_at' => $now, 'completed_at' => $now, 'created_at' => $now, 'updated_at' => $now)
                 );
 
                 if (false === $result) {

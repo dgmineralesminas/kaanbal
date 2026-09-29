@@ -13,8 +13,9 @@ final class QuizScoreCalculator
         }
 
         $correct = max(0, min($correct, $total));
-        $percentage = (int) round(($correct / $total) * 100);
+        $percentage = round(($correct / $total) * 100, 2);
+        $passed = $correct * 100 >= $passing_score * $total;
 
-        return new QuizScore($correct, $total, $percentage, $percentage >= $passing_score);
+        return new QuizScore($correct, $total, $percentage, $passed);
     }
 }

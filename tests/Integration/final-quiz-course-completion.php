@@ -58,12 +58,13 @@ try {
     $endpoint_student = $user('endpoint');
     $forged_user = $user('forged');
     $score_forged_user = $user('score-forged');
+    $score_precision_user = $user('score-precision');
     global $wpdb;
     $enrollments_table = $wpdb->prefix . 'kaanbal_enrollments';
     $attempts_table = $wpdb->prefix . 'kaanbal_quiz_attempts';
     $attempt_answers_table = $wpdb->prefix . 'kaanbal_quiz_attempt_answers';
     $now = current_time('mysql', true);
-    foreach (array($student, $other, $limited, $unlimited, $endpoint_student, $forged_user, $score_forged_user) as $user_id) {
+    foreach (array($student, $other, $limited, $unlimited, $endpoint_student, $forged_user, $score_forged_user, $score_precision_user) as $user_id) {
         $wpdb->insert($enrollments_table, array('user_id' => $user_id, 'course_id' => $course_with_quiz, 'status' => 'active', 'enrolled_at' => $now, 'created_at' => $now, 'updated_at' => $now));
     }
     $wpdb->insert($enrollments_table, array('user_id' => $student, 'course_id' => $course_without_quiz, 'status' => 'active', 'enrolled_at' => $now, 'created_at' => $now, 'updated_at' => $now));
@@ -125,6 +126,12 @@ try {
     }
     delete_post_meta($quiz, '_kaanbal_max_attempts');
     update_post_meta($malformed_quiz, '_kaanbal_course_id', $course_with_quiz);
+
+    $precision_score = (new Kaanbal\Quiz\Application\QuizScoreCalculator())->calculate(2, 3, 67);
+    $attempts->record($score_precision_user, $course_with_quiz, $quiz, null, $precision_score, array());
+    if ('66.67' !== $wpdb->get_var($wpdb->prepare('SELECT score FROM %i WHERE user_id = %d AND quiz_id = %d', $attempts_table, $score_precision_user, $quiz))) {
+        throw new RuntimeException('Quiz scores were not persisted with two decimal places.');
+    }
 
     $access = new Kaanbal\Access\Application\CourseAccessService($enrollments);
     $progress_store->complete($student, $lesson_without_quiz);
