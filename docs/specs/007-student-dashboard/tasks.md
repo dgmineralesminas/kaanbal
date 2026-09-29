@@ -3,7 +3,9 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Done
+
+Implementación: `4fe0f1e` (Codex) + remediación previa a auditoría `ff87511`.
 
 Dependencias:
 
@@ -18,7 +20,9 @@ Dependencias:
 
 ## TASK-001 — Implementar ruta del Student Dashboard
 
-Status: Pending
+Status: Done
+
+Evidencia: `DashboardModule::registerRewriteRules()` (`^mis-cursos/?$`); integración verifica la regla persistida.
 
 Covers:
 - AC-001
@@ -28,7 +32,9 @@ Covers:
 
 ## TASK-002 — Implementar autorización del Dashboard
 
-Status: Pending
+Status: Done
+
+Evidencia: `DashboardRouter::template()` usa `get_current_user_id()`; integración con `?user_id=` falsificado (anónimo y autenticado).
 
 Covers:
 - AC-001
@@ -43,7 +49,7 @@ Usar exclusivamente la identidad autenticada.
 
 ## TASK-003 — Implementar StudentDashboardQuery
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -55,7 +61,7 @@ Covers:
 
 ## TASK-004 — Cargar Enrollments del alumno
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -66,7 +72,9 @@ Covers:
 
 ## TASK-005 — Excluir Revoked del listado principal
 
-Status: Pending
+Status: Done
+
+Evidencia: `EnrollmentRepository::forUser()` filtra `active`/`completed`.
 
 Covers:
 - AC-005
@@ -75,7 +83,7 @@ Covers:
 
 ## TASK-006 — Implementar carga batch de Courses
 
-Status: Pending
+Status: Done
 
 Covers:
 - performance
@@ -84,7 +92,7 @@ Covers:
 
 ## TASK-007 — Integrar Course Progress
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -94,7 +102,9 @@ Covers:
 
 ## TASK-008 — Optimizar carga de progreso de múltiples cursos
 
-Status: Pending
+Status: Done
+
+Evidencia: integración mide 12 consultas con 1 curso y 12 con 8 cursos.
 
 Covers:
 - AC-025
@@ -103,7 +113,7 @@ Covers:
 
 ## TASK-009 — Implementar Student Course View Model
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -113,7 +123,7 @@ Covers:
 
 ## TASK-010 — Implementar estado En curso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -122,7 +132,7 @@ Covers:
 
 ## TASK-011 — Implementar estado Aprobado
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -131,7 +141,7 @@ Covers:
 
 ## TASK-012 — Implementar acción Continuar curso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -140,7 +150,7 @@ Covers:
 
 ## TASK-013 — Implementar acción Ver curso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -149,7 +159,9 @@ Covers:
 
 ## TASK-014 — Implementar Quiz Dashboard State
 
-Status: Pending
+Status: Done
+
+Evidencia: `QuizDashboardState` + `isVisibleFor()` / `showsAttempts()`; `QuizDashboardStateTest`.
 
 Covers:
 - AC-012
@@ -163,7 +175,7 @@ Covers:
 
 ## TASK-015 — Implementar estado Quiz Not Required
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -172,7 +184,7 @@ Covers:
 
 ## TASK-016 — Implementar estado Quiz Locked
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-013
@@ -181,7 +193,7 @@ Covers:
 
 ## TASK-017 — Implementar estado Quiz Available
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -190,7 +202,7 @@ Covers:
 
 ## TASK-018 — Implementar estado Quiz Passed
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -199,7 +211,7 @@ Covers:
 
 ## TASK-019 — Implementar intentos restantes
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -208,7 +220,7 @@ Covers:
 
 ## TASK-020 — Implementar estado No Attempts Left
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -217,7 +229,7 @@ Covers:
 
 ## TASK-021 — Mostrar completed_at
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-018
@@ -226,7 +238,9 @@ Covers:
 
 ## TASK-022 — Implementar mensaje de certificado
 
-Status: Pending
+Status: Done
+
+Evidencia: mensaje completo RF-023 en `parts/dashboard-content.php`, solo con `show_certificate`.
 
 Covers:
 - AC-019
@@ -236,7 +250,7 @@ Covers:
 
 ## TASK-023 — Implementar estado aprobado sin certificado
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-021
@@ -245,7 +259,7 @@ Covers:
 
 ## TASK-024 — Verificar que no exista descarga
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-020
@@ -254,7 +268,9 @@ Covers:
 
 ## TASK-025 — Implementar Dashboard Template
 
-Status: Pending
+Status: Done
+
+Evidencia: `templates/student/dashboard.php` envuelve el contenido con `get_header()`/`get_footer()`.
 
 Covers:
 - AC-003
@@ -267,7 +283,7 @@ Covers:
 
 ## TASK-026 — Implementar Course Card
 
-Status: Pending
+Status: Done
 
 Covers:
 - presentación
@@ -276,7 +292,7 @@ Covers:
 
 ## TASK-027 — Implementar Empty State
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-022
@@ -285,7 +301,7 @@ Covers:
 
 ## TASK-028 — Implementar escaping
 
-Status: Pending
+Status: Done
 
 Covers:
 - seguridad
@@ -294,7 +310,7 @@ Covers:
 
 ## TASK-029 — Implementar tests de acceso al Dashboard
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -305,7 +321,7 @@ Covers:
 
 ## TASK-030 — Implementar tests de cursos activos/completed/revoked
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -318,7 +334,7 @@ Covers:
 
 ## TASK-031 — Implementar tests de progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -328,7 +344,7 @@ Covers:
 
 ## TASK-032 — Implementar tests de Quiz State
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -342,7 +358,7 @@ Covers:
 
 ## TASK-033 — Implementar tests de certificado informativo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-019
@@ -353,7 +369,7 @@ Covers:
 
 ## TASK-034 — Implementar test Empty Dashboard
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-022
@@ -362,7 +378,7 @@ Covers:
 
 ## TASK-035 — Implementar test Dashboard Read Only
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-024
@@ -371,7 +387,9 @@ Covers:
 
 ## TASK-036 — Revisar queries y N+1
 
-Status: Pending
+Status: Done
+
+Evidencia: `update_meta_cache` + `update_post_thumbnail_cache` + lecturas batch; conteo de consultas en integración.
 
 Covers:
 - AC-025
@@ -380,7 +398,7 @@ Covers:
 
 ## TASK-037 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 ### Confirmar que no se implementa:
 
@@ -394,19 +412,21 @@ Status: Pending
 
 ## TASK-038 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
+
+Evidencia: ver Quality Gate en `implementation-status.md`.
 
 ---
 
 ## TASK-039 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-040 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 ### Resultado esperado
 

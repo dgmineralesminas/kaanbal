@@ -3,11 +3,13 @@
 SPEC: SPEC-007 — Student Dashboard
 
 Branch: feature/spec-007-student-dashboard
-Current commit: 4fe0f1eab59115f60dd938132e32687092512dd8
+Implementation commit: 4fe0f1eab59115f60dd938132e32687092512dd8
+Pre-audit remediation commit: ff87511
+Audit commit: ff87511
 
-Status: In implementation
-Ready for audit: No
-Current audit round: 0
+Status: Ready for audit
+Ready for audit: Yes
+Current audit round: 1
 
 ## Human Approval
 
@@ -40,9 +42,9 @@ Completed
 ## Tasks
 
 Total: 40
-Done: 38
-In Progress: 1
-Pending: 1
+Done: 40
+In Progress: 0
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -50,29 +52,38 @@ Not Applicable: 0
 
 ## Quality Gate
 
+Ejecutado sobre `ff87511` con PHP 8.4.21, WordPress 7.1.2 (core de este
+proyecto) y MariaDB en un entorno limpio con permalinks `/%postname%/`.
+
 PHP Syntax:
 
-`PASS — composer lint`
+`PASS — composer lint (src, tests) + php -l templates/student`
 
 Unit Tests:
 
-`PASS — composer test (61 tests, 90 assertions)`
+`PASS — composer test (74 tests, 103 assertions)`
 
 Integration Tests:
 
-`PASS — dashboard integration behavior; rewrite persistence rerun pending environment access`
+`PASS — student-dashboard, wordpress-lifecycle, courses-curriculum,
+course-access-player, student-progress, final-quiz-course-completion`
+
+`woocommerce-enrollment: BLOCKED BY ENVIRONMENT — WooCommerce no instalado
+en el entorno de validación. SPEC-007 no modifica código WooCommerce.`
 
 Dashboard Tests:
 
-`PASS — dashboard integration: access, ownership, courses, progress, quiz states, certificate, empty state and read-only behavior`
+`PASS — rewrite persistida, acceso, ownership vía template() con user_id
+falsificado (anónimo y autenticado), cursos, progreso, estados de quiz,
+visibilidad de quiz/intentos, certificado, estado vacío y read-only`
 
 Security Tests:
 
-`PASS — anonymous access and forged user_id coverage`
+`PASS — anónimo sin datos académicos; user_id falsificado ignorado`
 
 Performance Review:
 
-`PASS — batch course/progress loading reviewed; no per-course dashboard service calls`
+`PASS — 1 curso = 12 consultas, 8 cursos = 12 consultas`
 
 Composer Validation:
 
@@ -84,11 +95,17 @@ PHPCS:
 
 PHPStan:
 
-`PASS — composer analyse (0 errors; rerun after final rewrite-only patch pending environment access)`
+`PASS — composer analyse (0 errors)`
+
+Full-page render:
+
+`PASS — con un tema mínimo, /mis-cursos/ produce <html>, wp_head con
+dashboard.css, contenido y estado vacío; el acceso denegado incluye
+enlace de login con redirect_to`
 
 Manual Verification:
 
-`NOT RUN — visual browser verification unavailable`
+`NOT RUN — verificación visual en navegador pendiente del responsable humano`
 
 ---
 
@@ -201,18 +218,39 @@ Expected behavior:
 
 ---
 
+## Pre-audit Remediation (ff87511)
+
+Revisión previa a auditoría solicitada por el responsable humano:
+
+1. Templates sin `get_header()`/`get_footer()`: el tema y `dashboard.css`
+   no se cargaban. Corregido; se agrega `defined('ABSPATH') || exit;`.
+2. Curso aprobado mostraba quiz pendiente si el temario o el quiz cambiaron
+   después (RB-004, EC-007). Ahora solo muestra un quiz aprobado.
+3. El contador de intentos aparecía con quiz aprobado o agotado. Ahora solo
+   con quiz disponible o reintentable.
+4. Mensaje de certificado completado según RF-023.
+5. Acceso denegado con enlace de login que regresa a `/mis-cursos/`.
+6. Miniaturas precargadas (`update_post_thumbnail_cache`).
+7. La prueba de user_id falsificado ahora pasa por `template()` con la
+   identidad de sesión.
+8. La prueba de rewrite buscaba `mis-cursos/?$`; la llave real es
+   `^mis-cursos/?$`. Era la causa del "rerun pendiente".
+
+---
+
 ## Known Issues
 
-La integración que verifica la regla persistida de `/mis-cursos/` debe repetirse
-cuando el límite de ejecución del entorno permita conectar nuevamente con
-WordPress/MySQL.
+- El template `parts/dashboard-content.php` conserva dos líneas con varias
+  sentencias en línea (heredadas); `templates/` está fuera del alcance
+  configurado de PHPCS.
+- `access_url` construye `/courses/{slug}/` en el query en lugar de reutilizar
+  un helper de `PlayerModule` (recomendación, no bloqueante).
 
 ---
 
 ## Open Findings
 
-No audit round has been executed. The implementation is not yet an audit
-candidate until the pending integration rerun passes.
+Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `ff87511`.
 
 ---
 
@@ -224,12 +262,12 @@ None.
 
 ## Human Review
 
-Implementation authorized by the user; human acceptance is pending the final
-integration rerun.
+Pendiente. Se recomienda revisión visual de `/mis-cursos/` con el tema Kaanbal.
 
 ---
 
 ## Notes
 
-SPEC-007 is implemented on its dedicated branch. The current implementation
-commit is `4fe0f1eab59115f60dd938132e32687092512dd8`.
+La remediación previa a auditoría (`ff87511`) se hizo en esta sesión con el
+rol de implementación. Para respetar la independencia de `docs/agents.md`, la
+auditoría de código de la ronda 1 debe ejecutarla otra sesión o agente.
