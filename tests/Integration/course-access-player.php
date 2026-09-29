@@ -158,7 +158,7 @@ try {
     require dirname(__DIR__, 2) . '/templates/frontend/course.php';
     $course_markup = (string) ob_get_clean();
 
-    if (! str_contains($course_markup, 'Player course A') || ! str_contains($course_markup, 'Player empty module') || ! str_contains($course_markup, 'Comienza tu curso') || ! str_contains($course_markup, 'Reproducir')) {
+    if (! str_contains($course_markup, 'Player course A') || ! str_contains($course_markup, 'Player empty module') || ! str_contains($course_markup, 'Comienza tu curso') || ! str_contains($course_markup, '0 de 2 lecciones completadas') || ! str_contains($course_markup, 'role="progressbar"') || ! str_contains($course_markup, 'Reproducir')) {
         throw new RuntimeException('The authorized course template did not render course and empty-module content.');
     }
 
@@ -188,7 +188,7 @@ try {
     require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
     $lesson_markup = (string) ob_get_clean();
 
-    if (! str_contains($lesson_markup, 'Player lesson A one') || ! str_contains($lesson_markup, 'youtube-nocookie.com/embed/dQw4w9WgXcQ') || ! str_contains($lesson_markup, 'aria-current="page"') || ! str_contains($lesson_markup, 'Player lesson A two')) {
+    if (! str_contains($lesson_markup, 'Player lesson A one') || ! str_contains($lesson_markup, 'youtube-nocookie.com/embed/dQw4w9WgXcQ') || ! str_contains($lesson_markup, 'aria-current="page"') || ! str_contains($lesson_markup, 'Player lesson A two') || ! str_contains($lesson_markup, 'name="action" value="kaanbal_complete_lesson"') || ! str_contains($lesson_markup, 'name="_kaanbal_nonce"')) {
         throw new RuntimeException('The authorized lesson template did not render its protected content and video player.');
     }
 
