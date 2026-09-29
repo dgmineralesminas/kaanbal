@@ -5,8 +5,8 @@ SPEC: SPEC-006 — Final Quiz and Course Completion
 Branch: feature/spec-006-final-quiz-and-course-completion
 Current implementation commit: b600fc35446547f88091d52d3c44e18f14cf3262
 
-Status: Ready for audit
-Ready for audit: Yes
+Status: Completed
+Ready for audit: No
 Current audit round: 2
 
 ## Human Approval
@@ -220,13 +220,24 @@ abiertos y requieren decisión humana. No se implementaron en esta remediación.
 - CODE-007 — La finalización solo se evalúa en eventos del alumno; la UI de cursos sin quiz se deriva del progreso, no de la matrícula.
 - CODE-008 — Observaciones menores.
 
-Estado de cada finding: `OPEN — human decision required`.
+Estado de cada finding: `OPEN — non-blocking; accepted for this merge and pending future prioritization`.
+
+### Ronda 2 — recomendaciones no bloqueantes
+
+- SEC-001 — Falta la prueba explícita de endpoint para una pregunta de otro quiz.
+- SEC-REC-001 — Evitar que `is_correct` llegue al contexto de plantilla.
+- ARCH-001 — Acoplamiento de `ProgressModule` con el módulo Quiz.
+- ARCH-002 — Dos instancias funcionalmente equivalentes de `CourseCompletionService`.
+- ARCH-003 — Dependencias concretas instanciadas por `QuizModule`.
+- ARCH-004 — `QuizSubmissionAction` usa `wp_die()` para errores.
+
+Estado de cada recomendación: `OPEN — non-blocking; accepted for this merge and pending future prioritization`.
 
 ---
 
 ## Remediación de Auditoría — CODE-001
 
-Estado: `Implemented by Codex — pending audit confirmation in round 2`.
+Estado: `RESOLVED — confirmado por la auditoría de código de ronda 2`.
 
 La decisión de aprobado ahora usa aritmética entera exacta:
 
@@ -253,8 +264,15 @@ None.
 
 ## Human Review
 
-Implementation and the visual design were approved by the user. This document
-records the stable audit candidate.
+La revisión humana autorizó el merge a `main` después de los dictámenes de
+ronda 2. La SPEC queda completada; los findings no bloqueantes se conservan
+para priorización futura.
+
+He revisado visualmente:
+- Guarda el cuestionario
+- Se puede editar un cuestionario
+- El usuario puede responder el cuestionario al finalizar todas las lecciones
+- Obtiene un mensaje positivo al finalizar el cuestionario
 
 ---
 
