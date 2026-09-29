@@ -14,13 +14,14 @@ enum QuizDashboardState: string
     case NoAttemptsLeft = 'no_attempts_left';
     case Unavailable = 'unavailable';
 
-    public static function fromDashboardData(bool $required, ?int $quiz_id, int $percentage, bool $passed, int $attempts_used, ?int $max_attempts): self
+    public static function fromDashboardData(bool $required, ?int $quiz_id, bool $quiz_valid, int $percentage, bool $passed, int $attempts_used, ?int $max_attempts): self
     {
         if (! $required) {
             return self::NotRequired;
         }
 
-        if (null === $quiz_id) {
+        // Missing or invalid quiz (SPEC-006 validity rule): nothing to present.
+        if (null === $quiz_id || ! $quiz_valid) {
             return self::Unavailable;
         }
 
@@ -46,7 +47,7 @@ enum QuizDashboardState: string
      */
     public function isVisibleFor(string $enrollment_status): bool
     {
-        if (self::NotRequired === $this) {
+        if (self::NotRequired === $this || self::Unavailable === $this) {
             return false;
         }
 

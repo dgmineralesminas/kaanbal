@@ -15,7 +15,6 @@ $quiz_messages = array(
     'failed_can_retry' => __('No aprobaste el último intento. Puedes volver a intentarlo.', 'kaanbal'),
     'passed'           => __('Evaluación final aprobada.', 'kaanbal'),
     'no_attempts_left' => __('Intentos agotados.', 'kaanbal'),
-    'unavailable'      => __('La evaluación final aún no está disponible.', 'kaanbal'),
 );
 ?>
 <main class="kaanbal-dashboard" aria-labelledby="kaanbal-dashboard-title">

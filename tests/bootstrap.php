@@ -23,6 +23,13 @@ if (! function_exists('update_option')) {
     }
 }
 
+if (! function_exists('__')) {
+    function __(string $text, string $domain = 'default'): string
+    {
+        return $text;
+    }
+}
+
 if (! function_exists('wp_parse_url')) {
     function wp_parse_url(string $url, int $component = -1): array|string|int|null|false
     {

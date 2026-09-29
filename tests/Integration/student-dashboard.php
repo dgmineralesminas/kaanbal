@@ -13,6 +13,7 @@ require_once rtrim($wordpress_path, DIRECTORY_SEPARATOR) . '/wp-load.php';
 
 $post_ids = array();
 $user_ids = array();
+$question_ids = array();
 
 try {
     require_once dirname(__DIR__, 2) . '/kaanbal.php';
@@ -59,13 +60,21 @@ try {
 
         return $lessons;
     };
-    $add_quiz = static function (int $course_id, ?int $max_attempts) use ($create_post): int {
+    $add_quiz = static function (int $course_id, ?int $max_attempts, bool $with_valid_question = true) use ($create_post, &$question_ids): int {
         $quiz_id = $create_post('kaanbal_quiz', 'Dashboard quiz ' . $course_id);
         update_post_meta($course_id, '_kaanbal_requires_final_quiz', '1');
         update_post_meta($quiz_id, '_kaanbal_course_id', $course_id);
 
         if (null !== $max_attempts) {
             update_post_meta($quiz_id, '_kaanbal_max_attempts', $max_attempts);
+        }
+
+        if ($with_valid_question) {
+            $question_id = (new Kaanbal\Quiz\Infrastructure\QuestionRepository())->create($quiz_id, 'Dashboard question ' . $quiz_id, 1);
+            $question_ids[] = $question_id;
+            $answers = new Kaanbal\Quiz\Infrastructure\AnswerRepository();
+            $answers->create($question_id, 'Correct', true, 1);
+            $answers->create($question_id, 'Wrong', false, 2);
         }
 
         return $quiz_id;
@@ -85,6 +94,8 @@ try {
     $completed_plain = $create_post('kaanbal_course', 'Dashboard completed course');
     $revoked = $create_post('kaanbal_course', 'Dashboard revoked course');
     $other_course = $create_post('kaanbal_course', 'Dashboard private course');
+    $invalid_quiz_course = $create_post('kaanbal_course', 'Dashboard invalid quiz course');
+    $missing_quiz_course = $create_post('kaanbal_course', 'Dashboard missing quiz course');
     update_post_meta($active, '_kaanbal_instructor_name', 'Daniel');
     update_post_meta($active, '_kaanbal_duration', '2 horas');
     update_post_meta($completed_certificate, '_kaanbal_certificate_enabled', '1');
@@ -101,6 +112,10 @@ try {
     $certificate_quiz = $add_quiz($completed_certificate, null);
     $locked_quiz = $add_quiz($locked, 2);
     $late_quiz = $add_quiz($completed_plain, 2);
+    $invalid_lessons = $add_lessons($invalid_quiz_course, 1, 'Invalid quiz');
+    $missing_lessons = $add_lessons($missing_quiz_course, 1, 'Missing quiz');
+    $invalid_quiz = $add_quiz($invalid_quiz_course, 2, false);
+    update_post_meta($missing_quiz_course, '_kaanbal_requires_final_quiz', '1');
 
     global $wpdb;
     $enrollments_table = $wpdb->prefix . 'kaanbal_enrollments';
@@ -132,6 +147,9 @@ try {
     $enroll($student, 999999999, 'active');
     $enroll($other, $other_course, 'active');
     $enroll($single, $retry, 'active');
+    $enroll($student, $invalid_quiz_course, 'active');
+    $enroll($student, $missing_quiz_course, 'active');
+    $enroll($single, $invalid_quiz_course, 'active');
     $complete_lesson($student, $active_lessons[0]);
     $complete_lesson($student, $available_lessons[0]);
     $complete_lesson($student, $retry_lessons[0]);
@@ -140,9 +158,10 @@ try {
     $record_attempt($student, $retry, $retry_quiz, false);
     $record_attempt($student, $exhausted, $exhausted_quiz, false);
     $record_attempt($student, $completed_certificate, $certificate_quiz, true);
+    $complete_lesson($student, $invalid_lessons[0]);
 
     $curriculum = new Kaanbal\Courses\Application\CurriculumService(new Kaanbal\Courses\Infrastructure\CurriculumRepository());
-    $dashboard = new Kaanbal\Dashboard\Application\StudentDashboardQuery(new Kaanbal\Enrollment\Infrastructure\EnrollmentRepository(), new Kaanbal\Progress\Application\CourseProgressService($curriculum, new Kaanbal\Progress\Infrastructure\LessonProgressRepository()), new Kaanbal\Quiz\Infrastructure\QuizRepository(), new Kaanbal\Quiz\Infrastructure\QuizAttemptRepository());
+    $dashboard = new Kaanbal\Dashboard\Application\StudentDashboardQuery(new Kaanbal\Enrollment\Infrastructure\EnrollmentRepository(), new Kaanbal\Progress\Application\CourseProgressService($curriculum, new Kaanbal\Progress\Infrastructure\LessonProgressRepository()), new Kaanbal\Quiz\Infrastructure\QuizRepository(), new Kaanbal\Quiz\Infrastructure\QuizAttemptRepository(), new Kaanbal\Quiz\Application\QuizValidityService(new Kaanbal\Quiz\Infrastructure\QuestionRepository()));
     $router = new Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter($dashboard, dirname(__DIR__, 2) . '/templates/student/');
 
     if (array('kaanbal_student_dashboard') !== $router->queryVars(array())) {
@@ -150,8 +169,37 @@ try {
     }
 
     $anonymous = $router->resolve(0);
-    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || isset($anonymous['context']['dashboard']) || Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter::loginUrl() !== ($anonymous['context']['login_url'] ?? null)) {
+    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || isset($anonymous['context']['dashboard']) || ! is_string($anonymous['context']['login_url'] ?? null)) {
         throw new RuntimeException('The dashboard exposed academic data to an anonymous visitor.');
+    }
+
+    // CODE-002: the login action lands on WooCommerce "My account" when it is active, otherwise on wp-login.php.
+    $login_url = $anonymous['context']['login_url'];
+    if (class_exists('WooCommerce')) {
+        $account_page_id = wc_get_page_id('myaccount');
+        if ($account_page_id <= 0 || get_permalink($account_page_id) !== $login_url) {
+            throw new RuntimeException('With WooCommerce active the dashboard login did not point to "My account".');
+        }
+    } elseif (wp_login_url(home_url('/mis-cursos/')) !== $login_url || ! str_contains($login_url, 'wp-login.php')) {
+        throw new RuntimeException('Without WooCommerce the dashboard login did not point to wp-login.php.');
+    }
+
+    // CODE-002: "My account" offers a visible link to the student dashboard.
+    $account_links = new Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks();
+    if (home_url('/mis-cursos/') !== $account_links->endpointUrl('https://example.test/other/', Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks::MENU_KEY) || ! isset($account_links->menuItems(array('dashboard' => 'Escritorio'))[Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks::MENU_KEY])) {
+        throw new RuntimeException('The account menu link does not target the student dashboard.');
+    }
+
+    if (class_exists('WooCommerce')) {
+        wp_set_current_user($student);
+        ob_start();
+        woocommerce_account_navigation();
+        $account_navigation = (string) ob_get_clean();
+        wp_set_current_user(0);
+
+        if (! isset(wc_get_account_menu_items()[Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks::MENU_KEY]) || home_url('/mis-cursos/') !== wc_get_account_endpoint_url(Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks::MENU_KEY) || ! str_contains($account_navigation, esc_url(home_url('/mis-cursos/'))) || ! str_contains($account_navigation, 'Mis cursos')) {
+            throw new RuntimeException('The WooCommerce account navigation does not link to Mis cursos.');
+        }
     }
 
     // Anonymous request through the real WordPress entry point, with a forged user_id.
@@ -201,7 +249,7 @@ try {
         $by_id[$course['course_id']] = $course;
     }
 
-    if (8 !== count($by_id) || isset($by_id[$revoked]) || isset($by_id[$other_course]) || ! isset($by_id[$active], $by_id[$locked], $by_id[$available], $by_id[$retry], $by_id[$exhausted], $by_id[$unlimited], $by_id[$completed_certificate], $by_id[$completed_plain])) {
+    if (10 !== count($by_id) || isset($by_id[$revoked]) || isset($by_id[$other_course]) || ! isset($by_id[$active], $by_id[$locked], $by_id[$available], $by_id[$retry], $by_id[$exhausted], $by_id[$unlimited], $by_id[$completed_certificate], $by_id[$completed_plain], $by_id[$invalid_quiz_course], $by_id[$missing_quiz_course])) {
         throw new RuntimeException('The dashboard did not isolate relevant active and completed enrollments.');
     }
 
@@ -222,6 +270,45 @@ try {
         throw new RuntimeException('An approved course advertised a pending quiz.');
     }
 
+    // CODE-001: a required quiz that is missing or invalid shows no quiz state at all.
+    if (100 !== $by_id[$invalid_quiz_course]['progress']->percentage || 'unavailable' !== $by_id[$invalid_quiz_course]['quiz']['state'] || $by_id[$invalid_quiz_course]['quiz']['visible'] || 'unavailable' !== $by_id[$missing_quiz_course]['quiz']['state'] || $by_id[$missing_quiz_course]['quiz']['visible'] || 'En curso' !== $by_id[$invalid_quiz_course]['status_label'] || 'Continuar curso' !== $by_id[$invalid_quiz_course]['action_label']) {
+        throw new RuntimeException('A missing or invalid quiz produced a dashboard quiz state.');
+    }
+
+    // CODE-001: the course page (SPEC-006) uses the same rule and hides the assessment section.
+    $curriculum_service = $curriculum;
+    $progress_service = new Kaanbal\Progress\Application\CourseProgressService($curriculum_service, new Kaanbal\Progress\Infrastructure\LessonProgressRepository());
+    $question_repository = new Kaanbal\Quiz\Infrastructure\QuestionRepository();
+    $validity = new Kaanbal\Quiz\Application\QuizValidityService($question_repository);
+    $quiz_status = new Kaanbal\Quiz\Application\CourseQuizStatusService(
+        new Kaanbal\Quiz\Infrastructure\QuizRepository(),
+        $question_repository,
+        new Kaanbal\Quiz\Infrastructure\AnswerRepository(),
+        new Kaanbal\Quiz\Application\QuizEligibilityService(new Kaanbal\Access\Application\CourseAccessService(new Kaanbal\Enrollment\Infrastructure\EnrollmentRepository()), $progress_service, new Kaanbal\Quiz\Infrastructure\QuizRepository(), $validity, new Kaanbal\Quiz\Infrastructure\QuizAttemptRepository()),
+        $validity,
+    );
+
+    if (array($available_quiz, $retry_quiz, $exhausted_quiz) !== $validity->validQuizIds(array($available_quiz, $invalid_quiz, $retry_quiz, $exhausted_quiz))) {
+        throw new RuntimeException('The batch quiz validity did not match the SPEC-006 rule.');
+    }
+
+    foreach (array(array($student, $invalid_quiz_course), array($single, $invalid_quiz_course), array($student, $missing_quiz_course)) as $course_case) {
+        $course_quiz = $quiz_status->forCourse($course_case[0], $course_case[1]);
+
+        if ('invalid_quiz' !== $course_quiz['result']) {
+            throw new RuntimeException('The course page did not treat a missing or invalid quiz as invalid regardless of progress.');
+        }
+
+        Kaanbal\Access\Presentation\Frontend\TemplateContext::replace(array('curriculum' => $curriculum_service->forPublishedCourse($course_case[1]), 'progress' => $progress_service->forCourse($course_case[0], $course_case[1]), 'quiz' => $course_quiz));
+        ob_start();
+        require dirname(__DIR__, 2) . '/templates/frontend/course.php';
+        $course_markup = (string) ob_get_clean();
+
+        if (! str_contains($course_markup, 'Dashboard') || str_contains($course_markup, 'kaanbal-course__assessment') || str_contains($course_markup, 'Completa todas las lecciones') || str_contains($course_markup, 'Evaluación final')) {
+            throw new RuntimeException('The course page rendered an assessment section for a missing or invalid quiz.');
+        }
+    }
+
     // Attempts are only shown while the quiz can still be presented.
     if (! $by_id[$available]['quiz']['show_attempts'] || ! $by_id[$retry]['quiz']['show_attempts'] || $by_id[$exhausted]['quiz']['show_attempts'] || $by_id[$locked]['quiz']['show_attempts']) {
         throw new RuntimeException('The dashboard shows attempts for a quiz that cannot be presented.');
@@ -238,9 +325,9 @@ try {
     $single_queries = $count_queries($single);
     $many_queries = $count_queries($student);
 
-    fwrite(STDOUT, sprintf("Dashboard queries: 1 course = %d, 8 courses = %d\n", $single_queries, $many_queries));
+    fwrite(STDOUT, sprintf("Dashboard queries: 1 course = %d, %d courses = %d\n", $single_queries, count($by_id), $many_queries));
     if ($many_queries - $single_queries > 3) {
-        throw new RuntimeException(sprintf('The dashboard issued per-course queries: 1 course = %d queries, 8 courses = %d queries.', $single_queries, $many_queries));
+        throw new RuntimeException(sprintf('The dashboard issued per-course queries: 1 course = %d queries, %d courses = %d queries.', $single_queries, count($by_id), $many_queries));
     }
 
     Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($response['context']);
@@ -248,7 +335,7 @@ try {
     require dirname(__DIR__, 2) . '/templates/student/parts/dashboard-content.php';
     $markup = (string) ob_get_clean();
 
-    if (! str_contains($markup, 'Mis cursos') || ! str_contains($markup, 'Dashboard active course') || ! str_contains($markup, '50%') || ! str_contains($markup, 'Continuar curso') || ! str_contains($markup, 'Ver curso') || ! str_contains($markup, 'Completa las lecciones') || ! str_contains($markup, 'Tu evaluación final está disponible') || ! str_contains($markup, 'Intentos agotados') || ! str_contains($markup, 'Intentos ilimitados') || ! str_contains($markup, 'Evaluación final aprobada') || ! str_contains($markup, 'Has aprobado este curso. En breve nos estaremos comunicando contigo para hacerte llegar tu certificado.') || str_contains($markup, '0 intentos restantes') || 1 !== substr_count($markup, 'data-quiz-state="passed"') || str_contains($markup, 'certificado.pdf') || str_contains($markup, 'Dashboard private course') || str_contains($markup, 'Dashboard revoked course') || str_contains($markup, 'Descargar certificado')) {
+    if (! str_contains($markup, 'Mis cursos') || ! str_contains($markup, 'Dashboard active course') || ! str_contains($markup, '50%') || ! str_contains($markup, 'Continuar curso') || ! str_contains($markup, 'Ver curso') || ! str_contains($markup, 'Completa las lecciones') || ! str_contains($markup, 'Tu evaluación final está disponible') || ! str_contains($markup, 'Intentos agotados') || ! str_contains($markup, 'Intentos ilimitados') || ! str_contains($markup, 'Evaluación final aprobada') || ! str_contains($markup, 'Has aprobado este curso. En breve nos estaremos comunicando contigo para hacerte llegar tu certificado.') || str_contains($markup, '0 intentos restantes') || 1 !== substr_count($markup, 'data-quiz-state="passed"') || str_contains($markup, 'certificado.pdf') || str_contains($markup, 'Dashboard private course') || str_contains($markup, 'Dashboard revoked course') || str_contains($markup, 'Descargar certificado') || 6 !== substr_count($markup, 'data-quiz-state=') || 2 !== substr_count($markup, 'Tu evaluación final está disponible') || str_contains($markup, 'aún no está disponible') || ! str_contains($markup, 'Dashboard invalid quiz course') || ! str_contains($markup, 'Dashboard missing quiz course')) {
         throw new RuntimeException('The dashboard template did not render the expected student-facing states.');
     }
 
@@ -265,6 +352,11 @@ try {
     echo "Student dashboard integration: PASS\n";
 } finally {
     if (isset($wpdb) && $wpdb instanceof wpdb) {
+        foreach ($question_ids as $question_id) {
+            $wpdb->delete($wpdb->prefix . 'kaanbal_question_answers', array('question_id' => $question_id));
+            $wpdb->delete($wpdb->prefix . 'kaanbal_questions', array('id' => $question_id));
+        }
+
         foreach ($user_ids as $user_id) {
             $wpdb->delete($wpdb->prefix . 'kaanbal_lesson_progress', array('user_id' => $user_id));
             $wpdb->delete($wpdb->prefix . 'kaanbal_quiz_attempts', array('user_id' => $user_id));

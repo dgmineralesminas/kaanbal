@@ -7,6 +7,7 @@ namespace Kaanbal\Dashboard\Application;
 use Kaanbal\Enrollment\Infrastructure\EnrollmentRepository;
 use Kaanbal\Progress\Application\CourseProgress;
 use Kaanbal\Progress\Application\CourseProgressService;
+use Kaanbal\Quiz\Application\QuizValidityService;
 use Kaanbal\Quiz\Infrastructure\QuizAttemptRepository;
 use Kaanbal\Quiz\Infrastructure\QuizRepository;
 
@@ -17,6 +18,7 @@ final class StudentDashboardQuery
         private readonly CourseProgressService $progress,
         private readonly QuizRepository $quizzes,
         private readonly QuizAttemptRepository $attempts,
+        private readonly QuizValidityService $validity,
     ) {
     }
 
@@ -65,6 +67,7 @@ final class StudentDashboardQuery
         $quiz_details = $this->quizzes->dashboardDetailsForCourses($course_ids);
         $quiz_ids = array_values(array_filter(array_column($quiz_details, 'quiz_id')));
         $attempt_summaries = $this->attempts->summariesForUserAndQuizzes($user_id, $quiz_ids);
+        $valid_quizzes = array_fill_keys($this->validity->validQuizIds($quiz_ids), true);
         $items = array();
 
         foreach ($enrollments as $enrollment) {
@@ -80,7 +83,7 @@ final class StudentDashboardQuery
             $quiz = $quiz_details[$course_id] ?? array('required' => false, 'certificate_enabled' => false, 'quiz_id' => null, 'max_attempts' => null);
             $quiz_id = $quiz['quiz_id'];
             $attempts = is_int($quiz_id) ? ($attempt_summaries[$quiz_id] ?? array('attempts_used' => 0, 'passed' => false)) : array('attempts_used' => 0, 'passed' => false);
-            $state = QuizDashboardState::fromDashboardData($quiz['required'], $quiz_id, $course_progress->percentage, $attempts['passed'], $attempts['attempts_used'], $quiz['max_attempts']);
+            $state = QuizDashboardState::fromDashboardData($quiz['required'], $quiz_id, is_int($quiz_id) && isset($valid_quizzes[$quiz_id]), $course_progress->percentage, $attempts['passed'], $attempts['attempts_used'], $quiz['max_attempts']);
             $remaining = null === $quiz['max_attempts'] ? null : max(0, $quiz['max_attempts'] - $attempts['attempts_used']);
 
             $items[] = array(

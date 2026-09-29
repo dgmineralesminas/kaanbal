@@ -15,6 +15,7 @@ final class CourseQuizStatusService
         private readonly QuestionRepository $questions,
         private readonly AnswerRepository $answers,
         private readonly QuizEligibilityService $eligibility,
+        private readonly QuizValidityService $validity,
     ) {
     }
 
@@ -23,7 +24,15 @@ final class CourseQuizStatusService
     {
         $requires_quiz = $this->quizzes->requiresQuiz($course_id);
         $quiz = $this->quizzes->findForCourse($course_id);
-        $result = ! $requires_quiz ? QuizEligibilityResult::QuizNotRequired : ($quiz instanceof \WP_Post ? $this->eligibility->check($user_id, $course_id, $quiz->ID) : QuizEligibilityResult::InvalidQuiz);
+        if (! $requires_quiz) {
+            $result = QuizEligibilityResult::QuizNotRequired;
+        } elseif (! $quiz instanceof \WP_Post || ! $this->validity->isValid($quiz->ID)) {
+            // A missing or invalid quiz is never presented, whatever the progress.
+            $result = QuizEligibilityResult::InvalidQuiz;
+        } else {
+            $result = $this->eligibility->check($user_id, $course_id, $quiz->ID);
+        }
+
         $questions = $quiz instanceof \WP_Post && $result->isEligible() ? $this->questions->activeForQuiz($quiz->ID) : array();
         $answer_sets = $this->answers->forQuestions(array_column($questions, 'id'));
 

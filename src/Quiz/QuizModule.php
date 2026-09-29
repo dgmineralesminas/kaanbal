@@ -13,6 +13,7 @@ use Kaanbal\Progress\Application\CourseProgressService;
 use Kaanbal\Progress\Infrastructure\LessonProgressRepository;
 use Kaanbal\Quiz\Application\CourseCompletionService;
 use Kaanbal\Quiz\Application\QuizEligibilityService;
+use Kaanbal\Quiz\Application\QuizValidityService;
 use Kaanbal\Quiz\Application\QuizScoreCalculator;
 use Kaanbal\Quiz\Application\QuizSubmissionService;
 use Kaanbal\Quiz\Infrastructure\AnswerRepository;
@@ -33,7 +34,7 @@ final class QuizModule implements BootableService
         $questions = new QuestionRepository();
         $answers = new AnswerRepository();
         $attempts = new QuizAttemptRepository();
-        $eligibility = new QuizEligibilityService(new CourseAccessService($enrollments), $progress, $quizzes, $questions, $answers, $attempts);
+        $eligibility = new QuizEligibilityService(new CourseAccessService($enrollments), $progress, $quizzes, new QuizValidityService($questions), $attempts);
         $completion = new CourseCompletionService($progress, $quizzes, $attempts, $enrollments);
         $submission = new QuizSubmissionService($eligibility, $quizzes, $questions, $answers, $attempts, new QuizScoreCalculator(), $completion);
         $meta_boxes = new QuizMetaBoxes();

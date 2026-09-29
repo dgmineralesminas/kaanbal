@@ -15,6 +15,7 @@ use Kaanbal\Progress\Application\CourseProgressService;
 use Kaanbal\Progress\Infrastructure\LessonProgressRepository;
 use Kaanbal\Quiz\Application\CourseQuizStatusService;
 use Kaanbal\Quiz\Application\QuizEligibilityService;
+use Kaanbal\Quiz\Application\QuizValidityService;
 use Kaanbal\Quiz\Infrastructure\AnswerRepository;
 use Kaanbal\Quiz\Infrastructure\QuestionRepository;
 use Kaanbal\Quiz\Infrastructure\QuizAttemptRepository;
@@ -189,11 +190,14 @@ final class FrontendRouter
         $answers = new AnswerRepository();
         $attempts = new QuizAttemptRepository();
 
+        $validity = new QuizValidityService($questions);
+
         return new CourseQuizStatusService(
             $quizzes,
             $questions,
             $answers,
-            new QuizEligibilityService($this->access, $this->progress, $quizzes, $questions, $answers, $attempts),
+            new QuizEligibilityService($this->access, $this->progress, $quizzes, $validity, $attempts),
+            $validity,
         );
     }
 }

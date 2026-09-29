@@ -78,7 +78,7 @@ try {
     $answers = new Kaanbal\Quiz\Infrastructure\AnswerRepository();
     $attempts = new Kaanbal\Quiz\Infrastructure\QuizAttemptRepository();
     $completion = new Kaanbal\Quiz\Application\CourseCompletionService($progress, $quizzes, $attempts, $enrollments);
-    $eligibility = new Kaanbal\Quiz\Application\QuizEligibilityService(new Kaanbal\Access\Application\CourseAccessService($enrollments), $progress, $quizzes, $questions, $answers, $attempts);
+    $eligibility = new Kaanbal\Quiz\Application\QuizEligibilityService(new Kaanbal\Access\Application\CourseAccessService($enrollments), $progress, $quizzes, new Kaanbal\Quiz\Application\QuizValidityService($questions), $attempts);
     $submission = new Kaanbal\Quiz\Application\QuizSubmissionService($eligibility, $quizzes, $questions, $answers, $attempts, new Kaanbal\Quiz\Application\QuizScoreCalculator(), $completion);
 
     wp_set_current_user($administrator);

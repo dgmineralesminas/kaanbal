@@ -12,6 +12,7 @@ use Kaanbal\Enrollment\Infrastructure\EnrollmentSourceRepository;
 use Kaanbal\Enrollment\Infrastructure\ProductCourseRepository;
 use Kaanbal\WooCommerce\Infrastructure\WooCommerceOrderAdapter;
 use Kaanbal\WooCommerce\Presentation\Admin\ProductCourseMetaBox;
+use Kaanbal\WooCommerce\Presentation\Frontend\AccountMenuLinks;
 
 final class WooCommerceModule implements BootableService
 {
@@ -37,6 +38,10 @@ final class WooCommerceModule implements BootableService
         add_action('woocommerce_order_status_completed', array($this, 'grantCourses'), 20, 2);
         add_action('woocommerce_order_status_cancelled', array($this, 'revokeCourses'), 20);
         add_action('woocommerce_order_status_refunded', array($this, 'revokeCourses'), 20);
+
+        $account_links = new AccountMenuLinks();
+        add_filter('woocommerce_account_menu_items', array($account_links, 'menuItems'));
+        add_filter('woocommerce_get_endpoint_url', array($account_links, 'endpointUrl'), 10, 2);
 
         $this->grant_courses = $grant_courses;
         $this->enrollments   = $enrollments;

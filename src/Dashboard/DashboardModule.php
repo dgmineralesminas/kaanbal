@@ -12,6 +12,8 @@ use Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter;
 use Kaanbal\Enrollment\Infrastructure\EnrollmentRepository;
 use Kaanbal\Progress\Application\CourseProgressService;
 use Kaanbal\Progress\Infrastructure\LessonProgressRepository;
+use Kaanbal\Quiz\Application\QuizValidityService;
+use Kaanbal\Quiz\Infrastructure\QuestionRepository;
 use Kaanbal\Quiz\Infrastructure\QuizAttemptRepository;
 use Kaanbal\Quiz\Infrastructure\QuizRepository;
 
@@ -71,6 +73,7 @@ final class DashboardModule implements BootableService
             new CourseProgressService($curriculum, new LessonProgressRepository()),
             new QuizRepository(),
             new QuizAttemptRepository(),
+            new QuizValidityService(new QuestionRepository()),
         );
     }
 }
