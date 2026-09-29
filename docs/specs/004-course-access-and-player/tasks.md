@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: In implementation
+Status general: Ready for code audit
 
 Dependencias:
 
@@ -466,17 +466,21 @@ Covers:
 
 ## TASK-033 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
 
-### Resultado esperado
-
-Solo si todos los gates pasan:
+Resultado:
 
 ```text
-Status: Ready for audit
+Candidate commit: 7ab80cd — test: cubrir rutas protegidas de lecciones
+Status: Ready for code audit
 Ready for audit: Yes
-Current audit round: 1
+Current audit round: 2 (pending)
 ```
+
+### Remediación de auditoría round 1
+
+- CODE-001: Done — se añadieron pruebas de denegación de rutas Lesson para visitante, usuario sin matrícula y matrícula revocada; matrícula de Course A contra Lesson de Course B; y Course publicado sin módulos.
+- CODE-002: Done — el estado del candidato queda versionado en el commit documental separado.
