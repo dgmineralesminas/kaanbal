@@ -38,4 +38,28 @@ enum QuizDashboardState: string
 
         return $attempts_used > 0 ? self::FailedCanRetry : self::Available;
     }
+
+    /**
+     * An approved enrollment is the formal academic result (RB-004), so a
+     * completed course never advertises a pending quiz; only a passed quiz
+     * is still informative there.
+     */
+    public function isVisibleFor(string $enrollment_status): bool
+    {
+        if (self::NotRequired === $this) {
+            return false;
+        }
+
+        if ('completed' === $enrollment_status) {
+            return self::Passed === $this;
+        }
+
+        return true;
+    }
+
+    /** Attempts are only meaningful while the student can still present the quiz. */
+    public function showsAttempts(): bool
+    {
+        return self::Available === $this || self::FailedCanRetry === $this;
+    }
 }

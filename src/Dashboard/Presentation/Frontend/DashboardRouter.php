@@ -11,10 +11,17 @@ final class DashboardRouter
 {
     public const QUERY_VAR = 'kaanbal_student_dashboard';
 
+    public const PATH = '/mis-cursos/';
+
     public function __construct(
         private readonly StudentDashboardQuery $dashboard,
         private readonly string $templates_path,
     ) {
+    }
+
+    public static function url(): string
+    {
+        return home_url(self::PATH);
     }
 
     /** @param list<string> $query_vars
@@ -51,7 +58,7 @@ final class DashboardRouter
             return array(
                 'template' => 'dashboard-access-denied',
                 'status'   => 403,
-                'context'  => array(),
+                'context'  => array('login_url' => wp_login_url(self::url())),
             );
         }
 

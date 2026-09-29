@@ -19,7 +19,7 @@ try {
     do_action('init');
 
     $rewrite_rules = get_option('rewrite_rules', array());
-    if (! is_array($rewrite_rules) || ! array_key_exists('mis-cursos/?$', $rewrite_rules)) {
+    if (! is_array($rewrite_rules) || ! array_key_exists('^mis-cursos/?$', $rewrite_rules)) {
         throw new RuntimeException('The student dashboard rewrite rule was not persisted.');
     }
 
@@ -74,6 +74,7 @@ try {
     $student = $create_user('student');
     $other = $create_user('other');
     $without_courses = $create_user('empty');
+    $single = $create_user('single');
     $active = $create_post('kaanbal_course', 'Dashboard active course');
     $locked = $create_post('kaanbal_course', 'Dashboard locked course');
     $available = $create_post('kaanbal_course', 'Dashboard available course');
@@ -99,6 +100,7 @@ try {
     $unlimited_quiz = $add_quiz($unlimited, null);
     $certificate_quiz = $add_quiz($completed_certificate, null);
     $locked_quiz = $add_quiz($locked, 2);
+    $late_quiz = $add_quiz($completed_plain, 2);
 
     global $wpdb;
     $enrollments_table = $wpdb->prefix . 'kaanbal_enrollments';
@@ -129,6 +131,7 @@ try {
     $enroll($student, $revoked, 'revoked');
     $enroll($student, 999999999, 'active');
     $enroll($other, $other_course, 'active');
+    $enroll($single, $retry, 'active');
     $complete_lesson($student, $active_lessons[0]);
     $complete_lesson($student, $available_lessons[0]);
     $complete_lesson($student, $retry_lessons[0]);
@@ -147,8 +150,20 @@ try {
     }
 
     $anonymous = $router->resolve(0);
-    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || array() !== $anonymous['context']) {
+    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || isset($anonymous['context']['dashboard']) || ! str_contains((string) ($anonymous['context']['login_url'] ?? ''), 'mis-cursos')) {
         throw new RuntimeException('The dashboard exposed academic data to an anonymous visitor.');
+    }
+
+    // Anonymous request through the real WordPress entry point, with a forged user_id.
+    set_query_var(Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter::QUERY_VAR, '1');
+    wp_set_current_user(0);
+    $_GET['user_id'] = (string) $student;
+    $_REQUEST['user_id'] = (string) $student;
+    $anonymous_template = $router->template('fallback.php');
+    $anonymous_context = Kaanbal\Access\Presentation\Frontend\TemplateContext::all();
+
+    if (! str_ends_with($anonymous_template, 'dashboard-access-denied.php') || isset($anonymous_context['dashboard'])) {
+        throw new RuntimeException('A forged user_id exposed academic data to an anonymous visitor.');
     }
 
     $before = array(
@@ -156,9 +171,20 @@ try {
         $wpdb->get_results($wpdb->prepare('SELECT lesson_id FROM %i WHERE user_id = %d ORDER BY lesson_id', $progress_table, $student), ARRAY_A),
         $wpdb->get_results($wpdb->prepare('SELECT quiz_id, passed FROM %i WHERE user_id = %d ORDER BY quiz_id, attempt_number', $attempts_table, $student), ARRAY_A),
     );
+    // Authenticated request through the real WordPress entry point, forging another student's id.
+    wp_set_current_user($student);
     $_GET['user_id'] = (string) $other;
-    $response = $router->resolve($student);
+    $_REQUEST['user_id'] = (string) $other;
+    $student_template = $router->template('fallback.php');
+    $response = array(
+        'status'   => str_ends_with($student_template, '/dashboard.php') ? 200 : 0,
+        'template' => str_ends_with($student_template, '/dashboard.php') ? 'dashboard' : 'unexpected',
+        'context'  => Kaanbal\Access\Presentation\Frontend\TemplateContext::all(),
+    );
     $_GET = array();
+    $_REQUEST = array();
+    wp_set_current_user(0);
+    set_query_var(Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter::QUERY_VAR, '');
     $after = array(
         $wpdb->get_results($wpdb->prepare('SELECT course_id, status, completed_at FROM %i WHERE user_id = %d ORDER BY course_id', $enrollments_table, $student), ARRAY_A),
         $wpdb->get_results($wpdb->prepare('SELECT lesson_id FROM %i WHERE user_id = %d ORDER BY lesson_id', $progress_table, $student), ARRAY_A),
@@ -187,23 +213,49 @@ try {
         throw new RuntimeException('The quiz dashboard states or remaining attempts are incorrect.');
     }
 
-    if ('Aprobado' !== $by_id[$completed_certificate]['status_label'] || 'passed' !== $by_id[$completed_certificate]['quiz']['state'] || ! $by_id[$completed_certificate]['certificate_enabled'] || 'Aprobado' !== $by_id[$completed_plain]['status_label'] || $by_id[$completed_plain]['certificate_enabled']) {
+    if ('Aprobado' !== $by_id[$completed_certificate]['status_label'] || 'passed' !== $by_id[$completed_certificate]['quiz']['state'] || ! $by_id[$completed_certificate]['quiz']['visible'] || $by_id[$completed_certificate]['quiz']['show_attempts'] || ! $by_id[$completed_certificate]['certificate_enabled'] || ! $by_id[$completed_certificate]['show_certificate'] || 'Aprobado' !== $by_id[$completed_plain]['status_label'] || $by_id[$completed_plain]['certificate_enabled'] || $by_id[$completed_plain]['show_certificate']) {
         throw new RuntimeException('Completed-course dashboard data is incorrect.');
+    }
+
+    // A quiz enabled after approval must not appear as pending on an approved course (RB-004, EC-007).
+    if (! $by_id[$completed_plain]['quiz']['required'] || $by_id[$completed_plain]['quiz']['visible']) {
+        throw new RuntimeException('An approved course advertised a pending quiz.');
+    }
+
+    // Attempts are only shown while the quiz can still be presented.
+    if (! $by_id[$available]['quiz']['show_attempts'] || ! $by_id[$retry]['quiz']['show_attempts'] || $by_id[$exhausted]['quiz']['show_attempts'] || $by_id[$locked]['quiz']['show_attempts']) {
+        throw new RuntimeException('The dashboard shows attempts for a quiz that cannot be presented.');
+    }
+
+    // AC-025: loading many courses must not add queries per course.
+    $count_queries = static function (int $user_id) use ($dashboard, $wpdb): int {
+        wp_cache_flush();
+        $before_queries = $wpdb->num_queries;
+        $dashboard->forUser($user_id);
+
+        return $wpdb->num_queries - $before_queries;
+    };
+    $single_queries = $count_queries($single);
+    $many_queries = $count_queries($student);
+
+    fwrite(STDOUT, sprintf("Dashboard queries: 1 course = %d, 8 courses = %d\n", $single_queries, $many_queries));
+    if ($many_queries - $single_queries > 3) {
+        throw new RuntimeException(sprintf('The dashboard issued per-course queries: 1 course = %d queries, 8 courses = %d queries.', $single_queries, $many_queries));
     }
 
     Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($response['context']);
     ob_start();
-    require dirname(__DIR__, 2) . '/templates/student/dashboard.php';
+    require dirname(__DIR__, 2) . '/templates/student/parts/dashboard-content.php';
     $markup = (string) ob_get_clean();
 
-    if (! str_contains($markup, 'Mis cursos') || ! str_contains($markup, 'Dashboard active course') || ! str_contains($markup, '50%') || ! str_contains($markup, 'Continuar curso') || ! str_contains($markup, 'Ver curso') || ! str_contains($markup, 'Completa las lecciones') || ! str_contains($markup, 'Tu evaluación final está disponible') || ! str_contains($markup, 'Intentos agotados') || ! str_contains($markup, 'Intentos ilimitados') || ! str_contains($markup, 'Evaluación final aprobada') || ! str_contains($markup, 'hacerte llegar tu certificado') || str_contains($markup, 'Dashboard private course') || str_contains($markup, 'Dashboard revoked course') || str_contains($markup, 'Descargar certificado')) {
+    if (! str_contains($markup, 'Mis cursos') || ! str_contains($markup, 'Dashboard active course') || ! str_contains($markup, '50%') || ! str_contains($markup, 'Continuar curso') || ! str_contains($markup, 'Ver curso') || ! str_contains($markup, 'Completa las lecciones') || ! str_contains($markup, 'Tu evaluación final está disponible') || ! str_contains($markup, 'Intentos agotados') || ! str_contains($markup, 'Intentos ilimitados') || ! str_contains($markup, 'Evaluación final aprobada') || ! str_contains($markup, 'Has aprobado este curso. En breve nos estaremos comunicando contigo para hacerte llegar tu certificado.') || str_contains($markup, '0 intentos restantes') || 1 !== substr_count($markup, 'data-quiz-state="passed"') || str_contains($markup, 'certificado.pdf') || str_contains($markup, 'Dashboard private course') || str_contains($markup, 'Dashboard revoked course') || str_contains($markup, 'Descargar certificado')) {
         throw new RuntimeException('The dashboard template did not render the expected student-facing states.');
     }
 
     $empty = $router->resolve($without_courses);
     Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($empty['context']);
     ob_start();
-    require dirname(__DIR__, 2) . '/templates/student/dashboard.php';
+    require dirname(__DIR__, 2) . '/templates/student/parts/dashboard-content.php';
     $empty_markup = (string) ob_get_clean();
 
     if (200 !== $empty['status'] || ! str_contains($empty_markup, 'Aún no tienes cursos disponibles.')) {

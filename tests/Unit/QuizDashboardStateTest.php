@@ -28,4 +28,43 @@ final class QuizDashboardStateTest extends TestCase
             'passed quiz wins over historical progress' => array(true, 12, 0, true, 1, 2, QuizDashboardState::Passed),
         );
     }
+
+    /** @dataProvider visibilityCases */
+    public function testItOnlyShowsQuizInformationThatIsCoherentWithTheEnrollment(QuizDashboardState $state, string $enrollment_status, bool $expected): void
+    {
+        self::assertSame($expected, $state->isVisibleFor($enrollment_status));
+    }
+
+    /** @return array<string, array{QuizDashboardState, string, bool}> */
+    public static function visibilityCases(): array
+    {
+        return array(
+            'not required is never shown' => array(QuizDashboardState::NotRequired, 'active', false),
+            'locked quiz is shown while in progress' => array(QuizDashboardState::Locked, 'active', true),
+            'exhausted attempts are shown while in progress' => array(QuizDashboardState::NoAttemptsLeft, 'active', true),
+            'approved course hides a locked quiz' => array(QuizDashboardState::Locked, 'completed', false),
+            'approved course hides an available quiz' => array(QuizDashboardState::Available, 'completed', false),
+            'approved course hides an unconfigured quiz' => array(QuizDashboardState::Unavailable, 'completed', false),
+            'approved course keeps a passed quiz' => array(QuizDashboardState::Passed, 'completed', true),
+        );
+    }
+
+    /** @dataProvider attemptCases */
+    public function testItOnlyShowsAttemptsWhileTheQuizCanBePresented(QuizDashboardState $state, bool $expected): void
+    {
+        self::assertSame($expected, $state->showsAttempts());
+    }
+
+    /** @return array<string, array{QuizDashboardState, bool}> */
+    public static function attemptCases(): array
+    {
+        return array(
+            'available' => array(QuizDashboardState::Available, true),
+            'failed can retry' => array(QuizDashboardState::FailedCanRetry, true),
+            'passed' => array(QuizDashboardState::Passed, false),
+            'no attempts left' => array(QuizDashboardState::NoAttemptsLeft, false),
+            'locked' => array(QuizDashboardState::Locked, false),
+            'not required' => array(QuizDashboardState::NotRequired, false),
+        );
+    }
 }
