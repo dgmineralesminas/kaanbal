@@ -3,7 +3,7 @@
 SPEC: SPEC-005 — Student Progress
 
 Branch: feature/spec-005-student-progress
-Current commit: aceec25bcbbdbcdf1c9a2a77a9060751eface8b6
+Current commit: 613672254c89fdb67f87cd021efa2617a6a832f5
 
 Status: Ready for audit
 Ready for audit: Yes
@@ -34,9 +34,9 @@ Passed
 ## Tasks
 
 Total: 36
-Done: 0
+Done: 36
 In Progress: 0
-Pending: 36
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -46,64 +46,64 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — composer test (37 tests, 57 assertions)`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — wordpress-lifecycle, courses-curriculum, course-access-player and woocommerce-enrollment`
 
 Progress Tests:
 
-`NOT RUN`
+`PASS — student-progress (persistencia, porcentaje, curriculum dinámico y 100%)`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — endpoint admin-post: nonce válido, nonce ausente/inválido, anónimo, sin matrícula, curso/lección incompatibles y lección inválida`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (0 errors)`
 
 Manual Verification:
 
-`NOT RUN`
+`Previously approved by user; not repeated as part of this code-audit candidate.`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED  
-AC-018: NOT IMPLEMENTED  
-AC-019: NOT IMPLEMENTED  
-AC-020: NOT IMPLEMENTED
+AC-001: IMPLEMENTED — automated integration coverage
+AC-002: IMPLEMENTED — automated integration coverage
+AC-003: IMPLEMENTED — automated integration coverage
+AC-004: IMPLEMENTED — automated integration coverage
+AC-005: IMPLEMENTED — automated integration coverage
+AC-006: IMPLEMENTED — automated integration coverage
+AC-007: IMPLEMENTED — automated integration coverage
+AC-008: IMPLEMENTED — automated unit and integration coverage
+AC-009: IMPLEMENTED — automated unit and integration coverage
+AC-010: IMPLEMENTED — automated unit and integration coverage
+AC-011: IMPLEMENTED — CourseProgressService only derives from curriculum lessons
+AC-012: IMPLEMENTED — rendered course-template coverage and prior user verification
+AC-013: IMPLEMENTED — rendered course-template coverage
+AC-014: IMPLEMENTED — rendered lesson-template coverage and prior user verification
+AC-015: IMPLEMENTED — rendered form and endpoint coverage
+AC-016: IMPLEMENTED — automated duplicate-request coverage
+AC-017: IMPLEMENTED — automated integration coverage
+AC-018: IMPLEMENTED — automated integration coverage
+AC-019: IMPLEMENTED — automated integration coverage
+AC-020: IMPLEMENTED — automated integration coverage
 
 ---
 
@@ -167,15 +167,13 @@ Expected:
 
 ## Known Issues
 
-None currently recorded.
+None.
 
 ---
 
 ## Open Findings
 
-None.
-
-No audit round has been executed.
+None. No audit round has been executed; the next review is round 1.
 
 ---
 
@@ -187,21 +185,15 @@ None.
 
 ## Human Review
 
-Ready for audit
+Ready for code audit, round 1.
 
 ---
 
 ## Notes
 
-SPEC-005 has been defined but is not yet approved for implementation.
-
-Implementation must not begin until:
-
-1. SPEC-001 is completed.
-2. SPEC-002 is completed.
-3. SPEC-003 is completed.
-4. SPEC-004 is completed.
-5. SPEC-005 receives explicit human approval.
+Implementation was approved and completed. The stable code candidate is
+`613672254c89fdb67f87cd021efa2617a6a832f5`; this status document records its
+verification evidence.
 
 A progress value of 100% only means that all current lessons have been completed.
 

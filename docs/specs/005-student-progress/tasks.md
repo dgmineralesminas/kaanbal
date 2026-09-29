@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Ready for audit
 
 Dependencias:
 
@@ -15,7 +15,7 @@ Dependencias:
 
 ## TASK-001 — Crear migración de Lesson Progress
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -39,7 +39,7 @@ Migración idempotente.
 
 ## TASK-002 — Implementar LessonProgressRepository
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -60,7 +60,7 @@ Implementar:
 
 ## TASK-003 — Implementar ProgressCalculator
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -81,7 +81,7 @@ Cubrir:
 
 ## TASK-004 — Implementar CourseProgressService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -100,7 +100,7 @@ Combinar curriculum actual y completions del usuario.
 
 ## TASK-005 — Implementar CompleteLessonService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -122,7 +122,7 @@ Covers:
 
 ## TASK-006 — Integrar CourseAccessService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -136,7 +136,7 @@ Solo enrollment válido permite escritura.
 
 ## TASK-007 — Proteger ownership
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -150,7 +150,7 @@ No aceptar `user_id` arbitrario como autoridad del request.
 
 ## TASK-008 — Implementar protección CSRF
 
-Status: Pending
+Status: Done
 
 Covers:
 - seguridad
@@ -163,7 +163,7 @@ Request sin token válido es rechazado.
 
 ## TASK-009 — Implementar endpoint de completar lección
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -180,7 +180,7 @@ Exponer operación segura desde player.
 
 ## TASK-010 — Implementar respuesta idempotente
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -194,7 +194,7 @@ Repetición no genera error funcional ni duplicado.
 
 ## TASK-011 — Integrar progreso en Course View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -213,7 +213,7 @@ Mostrar:
 
 ## TASK-012 — Implementar batch loading de completions
 
-Status: Pending
+Status: Done
 
 Covers:
 - RNF-006
@@ -226,7 +226,7 @@ Evitar N+1 por cada Lesson.
 
 ## TASK-013 — Integrar estado en Lesson View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -237,7 +237,7 @@ Covers:
 
 ## TASK-014 — Implementar botón Marcar como completada
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -250,7 +250,7 @@ UI mínima para ejecutar el endpoint.
 
 ## TASK-015 — Implementar estado visual completed
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -261,7 +261,7 @@ Covers:
 
 ## TASK-016 — Verificar que abrir lección no escriba progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -270,7 +270,7 @@ Covers:
 
 ## TASK-017 — Implementar cálculo de curso vacío
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -279,7 +279,7 @@ Covers:
 
 ## TASK-018 — Ignorar completions fuera del curriculum
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-018
@@ -292,7 +292,7 @@ Solo Lesson IDs actuales cuentan.
 
 ## TASK-019 — Soportar curriculum dinámico
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -306,7 +306,7 @@ Agregar/eliminar lecciones recalcula porcentaje automáticamente.
 
 ## TASK-020 — Garantizar exclusión de quiz
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -319,7 +319,7 @@ Progress Service depende solo de Lesson.
 
 ## TASK-021 — Evitar Course Completion automático
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-020
@@ -332,7 +332,7 @@ Covers:
 
 ## TASK-022 — Revisar TOCTOU del flujo de escritura
 
-Status: Pending
+Status: Done
 
 Covers:
 - seguridad
@@ -346,7 +346,7 @@ Documentar y aplicar la estrategia usada para mantener invariantes durante la es
 
 ## TASK-023 — Implementar tests de LessonProgressRepository
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -358,7 +358,7 @@ Covers:
 
 ## TASK-024 — Implementar tests de ProgressCalculator
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -369,7 +369,7 @@ Covers:
 
 ## TASK-025 — Implementar tests CourseProgressService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -383,7 +383,7 @@ Covers:
 
 ## TASK-026 — Implementar tests CompleteLessonService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -396,7 +396,7 @@ Covers:
 
 ## TASK-027 — Implementar tests del endpoint
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -419,7 +419,7 @@ Covers:
 
 ## TASK-028 — Implementar test de usuarios independientes
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-019
@@ -428,7 +428,7 @@ Covers:
 
 ## TASK-029 — Implementar tests de curriculum dinámico
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -438,7 +438,7 @@ Covers:
 
 ## TASK-030 — Implementar tests de 100% sin Course Completion
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-020
@@ -447,7 +447,7 @@ Covers:
 
 ## TASK-031 — Verificar concurrencia/idempotencia
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -460,7 +460,7 @@ Validar unique constraint y manejo de inserción duplicada.
 
 ## TASK-032 — Revisar consultas y N+1
 
-Status: Pending
+Status: Done
 
 Covers:
 - RNF-006
@@ -469,7 +469,7 @@ Covers:
 
 ## TASK-033 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 ### Confirmar que no se implementa:
 
@@ -482,7 +482,7 @@ Status: Pending
 
 ## TASK-034 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -491,7 +491,7 @@ Covers:
 
 ## TASK-035 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -500,7 +500,7 @@ Covers:
 
 ## TASK-036 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
