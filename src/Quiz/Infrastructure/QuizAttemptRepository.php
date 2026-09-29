@@ -31,6 +31,32 @@ final class QuizAttemptRepository
         return (int) $this->database->get_var($this->database->prepare('SELECT COUNT(*) FROM ' . $this->tableName() . ' WHERE user_id = %d AND quiz_id = %d', $user_id, $quiz_id));
     }
 
+    /** @param list<int> $quiz_ids
+     * @return array<int, array{attempts_used: int, passed: bool}>
+     */
+    public function summariesForUserAndQuizzes(int $user_id, array $quiz_ids): array
+    {
+        $quiz_ids = array_values(array_unique(array_filter(array_map('absint', $quiz_ids))));
+
+        if ($user_id <= 0 || array() === $quiz_ids) {
+            return array();
+        }
+
+        $placeholders = implode(', ', array_fill(0, count($quiz_ids), '%d'));
+        $query = 'SELECT quiz_id, COUNT(*) AS attempts_used, MAX(passed) AS passed FROM ' . $this->tableName() . ' WHERE user_id = %d AND quiz_id IN (' . $placeholders . ') GROUP BY quiz_id';
+        $rows = $this->database->get_results($this->database->prepare($query, $user_id, ...$quiz_ids), 'ARRAY_A');
+        $summaries = array();
+
+        foreach (is_array($rows) ? $rows : array() as $row) {
+            $summaries[(int) $row['quiz_id']] = array(
+                'attempts_used' => (int) $row['attempts_used'],
+                'passed'        => 1 === (int) $row['passed'],
+            );
+        }
+
+        return $summaries;
+    }
+
     /**
      * @param list<array{question_id: int, answer_id: int, is_correct: bool, question_text: string, answer_text: string}> $answers
      */

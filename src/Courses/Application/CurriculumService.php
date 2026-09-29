@@ -24,6 +24,59 @@ final class CurriculumService
         return $this->buildCurriculum($course_id, 'publish');
     }
 
+    /** @param list<int> $course_ids
+     * @return array<int, array{course: \WP_Post, modules: list<array{module: \WP_Post, lessons: list<\WP_Post>}>}>
+     */
+    public function forPublishedCourses(array $course_ids): array
+    {
+        $course_ids = array_values(array_unique(array_filter(array_map('absint', $course_ids))));
+        $courses = array();
+
+        foreach ($course_ids as $course_id) {
+            $course = get_post($course_id);
+
+            if ($course instanceof \WP_Post && 'kaanbal_course' === $course->post_type && 'publish' === $course->post_status) {
+                $courses[$course_id] = $course;
+            }
+        }
+
+        if (array() === $courses) {
+            return array();
+        }
+
+        $modules = $this->repository->modulesForCourses(array_keys($courses), 'publish');
+        $modules_by_course = array();
+
+        foreach ($modules as $module) {
+            $modules_by_course[(int) get_post_meta($module->ID, CurriculumRepository::COURSE_ID_META, true)][] = $module;
+        }
+
+        $lessons = $this->repository->lessonsForModules(array_map(static fn (\WP_Post $module): int => $module->ID, $modules), 'publish');
+        $lessons_by_module = array();
+
+        foreach ($lessons as $lesson) {
+            $lessons_by_module[(int) get_post_meta($lesson->ID, CurriculumRepository::MODULE_ID_META, true)][] = $lesson;
+        }
+
+        $curricula = array();
+
+        foreach ($courses as $course_id => $course) {
+            $course_modules = $modules_by_course[$course_id] ?? array();
+            $curricula[$course_id] = array(
+                'course'  => $course,
+                'modules' => array_map(
+                    static fn (\WP_Post $module): array => array(
+                        'module'  => $module,
+                        'lessons' => $lessons_by_module[$module->ID] ?? array(),
+                    ),
+                    $course_modules
+                ),
+            );
+        }
+
+        return $curricula;
+    }
+
     /** @return array{module: \WP_Post, course: \WP_Post}|null */
     public function hierarchyForLesson(int $lesson_id): ?array
     {

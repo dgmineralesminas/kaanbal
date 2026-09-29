@@ -41,4 +41,46 @@ final class CourseProgressService
             $completed,
         );
     }
+
+    /** @param list<int> $course_ids
+     * @return array<int, CourseProgress>
+     */
+    public function forCourses(int $user_id, array $course_ids): array
+    {
+        $curricula = $this->curriculum->forPublishedCourses($course_ids);
+        $lesson_ids = array();
+
+        foreach ($curricula as $curriculum) {
+            foreach ($curriculum['modules'] as $module) {
+                foreach ($module['lessons'] as $lesson) {
+                    $lesson_ids[] = $lesson->ID;
+                }
+            }
+        }
+
+        $completed_ids = $this->progress->findCompletedLessonIds($user_id, $lesson_ids);
+        $completed_lookup = array_fill_keys($completed_ids, true);
+        $progress = array();
+
+        foreach ($curricula as $course_id => $curriculum) {
+            $course_lesson_ids = array();
+
+            foreach ($curriculum['modules'] as $module) {
+                foreach ($module['lessons'] as $lesson) {
+                    $course_lesson_ids[] = $lesson->ID;
+                }
+            }
+
+            $course_lesson_ids = array_values(array_unique($course_lesson_ids));
+            $course_completed_ids = array_values(array_filter($course_lesson_ids, static fn (int $lesson_id): bool => isset($completed_lookup[$lesson_id])));
+            $progress[$course_id] = new CourseProgress(
+                count($course_lesson_ids),
+                count($course_completed_ids),
+                $this->calculator->percentage(count($course_completed_ids), count($course_lesson_ids)),
+                $course_completed_ids,
+            );
+        }
+
+        return $progress;
+    }
 }
