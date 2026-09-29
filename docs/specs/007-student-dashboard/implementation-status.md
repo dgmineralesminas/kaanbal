@@ -7,11 +7,13 @@ Implementation commit: 4fe0f1eab59115f60dd938132e32687092512dd8
 Pre-audit remediation commit: ff87511
 Visual fix commit: 591e7c0
 Login link commit: d4abd03
-Audit commit: d4abd03
+Round 1 audited commit: d4abd03 (PASS WITH RECOMMENDATIONS)
+Round 1 remediation commit: 4d16911
+Audit commit: 4d16911e8cca8058486bb04cade014b24c22ea96
 
 Status: Ready for audit
 Ready for audit: Yes
-Current audit round: 1
+Current audit round: 2
 
 ## Human Approval
 
@@ -54,30 +56,38 @@ Not Applicable: 0
 
 ## Quality Gate
 
-Ejecutado sobre `ff87511` con PHP 8.4.21, WordPress 7.1.2 (core de este
-proyecto) y MariaDB en un entorno limpio con permalinks `/%postname%/`.
+Ejecutado sobre el candidato exacto `4d16911` (extraído con `git archive`),
+con PHP 8.4.21, WordPress 7.1.2 (core de este proyecto), MariaDB y
+WooCommerce 11.1.1 (copia de `wp-content/plugins/woocommerce` de este
+proyecto), permalinks `/%postname%/`.
 
 PHP Syntax:
 
-`PASS — composer lint (src, tests) + php -l templates/student`
+`PASS — composer lint (95 archivos de src y tests) + php -l templates/ (7 archivos)`
 
 Unit Tests:
 
-`PASS — composer test (74 tests, 103 assertions)`
+`PASS — composer test (87 tests, 117 assertions)`
 
-Integration Tests:
+Integration Tests (WooCommerce activo):
 
-`PASS — student-dashboard, wordpress-lifecycle, courses-curriculum,
-course-access-player, student-progress, final-quiz-course-completion`
+`PASS — test:integration:dashboard, test:integration (wordpress-lifecycle),
+test:integration:curriculum, test:integration:player,
+test:integration:progress, test:integration:quiz,
+test:integration:woocommerce`
 
-`woocommerce-enrollment: BLOCKED BY ENVIRONMENT — WooCommerce no instalado
-en el entorno de validación. SPEC-007 no modifica código WooCommerce.`
+Integration Tests (WooCommerce inactivo):
+
+`PASS — test:integration:dashboard, test:integration:quiz`
 
 Dashboard Tests:
 
 `PASS — rewrite persistida, acceso, ownership vía template() con user_id
 falsificado (anónimo y autenticado), cursos, progreso, estados de quiz,
-visibilidad de quiz/intentos, certificado, estado vacío y read-only`
+quiz requerido inválido o sin publicar sin estado visible, página del curso
+sin sección de evaluación para quiz inválido/sin publicar, visibilidad de
+intentos, certificado, estado vacío, read-only, destino real del login y
+enlace "Mis cursos" en la navegación de Mi cuenta`
 
 Security Tests:
 
@@ -85,7 +95,8 @@ Security Tests:
 
 Performance Review:
 
-`PASS — 1 curso = 12 consultas, 8 cursos = 12 consultas`
+`PASS — 1 curso = 13 consultas, 10 cursos = 13 consultas (la validez del quiz
+agrega una sola consulta agregada)`
 
 Composer Validation:
 
@@ -93,21 +104,22 @@ Composer Validation:
 
 PHPCS:
 
-`PASS — composer cs`
+`PASS — composer cs (exit 0)`
 
 PHPStan:
 
 `PASS — composer analyse (0 errors)`
 
-Full-page render:
+Environment notes:
 
-`PASS — con un tema mínimo, /mis-cursos/ produce <html>, wp_head con
-dashboard.css, contenido y estado vacío; el acceso denegado incluye
-enlace de login con redirect_to`
+`Avisos de CLI ajenos al plugin (SERVER_NAME no definido, sendmail ausente)
+durante las integraciones; no afectan los resultados.`
 
 Manual Verification:
 
-`PARTIAL — revisión visual humana detectó portada recortada y enlace morado (corregidos en 591e7c0); pendiente confirmar en navegador`
+`PARTIAL — Daniel revisó /mis-cursos/ y el acceso denegado en navegador
+durante la ronda 1 (portada, color del botón y destino Mi cuenta corregidos).
+Pendiente revisar en navegador el enlace "Mis cursos" en Mi cuenta.`
 
 ---
 
@@ -187,6 +199,7 @@ Possible states:
 - Failed / Retry Available
 - Passed
 - Attempts Exhausted
+- Unavailable (quiz requerido sin publicar o inválido): nunca visible
 
 ---
 
@@ -231,7 +244,8 @@ Revisión previa a auditoría solicitada por el responsable humano:
 3. El contador de intentos aparecía con quiz aprobado o agotado. Ahora solo
    con quiz disponible o reintentable.
 4. Mensaje de certificado completado según RF-023.
-5. Acceso denegado con enlace de login que regresa a `/mis-cursos/`.
+5. Acceso denegado con enlace de login (en `ff87511` regresaba a
+   `/mis-cursos/`; desde `d4abd03` lleva a Mi cuenta, ver CODE-002).
 6. Miniaturas precargadas (`update_post_thumbnail_cache`).
 7. La prueba de user_id falsificado ahora pasa por `template()` con la
    identidad de sesión.
@@ -261,19 +275,104 @@ WooCommerce (`wc_get_page_permalink('myaccount')`), igual que el tema.
 
 ---
 
+## Round 1 Remediation (4d16911)
+
+Auditoría: `audits/round-1/code-audit.md` — PASS WITH RECOMMENDATIONS,
+decisiones humanas en §10.
+
+### CODE-001 — Accepted, resolved
+
+Decisión humana: "Si no hay preguntas válidas o quiz en un curso no mostrar
+nada."
+
+- `Quiz\Application\QuizValidityRule`: única definición de quiz válido.
+- `Quiz\Application\QuizValidityService::validQuizIds()`: validez en lote con
+  una consulta agregada (`QuestionRepository::answerStatsForQuizzes`);
+  `isValid()` usa la misma operación.
+- `QuizEligibilityService` usa `QuizValidityService` (se eliminó
+  `hasValidQuestions`, sin duplicar la regla).
+- Dashboard: quiz requerido sin publicar o inválido → estado `unavailable`,
+  nunca visible; el resto de la tarjeta no cambia. Se elimina el mensaje
+  "La evaluación final aún no está disponible."
+- Página del curso: `CourseQuizStatusService` devuelve `invalid_quiz` para
+  quiz sin publicar o inválido antes de evaluar el progreso, y
+  `templates/frontend/course.php` no renderiza la sección de evaluación.
+- Pruebas: `QuizValidityRuleTest`, casos nuevos en `QuizDashboardStateTest`,
+  integración con quiz sin preguntas (al 100%), quiz sin publicar, página del
+  curso con progreso completo e incompleto, y conteo de consultas.
+
+### CODE-002 — Accepted, resolved (adición de alcance aprobada)
+
+Decisión humana: "Puede caer en mi cuenta, por si necesita cambiar algo. Pero
+debe haber un botón que lleve a Mis cursos."
+
+- `DashboardRouter::loginUrl()` sin cambios: Mi cuenta de WooCommerce si está
+  activo; `wp_login_url()` si no.
+- `WooCommerce\Presentation\Frontend\AccountMenuLinks`: agrega "Mis cursos"
+  (después de "Escritorio") al menú de Mi cuenta mediante
+  `woocommerce_account_menu_items`, con la URL de `DashboardRouter::url()` vía
+  `woocommerce_get_endpoint_url`. Se registra en `WooCommerceModule` solo si
+  WooCommerce está activo; Dashboard no depende de WooCommerce.
+- La prueba del login afirma el destino real: permalink de la página
+  `myaccount` con WooCommerce; `wp_login_url('/mis-cursos/')` sin él. La
+  navegación renderizada de Mi cuenta contiene el enlace a `/mis-cursos/`.
+
+### CODE-003 — Accepted, resolved
+
+- Quality gate completo ejecutado sobre el candidato exacto `4d16911`.
+- `test:integration:woocommerce` ejecutada con WooCommerce 11.1.1.
+- El cambio sin commitear en "Human Review" (`Approved.`) no se conserva: la
+  revisión humana formal ocurre después de la última ronda
+  (`development-workflow.md` §24-25). Daniel puede registrarla al cerrar la
+  ronda 2.
+
+### CODE-004 — Open, pending human decision
+
+Estados sin explicación para el alumno (aprobado con progreso actual < 100%;
+curso sin quiz al 100% con matrícula `active`). No implementado.
+
+### CODE-005 — Open, pending human decision
+
+Observaciones menores (helper de `access_url`, temas de bloques sin
+`header.php`, aserción de render de `completed_at`, `update_meta_cache`
+duplicado). No implementado.
+
+---
+
+## Human Scope Decisions
+
+- 2026-09-29 — Daniel aprueba agregar en "Mi cuenta" de WooCommerce una acción
+  visible hacia `/mis-cursos/` (CODE-002). SPEC-007 §4 excluía el frontend de
+  cuenta WooCommerce; esta adición queda aprobada por el responsable humano sin
+  modificar `spec.md`.
+- Diferido a una SPEC posterior: que los botones "Mis cursos" del tema (header,
+  tarjeta de compra y CTA del home) apunten a `/mis-cursos/`.
+
+---
+
 ## Known Issues
 
 - El template `parts/dashboard-content.php` conserva dos líneas con varias
   sentencias en línea (heredadas); `templates/` está fuera del alcance
   configurado de PHPCS.
 - `access_url` construye `/courses/{slug}/` en el query en lugar de reutilizar
-  un helper de `PlayerModule` (recomendación, no bloqueante).
+  un helper de `PlayerModule` (CODE-005, pendiente de decisión).
 
 ---
 
 ## Open Findings
 
-Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `d4abd03`.
+Blocking: 0
+
+Round 1 (código):
+
+- CODE-001 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
+- CODE-002 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
+- CODE-003 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
+- CODE-004 — Open, pending human decision
+- CODE-005 — Open, pending human decision
+
+Candidato de ronda 2: `4d16911`.
 
 ---
 
@@ -285,7 +384,7 @@ None.
 
 ## Human Review
 
-Pendiente. Se recomienda revisión visual de `/mis-cursos/` con el tema Kaanbal.
+Pendiente (después de la ronda 2).
 
 ---
 
@@ -294,3 +393,7 @@ Pendiente. Se recomienda revisión visual de `/mis-cursos/` con el tema Kaanbal.
 La remediación previa a auditoría (`ff87511`) se hizo en esta sesión con el
 rol de implementación. Para respetar la independencia de `docs/agents.md`, la
 auditoría de código de la ronda 1 debe ejecutarla otra sesión o agente.
+
+La remediación de la ronda 1 (`4d16911`) también se hizo en esta sesión con el
+rol de implementación; la auditoría de código de la ronda 2 debe ejecutarla
+otra sesión o agente.
