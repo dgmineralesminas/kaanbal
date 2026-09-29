@@ -150,7 +150,7 @@ try {
     }
 
     $anonymous = $router->resolve(0);
-    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || isset($anonymous['context']['dashboard']) || ! str_contains((string) ($anonymous['context']['login_url'] ?? ''), 'mis-cursos')) {
+    if (403 !== $anonymous['status'] || 'dashboard-access-denied' !== $anonymous['template'] || isset($anonymous['context']['dashboard']) || Kaanbal\Dashboard\Presentation\Frontend\DashboardRouter::loginUrl() !== ($anonymous['context']['login_url'] ?? null)) {
         throw new RuntimeException('The dashboard exposed academic data to an anonymous visitor.');
     }
 

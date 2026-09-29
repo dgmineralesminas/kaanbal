@@ -24,6 +24,23 @@ final class DashboardRouter
         return home_url(self::PATH);
     }
 
+    /**
+     * Students sign in through the WooCommerce "My account" page used by the
+     * theme; wp-login.php is only a fallback when WooCommerce is inactive.
+     */
+    public static function loginUrl(): string
+    {
+        if (function_exists('wc_get_page_permalink')) {
+            $account_url = wc_get_page_permalink('myaccount');
+
+            if ('' !== $account_url) {
+                return $account_url;
+            }
+        }
+
+        return wp_login_url(self::url());
+    }
+
     /** @param list<string> $query_vars
      * @return list<string>
      */
@@ -58,7 +75,7 @@ final class DashboardRouter
             return array(
                 'template' => 'dashboard-access-denied',
                 'status'   => 403,
-                'context'  => array('login_url' => wp_login_url(self::url())),
+                'context'  => array('login_url' => self::loginUrl()),
             );
         }
 
