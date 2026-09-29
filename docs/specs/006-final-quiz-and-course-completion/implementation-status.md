@@ -3,11 +3,11 @@
 SPEC: SPEC-006 — Final Quiz and Course Completion
 
 Branch: feature/spec-006-final-quiz-and-course-completion
-Current implementation commit: ff1721bdf2766b09777f34e7eb1745ace74caba1
+Current implementation commit: b600fc35446547f88091d52d3c44e18f14cf3262
 
 Status: Ready for audit
 Ready for audit: Yes
-Current audit round: 1
+Current audit round: 2
 
 ## Human Approval
 
@@ -53,7 +53,7 @@ PHP Syntax:
 
 Unit Tests:
 
-`PASS — composer test (49 tests, 73 assertions)`
+`PASS — composer test (54 tests, 83 assertions)`
 
 Integration Tests:
 
@@ -203,15 +203,45 @@ Kaanbal only informs the student that someone will contact them to deliver the c
 
 ## Known Issues
 
-None currently recorded.
+Los findings no bloqueantes CODE-002 a CODE-008 de la ronda 1 permanecen
+abiertos y requieren decisión humana. No se implementaron en esta remediación.
 
 ---
 
 ## Open Findings
 
-The review decisions are implemented: `NULL` represents unlimited attempts,
-attempt numbers use a per-user/quiz advisory lock, transaction, and unique
-constraint, and attempt answers store text snapshots.
+### Ronda 1 — pendientes de decisión humana
+
+- CODE-002 — Estados del alumno engañosos o sin retroalimentación en la evaluación.
+- CODE-003 — Administración del quiz incompleta y con errores silenciosos.
+- CODE-004 — La finalización al completar la última lección no tiene prueba del flujo real, y la prueba de SPEC-005 quedó obsoleta.
+- CODE-005 — Casos de prueba del plan ausentes o débiles.
+- CODE-006 — Trazabilidad documental: archivos protegidos sin versión aprobada previa e inconsistencias de estado.
+- CODE-007 — La finalización solo se evalúa en eventos del alumno; la UI de cursos sin quiz se deriva del progreso, no de la matrícula.
+- CODE-008 — Observaciones menores.
+
+Estado de cada finding: `OPEN — human decision required`.
+
+---
+
+## Remediación de Auditoría — CODE-001
+
+Estado: `Implemented by Codex — pending audit confirmation in round 2`.
+
+La decisión de aprobado ahora usa aritmética entera exacta:
+
+```text
+correct * 100 >= passing_score * total
+```
+
+El umbral sigue siendo inclusivo. El score se calcula con dos decimales y se
+persiste con escala decimal de dos posiciones; el formato de presentación sigue
+siendo responsabilidad de la interfaz.
+
+Evidencia de regresión:
+
+- `tests/Unit/QuizScoreCalculatorTest.php`: 2/3 @ 67, 7/9 @ 78 y 159/200 @ 80 fallan; 160/200 @ 80 y 8/10 @ 80 aprueban; 79/100 @ 80 falla. El caso 2/3 verifica score `66.67`.
+- `tests/Integration/final-quiz-course-completion.php`: registra un intento con 2/3 y verifica que `score` se persiste como `66.67`.
 
 ---
 
@@ -231,6 +261,6 @@ records the stable audit candidate.
 ## Notes
 
 The branch was created from `15faf3a8276039e1c378aac9195b254a39c62ff8`, which
-contains the recorded SPEC-005 audit materials. Implementation is committed in
-`ff1721bdf2766b09777f34e7eb1745ace74caba1`; this documentation commit records
-the round-1 audit candidate.
+contains the recorded SPEC-005 audit materials. CODE-001 is remediated in
+`b600fc35446547f88091d52d3c44e18f14cf3262`; this documentation commit records
+the round-2 audit candidate.
