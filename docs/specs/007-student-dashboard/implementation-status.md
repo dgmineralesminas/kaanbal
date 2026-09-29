@@ -6,7 +6,8 @@ Branch: feature/spec-007-student-dashboard
 Implementation commit: 4fe0f1eab59115f60dd938132e32687092512dd8
 Pre-audit remediation commit: ff87511
 Visual fix commit: 591e7c0
-Audit commit: 591e7c0
+Login link commit: d4abd03
+Audit commit: d4abd03
 
 Status: Ready for audit
 Ready for audit: Yes
@@ -252,6 +253,14 @@ Solo CSS; verificado con captura en 1200 px y 390 px.
 
 ---
 
+## Login Link (d4abd03)
+
+El botón "Iniciar sesión" del acceso denegado lleva a la página Mi cuenta de
+WooCommerce (`wc_get_page_permalink('myaccount')`), igual que el tema.
+`wp-login.php` solo se usa si WooCommerce no está activo.
+
+---
+
 ## Known Issues
 
 - El template `parts/dashboard-content.php` conserva dos líneas con varias
@@ -264,7 +273,7 @@ Solo CSS; verificado con captura en 1200 px y 390 px.
 
 ## Open Findings
 
-Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `591e7c0`.
+Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `d4abd03`.
 
 ---
 
