@@ -3,9 +3,9 @@
 SPEC: SPEC-007 — Student Dashboard
 
 Branch: feature/spec-007-student-dashboard
-Current commit: 8a472c94e4e1251c2d27f5ae424fd1a1691c31b8
+Current commit: 4fe0f1eab59115f60dd938132e32687092512dd8
 
-Status: Ready for implementation
+Status: In implementation
 Ready for audit: No
 Current audit round: 0
 
@@ -18,31 +18,31 @@ SPEC approved for implementation: Yes
 ## Dependencies
 
 SPEC-001:
-NOT VERIFIED
+Completed
 
 SPEC-002:
-NOT VERIFIED
+Completed
 
 SPEC-003:
-NOT VERIFIED
+Completed
 
 SPEC-004:
-NOT VERIFIED
+Completed
 
 SPEC-005:
-NOT VERIFIED
+Completed
 
 SPEC-006:
-NOT VERIFIED
+Completed
 
 ---
 
 ## Tasks
 
 Total: 40
-Done: 0
-In Progress: 0
-Pending: 40
+Done: 38
+In Progress: 1
+Pending: 1
 Blocked: 0
 Not Applicable: 0
 
@@ -52,73 +52,73 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — composer test (61 tests, 90 assertions)`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — dashboard integration behavior; rewrite persistence rerun pending environment access`
 
 Dashboard Tests:
 
-`NOT RUN`
+`PASS — dashboard integration: access, ownership, courses, progress, quiz states, certificate, empty state and read-only behavior`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — anonymous access and forged user_id coverage`
 
 Performance Review:
 
-`NOT RUN`
+`PASS — batch course/progress loading reviewed; no per-course dashboard service calls`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (0 errors; rerun after final rewrite-only patch pending environment access)`
 
 Manual Verification:
 
-`NOT RUN`
+`NOT RUN — visual browser verification unavailable`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED  
-AC-018: NOT IMPLEMENTED  
-AC-019: NOT IMPLEMENTED  
-AC-020: NOT IMPLEMENTED  
-AC-021: NOT IMPLEMENTED  
-AC-022: NOT IMPLEMENTED  
-AC-023: NOT IMPLEMENTED  
-AC-024: NOT IMPLEMENTED  
-AC-025: NOT IMPLEMENTED
+AC-001: IMPLEMENTED — authenticated route and denial template
+AC-002: IMPLEMENTED — anonymous request returns 403 without dashboard context
+AC-003: IMPLEMENTED — active enrollments appear in the read model
+AC-004: IMPLEMENTED — completed enrollments appear as approved
+AC-005: IMPLEMENTED — revoked and orphaned courses are excluded
+AC-006: IMPLEMENTED — progress counts and percentage from CourseProgressService
+AC-007: IMPLEMENTED — no dashboard-owned progress storage
+AC-008: IMPLEMENTED — active status label En curso
+AC-009: IMPLEMENTED — completed status label Aprobado
+AC-010: IMPLEMENTED — Continuar curso action
+AC-011: IMPLEMENTED — Ver curso action preserves the player URL
+AC-012: IMPLEMENTED — no quiz state for courses without a quiz
+AC-013: IMPLEMENTED — locked quiz state
+AC-014: IMPLEMENTED — available quiz state
+AC-015: IMPLEMENTED — passed quiz state
+AC-016: IMPLEMENTED — limited attempts remaining
+AC-017: IMPLEMENTED — exhausted attempts state
+AC-018: IMPLEMENTED — completed_at is included in the view model
+AC-019: IMPLEMENTED — certificate follow-up message
+AC-020: IMPLEMENTED — no certificate download or URL
+AC-021: IMPLEMENTED — completed course without certificate
+AC-022: IMPLEMENTED — empty dashboard state
+AC-023: IMPLEMENTED — session identity only; forged user_id ignored
+AC-024: IMPLEMENTED — dashboard query is read-only
+AC-025: IMPLEMENTED — batched enrollment, course, progress and quiz-attempt reads
 
 ---
 
@@ -203,15 +203,16 @@ Expected behavior:
 
 ## Known Issues
 
-None currently recorded.
+La integración que verifica la regla persistida de `/mis-cursos/` debe repetirse
+cuando el límite de ejecución del entorno permita conectar nuevamente con
+WordPress/MySQL.
 
 ---
 
 ## Open Findings
 
-None.
-
-No audit round has been executed.
+No audit round has been executed. The implementation is not yet an audit
+candidate until the pending integration rerun passes.
 
 ---
 
@@ -223,11 +224,12 @@ None.
 
 ## Human Review
 
-SPEC approved for implementation by the user.
+Implementation authorized by the user; human acceptance is pending the final
+integration rerun.
 
 ---
 
 ## Notes
 
-SPEC-007 has been defined on its dedicated branch. Implementation is authorized
-by the user and must preserve the approved scope and dependency contracts.
+SPEC-007 is implemented on its dedicated branch. The current implementation
+commit is `4fe0f1eab59115f60dd938132e32687092512dd8`.
