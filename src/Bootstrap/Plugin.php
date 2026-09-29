@@ -55,7 +55,7 @@ final class Plugin
 
                 printf(
                     '<div class="notice notice-error"><p>%s</p><p><code>%s</code></p></div>',
-                    esc_html__('Kaanbal could not create or update its database tables. Course purchases will not grant access until this is fixed. Check that the database user can create tables.', 'kaanbal'),
+                    esc_html__('Kaanbal could not create or update its database tables. Course purchases will not grant access and lesson progress cannot be saved until this is fixed. Check that the database user can create tables.', 'kaanbal'),
                     esc_html($exception->getMessage())
                 );
             }

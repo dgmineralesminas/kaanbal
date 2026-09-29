@@ -138,13 +138,16 @@ try {
     }
 
     $endpoint = dirname(__DIR__) . '/Integration/support/progress-endpoint-request.php';
-    $run_endpoint = static function (int $user_id, int $course_id, int $lesson_id, string $nonce) use ($endpoint, $wordpress_path): int {
+    $run_endpoint = static function (int $user_id, int $course_id, int $lesson_id, string $nonce, ?int $posted_user_id = null) use ($endpoint, $wordpress_path): int {
         $command = escapeshellarg(PHP_BINARY)
             . ' ' . escapeshellarg($endpoint)
             . ' --user=' . escapeshellarg((string) $user_id)
             . ' --course=' . escapeshellarg((string) $course_id)
             . ' --lesson=' . escapeshellarg((string) $lesson_id)
             . ' --nonce=' . escapeshellarg($nonce);
+        if (null !== $posted_user_id) {
+            $command .= ' --posted-user=' . escapeshellarg((string) $posted_user_id);
+        }
         $environment = array_merge(getenv(), array('KAANBAL_WP_PATH' => $wordpress_path));
         $process = proc_open($command, array(1 => array('pipe', 'w'), 2 => array('pipe', 'w')), $pipes, null, $environment);
 
@@ -158,30 +161,48 @@ try {
         return proc_close($process);
     };
 
-    if (
-        0 !== $run_endpoint($other, $course_a, $lesson_a_one, 'valid')
-        || 0 !== $run_endpoint($other, $course_a, $lesson_a_one, 'valid')
-    ) {
-        throw new RuntimeException('The endpoint did not accept an active user with a valid nonce.');
+    for ($attempt = 0; $attempt < 5; $attempt++) {
+        if (0 !== $run_endpoint($other, $course_a, $lesson_a_one, 'valid')) {
+            throw new RuntimeException('The endpoint did not accept an active user with a valid nonce.');
+        }
     }
 
     if (1 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $other, $lesson_a_one))) {
         throw new RuntimeException('The endpoint did not write idempotently.');
     }
 
+    $lesson_a_four = $create_post('kaanbal_lesson', 'Progress lesson A four');
+    update_post_meta($lesson_a_four, '_kaanbal_module_id', $module_a);
+
+    if (
+        0 !== $run_endpoint($other, $course_a, $lesson_a_four, 'valid', $active)
+        || 0 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $active, $lesson_a_four))
+        || 1 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $other, $lesson_a_four))
+    ) {
+        throw new RuntimeException('The endpoint accepted a forged user ID instead of the authenticated user.');
+    }
+
     foreach (
         array(
-        array(0, $course_a, $lesson_a_two, 'missing'),
-        array($other, $course_a, $lesson_a_two, 'missing'),
-        array($other, $course_a, $lesson_a_two, 'invalid'),
-        array($unenrolled, $course_a, $lesson_a_two, 'valid'),
-        array($active, $course_b, $lesson_b, 'valid'),
-        array($active, $course_a, 999999999, 'valid'),
+            array(0, $course_a, $lesson_a_two, 'valid'),
+            array($other, $course_a, $lesson_a_two, 'missing'),
+            array($other, $course_a, $lesson_a_two, 'invalid'),
+            array($unenrolled, $course_a, $lesson_a_two, 'valid'),
+            array($active, $course_a, $lesson_b, 'valid'),
+            array($active, $course_a, 999999999, 'valid'),
         ) as $request
     ) {
         if (3 !== $run_endpoint(...$request)) {
             throw new RuntimeException('The endpoint did not reject an unauthorized completion request.');
         }
+    }
+
+    if (
+        0 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $other, $lesson_a_two))
+        || 0 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $unenrolled, $lesson_a_two))
+        || 0 !== (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $active, $lesson_b))
+    ) {
+        throw new RuntimeException('A rejected endpoint request wrote lesson progress.');
     }
 
     echo "Student progress integration: PASS\n";

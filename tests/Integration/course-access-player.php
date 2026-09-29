@@ -192,6 +192,37 @@ try {
         throw new RuntimeException('The authorized lesson template did not render its protected content and video player.');
     }
 
+    $progress_table = $wpdb->prefix . 'kaanbal_lesson_progress';
+    $wpdb->insert(
+        $progress_table,
+        array(
+            'user_id'      => $active_user,
+            'lesson_id'    => $lesson_a_one_id,
+            'completed_at' => $now,
+            'created_at'   => $now,
+            'updated_at'   => $now,
+        )
+    );
+    $completed_course_response = $router->resolve($course_a->post_name, null, $active_user);
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($completed_course_response['context']);
+    ob_start();
+    require dirname(__DIR__, 2) . '/templates/frontend/course.php';
+    $completed_course_markup = (string) ob_get_clean();
+
+    if (! str_contains($completed_course_markup, '1 de 2 lecciones completadas') || ! str_contains($completed_course_markup, 'aria-valuenow="50"') || ! str_contains($completed_course_markup, 'is-completed') || ! str_contains($completed_course_markup, 'Completada') || ! str_contains($completed_course_markup, 'Reproducir')) {
+        throw new RuntimeException('The course template did not distinguish completed and pending lessons.');
+    }
+
+    $completed_lesson_response = $router->resolve($course_a->post_name, $lesson_a_one->post_name, $active_user);
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($completed_lesson_response['context']);
+    ob_start();
+    require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
+    $completed_lesson_markup = (string) ob_get_clean();
+
+    if (! str_contains($completed_lesson_markup, 'Lección completada') || str_contains($completed_lesson_markup, 'name="action" value="kaanbal_complete_lesson"')) {
+        throw new RuntimeException('The lesson template did not render the completed state.');
+    }
+
     $lesson_two_response = $router->resolve($course_a->post_name, $lesson_a_two->post_name, $active_user);
 
     if (200 !== $lesson_two_response['status'] || 'lesson' !== $lesson_two_response['template']) {
@@ -271,6 +302,9 @@ try {
     echo "Course access and player integration: PASS\n";
 } finally {
     if (isset($wpdb) && $wpdb instanceof wpdb && isset($enrollments_table)) {
+        if (isset($progress_table)) {
+            $wpdb->delete($progress_table, array('user_id' => $active_user), array('%d'));
+        }
         foreach (array_unique($enrollment_user_ids) as $user_id) {
             $wpdb->delete($enrollments_table, array('user_id' => $user_id), array('%d'));
         }

@@ -16,6 +16,6 @@ final class ProgressCalculator
             return 100;
         }
 
-        return (int) round(($completed_lessons / $total_lessons) * 100);
+        return min(99, (int) round(($completed_lessons / $total_lessons) * 100));
     }
 }

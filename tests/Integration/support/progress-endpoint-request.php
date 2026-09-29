@@ -13,11 +13,12 @@ require_once dirname(__DIR__, 3) . '/kaanbal.php';
 
 do_action('init');
 
-$options = getopt('', array('user:', 'course:', 'lesson:', 'nonce:'));
+$options = getopt('', array('user:', 'course:', 'lesson:', 'nonce:', 'posted-user:'));
 $user_id = isset($options['user']) ? absint($options['user']) : 0;
 $course_id = isset($options['course']) ? absint($options['course']) : 0;
 $lesson_id = isset($options['lesson']) ? absint($options['lesson']) : 0;
 $nonce_mode = isset($options['nonce']) && is_string($options['nonce']) ? $options['nonce'] : 'missing';
+$posted_user_id = isset($options['posted-user']) ? absint($options['posted-user']) : 0;
 
 wp_set_current_user($user_id);
 
@@ -26,6 +27,10 @@ $_POST = array(
     'course_id' => $course_id,
     'lesson_id' => $lesson_id,
 );
+
+if ($posted_user_id > 0) {
+    $_POST['user_id'] = $posted_user_id;
+}
 
 if ('valid' === $nonce_mode) {
     $_POST['_kaanbal_nonce'] = wp_create_nonce('kaanbal_complete_lesson_' . $lesson_id);
