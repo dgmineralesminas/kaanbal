@@ -14,12 +14,12 @@ final class PlayerModule implements BootableService
         $router = new FrontendRouter();
 
         add_action('init', array(self::class, 'registerRewriteRules'));
-        add_action('wp_enqueue_scripts', array($this, 'enqueueStyles'));
+        add_action('wp_enqueue_scripts', array($this, 'enqueueAssets'));
         add_filter('query_vars', array($router, 'queryVars'));
         add_filter('template_include', array($router, 'template'));
     }
 
-    public function enqueueStyles(): void
+    public function enqueueAssets(): void
     {
         if ('' === (string) get_query_var(FrontendRouter::COURSE_QUERY_VAR)) {
             return;
@@ -27,12 +27,21 @@ final class PlayerModule implements BootableService
 
         $plugin_path = dirname(__DIR__, 2);
         $style_path  = $plugin_path . '/assets/css/player.css';
+        $script_path = $plugin_path . '/assets/js/assessment.js';
 
         wp_enqueue_style(
             'kaanbal-player',
             plugins_url('assets/css/player.css', $plugin_path . '/kaanbal.php'),
             array(),
             (string) filemtime($style_path)
+        );
+
+        wp_enqueue_script(
+            'kaanbal-assessment',
+            plugins_url('assets/js/assessment.js', $plugin_path . '/kaanbal.php'),
+            array(),
+            (string) filemtime($script_path),
+            true
         );
     }
 

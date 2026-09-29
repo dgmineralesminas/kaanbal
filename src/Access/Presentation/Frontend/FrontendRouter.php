@@ -13,6 +13,12 @@ use Kaanbal\Courses\Infrastructure\CurriculumRepository;
 use Kaanbal\Enrollment\Infrastructure\EnrollmentRepository;
 use Kaanbal\Progress\Application\CourseProgressService;
 use Kaanbal\Progress\Infrastructure\LessonProgressRepository;
+use Kaanbal\Quiz\Application\CourseQuizStatusService;
+use Kaanbal\Quiz\Application\QuizEligibilityService;
+use Kaanbal\Quiz\Infrastructure\AnswerRepository;
+use Kaanbal\Quiz\Infrastructure\QuestionRepository;
+use Kaanbal\Quiz\Infrastructure\QuizAttemptRepository;
+use Kaanbal\Quiz\Infrastructure\QuizRepository;
 
 final class FrontendRouter
 {
@@ -27,6 +33,8 @@ final class FrontendRouter
 
     private readonly CourseProgressService $progress;
 
+    private readonly CourseQuizStatusService $quiz;
+
     private readonly string $templates_path;
 
     public function __construct(
@@ -34,12 +42,14 @@ final class FrontendRouter
         ?CourseAccessService $access = null,
         ?LessonNavigationService $navigation = null,
         ?string $templates_path = null,
-        ?CourseProgressService $progress = null
+        ?CourseProgressService $progress = null,
+        ?CourseQuizStatusService $quiz = null,
     ) {
         $this->curriculum = $curriculum ?? new CurriculumService(new CurriculumRepository());
         $this->access     = $access ?? new CourseAccessService(new EnrollmentRepository());
         $this->navigation = $navigation ?? new LessonNavigationService();
         $this->progress = $progress ?? new CourseProgressService($this->curriculum, new LessonProgressRepository());
+        $this->quiz = $quiz ?? $this->quizStatusService();
         $this->templates_path = $templates_path ?? dirname(__DIR__, 4) . '/templates/frontend/';
     }
 
@@ -120,6 +130,7 @@ final class FrontendRouter
                 'context'  => array(
                     'curriculum' => $curriculum,
                     'progress'   => $this->progress->forCourse($user_id, $course->ID),
+                    'quiz'       => $this->quiz->forCourse($user_id, $course->ID),
                 ),
             );
         }
@@ -146,6 +157,7 @@ final class FrontendRouter
                 'lesson'     => $lesson,
                 'navigation' => $this->navigation->forLesson($lesson->ID, $curriculum),
                 'progress'   => $this->progress->forCourse($user_id, $course->ID),
+                'quiz'       => $this->quiz->forCourse($user_id, $course->ID),
             ),
         );
     }
@@ -167,6 +179,21 @@ final class FrontendRouter
             'template' => 'not-found',
             'status'   => 404,
             'context'  => array(),
+        );
+    }
+
+    private function quizStatusService(): CourseQuizStatusService
+    {
+        $quizzes = new QuizRepository();
+        $questions = new QuestionRepository();
+        $answers = new AnswerRepository();
+        $attempts = new QuizAttemptRepository();
+
+        return new CourseQuizStatusService(
+            $quizzes,
+            $questions,
+            $answers,
+            new QuizEligibilityService($this->access, $this->progress, $quizzes, $questions, $answers, $attempts),
         );
     }
 }

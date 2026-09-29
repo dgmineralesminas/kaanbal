@@ -9,12 +9,14 @@ final class ContentTypes
     public const COURSE = 'kaanbal_course';
     public const MODULE = 'kaanbal_module';
     public const LESSON = 'kaanbal_lesson';
+    public const QUIZ = 'kaanbal_quiz';
 
     public function register(): void
     {
         register_post_type(self::COURSE, $this->arguments(__('Courses', 'kaanbal'), __('Course', 'kaanbal')));
         register_post_type(self::MODULE, $this->arguments(__('Modules', 'kaanbal'), __('Module', 'kaanbal')));
         register_post_type(self::LESSON, $this->arguments(__('Lessons', 'kaanbal'), __('Lesson', 'kaanbal')));
+        register_post_type(self::QUIZ, $this->arguments(__('Final quizzes', 'kaanbal'), __('Final quiz', 'kaanbal')));
     }
 
     /** @return array<string, mixed> */

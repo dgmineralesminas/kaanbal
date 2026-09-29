@@ -7,6 +7,7 @@ namespace Kaanbal\Progress\Application;
 use Kaanbal\Access\Application\CourseAccessService;
 use Kaanbal\Courses\Application\CurriculumService;
 use Kaanbal\Courses\Infrastructure\ContentTypes;
+use Kaanbal\Quiz\Application\CourseCompletionService;
 
 final class CompleteLessonService
 {
@@ -14,6 +15,7 @@ final class CompleteLessonService
         private readonly CourseAccessService $access,
         private readonly CurriculumService $curriculum,
         private readonly LessonProgressStore $progress,
+        private readonly ?CourseCompletionService $completion = null,
     ) {
     }
 
@@ -35,8 +37,14 @@ final class CompleteLessonService
             return CompleteLessonResult::AccessDenied;
         }
 
-        return $this->progress->complete($user_id, $lesson_id)
+        $result = $this->progress->complete($user_id, $lesson_id)
             ? CompleteLessonResult::Completed
             : CompleteLessonResult::AlreadyCompleted;
+
+        if (null !== $this->completion) {
+            $this->completion->evaluate($user_id, $course_id);
+        }
+
+        return $result;
     }
 }
