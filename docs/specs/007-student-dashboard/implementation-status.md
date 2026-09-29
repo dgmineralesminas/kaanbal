@@ -5,7 +5,8 @@ SPEC: SPEC-007 — Student Dashboard
 Branch: feature/spec-007-student-dashboard
 Implementation commit: 4fe0f1eab59115f60dd938132e32687092512dd8
 Pre-audit remediation commit: ff87511
-Audit commit: ff87511
+Visual fix commit: 591e7c0
+Audit commit: 591e7c0
 
 Status: Ready for audit
 Ready for audit: Yes
@@ -105,7 +106,7 @@ enlace de login con redirect_to`
 
 Manual Verification:
 
-`NOT RUN — verificación visual en navegador pendiente del responsable humano`
+`PARTIAL — revisión visual humana detectó portada recortada y enlace morado (corregidos en 591e7c0); pendiente confirmar en navegador`
 
 ---
 
@@ -238,6 +239,19 @@ Revisión previa a auditoría solicitada por el responsable humano:
 
 ---
 
+## Visual Fix (591e7c0)
+
+Tras la revisión visual del responsable humano:
+
+- La portada del curso (póster 4:5) se recortaba a una franja de 170 px.
+  Ahora se muestra completa en una tarjeta horizontal (apilada en móvil).
+- El botón de acción se veía morado por `a:visited` del tema; se fija el
+  color en `:visited`, `:focus` y `:active`.
+
+Solo CSS; verificado con captura en 1200 px y 390 px.
+
+---
+
 ## Known Issues
 
 - El template `parts/dashboard-content.php` conserva dos líneas con varias
@@ -250,7 +264,7 @@ Revisión previa a auditoría solicitada por el responsable humano:
 
 ## Open Findings
 
-Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `ff87511`.
+Ninguna ronda de auditoría ejecutada. Candidato de ronda 1: `591e7c0`.
 
 ---
 
