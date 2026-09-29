@@ -5,9 +5,9 @@ SPEC: SPEC-004 — Course Access and Player
 Branch: feature/spec-004-course-access-and-player
 Current commit: 7ab80cd — test: cubrir rutas protegidas de lecciones
 
-Status: Ready for code audit
-Ready for audit: Yes
-Current audit round: 2 (pending)
+Status: Completed
+Ready for audit: No
+Current audit round: 2 (completed)
 
 ## Human Approval
 
@@ -141,9 +141,13 @@ The YouTube-hosted player can still expose native YouTube links and sharing cont
 
 ## Open Findings
 
-CODE-001 from audit round 1 is remediated by the integration coverage in `7ab80cd`.
+Audit round 2 completed without blocking findings:
 
-CODE-002 is remediated by this documentation commit. CODE-003 through CODE-008 remain recorded as non-blocking observations for audit round 2.
+- Code: `PASS WITH RECOMMENDATIONS`; CODE-001 resolved.
+- Architecture: `PASS`.
+- Security: `PASS WITH RECOMMENDATIONS`.
+
+The remaining CODE, ARCH and SEC findings are non-blocking recommendations recorded in the round-2 audit reports. They do not prevent closure of this SPEC.
 
 ---
 
@@ -155,10 +159,10 @@ None.
 
 ## Human Review
 
-Ready for code audit round 2
+Pass
 
 ---
 
 ## Notes
 
-The routing decision is recorded as DEC-008 in `plan.md`. The candidate is the stable commit `7ab80cd`; audit must review that exact commit together with this documentation record.
+The routing decision is recorded as DEC-008 in `plan.md`. The code candidate was `7ab80cd`, with candidate status documented in `81408d0`. Round-2 audit reports are versioned with the SPEC closure record.
