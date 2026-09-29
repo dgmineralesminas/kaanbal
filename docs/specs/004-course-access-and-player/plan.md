@@ -705,3 +705,17 @@ SPEC-004 estará lista para auditoría cuando:
 - tests pasen
 - Quality Gate pase
 - `Ready for audit: Yes`
+
+---
+
+# 36. Candidato de auditoría
+
+El candidato estable para la auditoría de código es el commit:
+
+```text
+68c2561 — Vista de la lección y el curso listos.
+```
+
+La auditoría debe revisar ese commit exacto. La verificación visual autenticada de las vistas Course y Lesson, el índice de lecciones, la lección actual, el reproductor y el CTA de inicio pasó antes de preparar el candidato.
+
+El reproductor YouTube usa el dominio de privacidad mejorada y permisos reducidos. Los enlaces y controles nativos de YouTube no pueden eliminarse de forma fiable desde el iframe; impedir la compartición de URL requiere cambiar de proveedor u hospedaje y está fuera del alcance de esta SPEC.

@@ -1,6 +1,6 @@
 # SPEC-004 — Course Access and Player
 
-Status: Ready for implementation
+Status: Ready for code audit
 
 ## 1. Objetivo
 
