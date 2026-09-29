@@ -1,6 +1,6 @@
 # SPEC-004 — Course Access and Player
 
-Status: Ready for implementation
+Status: Ready for code audit
 
 ## 1. Objetivo
 
@@ -693,18 +693,15 @@ SPEC-004 es estrictamente read-only respecto al progreso.
 
 ---
 
-# 12. Decisiones Pendientes
+# 12. Decisiones de Implementación
 
-El plan puede resolver:
+- rutas virtuales del plugin: `/courses/{course-slug}/` y `/courses/{course-slug}/lesson/{lesson-slug}/`
+- acceso denegado: respuesta `403` sin exponer contenido, tanto para visitante como para usuario sin matrícula
+- contenido inexistente o Course/Lesson cruzados: respuesta `404`
+- templates del plugin con `get_header()` y `get_footer()` para compatibilidad con themes
+- iframe YouTube construido exclusivamente desde el ID normalizado, en `youtube-nocookie.com`, con URL y atributos escapados
 
-- mecanismo público exacto: rewrite rules, endpoints, templates o shortcodes
-- URLs definitivas
-- política UX para acceso denegado
-- si usuario no autenticado redirige a login o recibe vista de acceso requerida
-- cómo integrar templates con themes
-- atributos permitidos del iframe YouTube
-
-Estas decisiones no pueden debilitar la autorización server-side.
+Estas decisiones no debilitan la autorización server-side.
 
 ---
 

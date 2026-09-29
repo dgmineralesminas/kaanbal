@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Kaanbal\Bootstrap;
 
 use Kaanbal\Courses\CoursesModule;
+use Kaanbal\Access\PlayerModule;
+use Kaanbal\Progress\ProgressModule;
+use Kaanbal\Quiz\QuizModule;
 use Kaanbal\WooCommerce\WooCommerceModule;
 
 final class Plugin
@@ -36,6 +39,9 @@ final class Plugin
 
         $services = new ServiceRegistry();
         $services->add(new CoursesModule());
+        $services->add(new PlayerModule());
+        $services->add(new ProgressModule());
+        $services->add(new QuizModule());
         $services->add(new WooCommerceModule());
         $services->registerAll();
     }
@@ -51,7 +57,7 @@ final class Plugin
 
                 printf(
                     '<div class="notice notice-error"><p>%s</p><p><code>%s</code></p></div>',
-                    esc_html__('Kaanbal could not create or update its database tables. Course purchases will not grant access until this is fixed. Check that the database user can create tables.', 'kaanbal'),
+                    esc_html__('Kaanbal could not create or update its database tables. Course purchases will not grant access and lesson progress cannot be saved until this is fixed. Check that the database user can create tables.', 'kaanbal'),
                     esc_html($exception->getMessage())
                 );
             }

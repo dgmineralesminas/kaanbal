@@ -3,11 +3,11 @@
 SPEC: SPEC-004 — Course Access and Player
 
 Branch: feature/spec-004-course-access-and-player
-Current commit: N/A
+Current commit: 7ab80cd — test: cubrir rutas protegidas de lecciones
 
-Status: Ready for implementation
+Status: Completed
 Ready for audit: No
-Current audit round: 0
+Current audit round: 2 (completed)
 
 ## Human Approval
 
@@ -31,9 +31,9 @@ Completed
 ## Tasks
 
 Total: 33
-Done: 0
+Done: 33
 In Progress: 0
-Pending: 33
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -43,66 +43,66 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — 31 tests, 51 assertions`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — course-access-player, courses-curriculum and woocommerce-enrollment fixtures against local WordPress + WooCommerce`
 
 Frontend/Access Tests:
 
-`NOT RUN`
+`PASS — active/completed/revoked/unenrolled/anonymous access on Course and Lesson routes, Course/Lesson IDOR, 404 content handling, ordered curriculum, empty course, templates, YouTube and no enrollment writes`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — anonymous, unenrolled and revoked users receive 403 without Course, Lesson or Curriculum context; an enrollment in Course A cannot open Course B or its Lesson; forged Course/Lesson requests receive 404; YouTube embeds are constructed only from normalized IDs`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (outside sandbox; local PHPStan socket required)`
 
 Manual Verification:
 
-`NOT RUN`
+`PASS — authenticated browser verification of the Course and Lesson views, curriculum links, current-lesson state, player loading and course start CTA.`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED  
-AC-018: NOT IMPLEMENTED  
-AC-019: NOT IMPLEMENTED  
-AC-020: NOT IMPLEMENTED  
-AC-021: NOT IMPLEMENTED  
-AC-022: NOT IMPLEMENTED
+AC-001: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-002: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-003: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-004: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-005: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-006: IMPLEMENTED AND INTEGRATION-TESTED
+AC-007: IMPLEMENTED AND INTEGRATION-TESTED
+AC-008: IMPLEMENTED AND INTEGRATION-TESTED
+AC-009: IMPLEMENTED AND INTEGRATION-TESTED
+AC-010: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-011: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-012: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-013: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-014: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-015: IMPLEMENTED, UNIT-TESTED AND INTEGRATION-TESTED
+AC-016: IMPLEMENTED AND INTEGRATION-TESTED
+AC-017: IMPLEMENTED AND INTEGRATION-TESTED
+AC-018: IMPLEMENTED AND INTEGRATION-TESTED
+AC-019: IMPLEMENTED AND INTEGRATION-TESTED
+AC-020: IMPLEMENTED AND INTEGRATION-TESTED
+AC-021: IMPLEMENTED; PARTIALLY INTEGRATION-TESTED (no enrollment writes are asserted; no academic-progress storage exists in this SPEC)
+AC-022: IMPLEMENTED AND INTEGRATION-TESTED
 
 ---
 
@@ -135,15 +135,19 @@ Course and Lesson views must remain read-only regarding academic progress.
 
 ## Known Issues
 
-None currently recorded.
+The YouTube-hosted player can still expose native YouTube links and sharing controls. The embed uses the privacy-enhanced domain and reduced permissions, but preventing URL sharing requires a different video provider or hosting model. That decision is outside this SPEC's YouTube-only scope.
 
 ---
 
 ## Open Findings
 
-None.
+Audit round 2 completed without blocking findings:
 
-No audit round has been executed.
+- Code: `PASS WITH RECOMMENDATIONS`; CODE-001 resolved.
+- Architecture: `PASS`.
+- Security: `PASS WITH RECOMMENDATIONS`.
+
+The remaining CODE, ARCH and SEC findings are non-blocking recommendations recorded in the round-2 audit reports. They do not prevent closure of this SPEC.
 
 ---
 
@@ -155,17 +159,10 @@ None.
 
 ## Human Review
 
-Pending.
+Pass
 
 ---
 
 ## Notes
 
-SPEC-004 has been defined but is not yet approved for implementation.
-
-Implementation must not begin until:
-
-1. SPEC-001 is completed.
-2. SPEC-002 is completed.
-3. SPEC-003 is completed.
-4. SPEC-004 receives explicit human approval.
+The routing decision is recorded as DEC-008 in `plan.md`. The code candidate was `7ab80cd`, with candidate status documented in `81408d0`. Round-2 audit reports are versioned with the SPEC closure record.

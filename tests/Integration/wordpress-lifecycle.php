@@ -50,10 +50,6 @@ try {
         throw new RuntimeException('Kaanbal deactivation removed the schema version.');
     }
 
-    if (class_exists('WooCommerce')) {
-        throw new RuntimeException('This integration fixture expects WooCommerce to be inactive.');
-    }
-
     echo "WordPress lifecycle integration: PASS\n";
 } finally {
     if ($missing === $previous) {

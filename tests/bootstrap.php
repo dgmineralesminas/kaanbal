@@ -42,3 +42,42 @@ if (! function_exists('add_action')) {
         return true;
     }
 }
+
+if (! function_exists('add_filter')) {
+    function add_filter(string $hook_name, callable $callback, int $priority = 10, int $accepted_args = 1): bool
+    {
+        return add_action($hook_name, $callback, $priority, $accepted_args);
+    }
+}
+
+if (! function_exists('add_rewrite_rule')) {
+    function add_rewrite_rule(string $regex, string $query, string $after = 'bottom'): void
+    {
+        $GLOBALS['kaanbal_test_rewrite_rules'][] = array(
+            'regex' => $regex,
+            'query' => $query,
+            'after' => $after,
+        );
+    }
+}
+
+if (! function_exists('flush_rewrite_rules')) {
+    function flush_rewrite_rules(bool $hard = true): void
+    {
+        // WordPress persists rewrite rules. Unit tests only need this call to be safe.
+    }
+}
+
+if (! function_exists('esc_attr')) {
+    function esc_attr(string $text): string
+    {
+        return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+    }
+}
+
+if (! function_exists('esc_url')) {
+    function esc_url(string $url): string
+    {
+        return htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+    }
+}

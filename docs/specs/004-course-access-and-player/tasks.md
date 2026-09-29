@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Ready for code audit
 
 Dependencias:
 
@@ -14,7 +14,7 @@ Dependencias:
 
 ## TASK-001 — Implementar CourseAccessService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -41,7 +41,7 @@ Tests para:
 
 ## TASK-002 — Implementar pruebas unitarias de acceso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -54,7 +54,7 @@ Covers:
 
 ## TASK-003 — Definir routing frontend
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -68,7 +68,7 @@ Definir mecanismo soportado por WordPress para resolver Course y Lesson.
 
 ## TASK-004 — Implementar Course resolver
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -83,7 +83,7 @@ Distinguir correctamente Course válido/inexistente.
 
 ## TASK-005 — Implementar Lesson resolver
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -100,7 +100,7 @@ Lesson → Module → Course.
 
 ## TASK-006 — Implementar autorización para Course View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -114,7 +114,7 @@ Covers:
 
 ## TASK-007 — Implementar autorización para Lesson View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -130,7 +130,7 @@ No exponer contenido por acceso directo a la URL.
 
 ## TASK-008 — Implementar Course View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -150,7 +150,7 @@ Mostrar:
 
 ## TASK-009 — Implementar Curriculum frontend
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -165,7 +165,7 @@ Módulos/lecciones mantienen el orden de SPEC-002.
 
 ## TASK-010 — Implementar navegación libre
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -178,7 +178,7 @@ No consultar progreso ni prerequisitos.
 
 ## TASK-011 — Implementar Lesson View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -188,7 +188,7 @@ Covers:
 
 ## TASK-012 — Implementar YouTube Embed Renderer
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -203,7 +203,7 @@ No renderizar HTML arbitrario almacenado.
 
 ## TASK-013 — Implementar manejo de lección sin video
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -212,7 +212,7 @@ Covers:
 
 ## TASK-014 — Implementar LessonNavigationService
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -228,7 +228,7 @@ Resolver previous/next sobre curriculum ordenado.
 
 ## TASK-015 — Manejar módulos vacíos en navegación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -239,7 +239,7 @@ Covers:
 
 ## TASK-016 — Implementar protección Course/Lesson cruzada
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -253,7 +253,7 @@ Evitar IDOR por combinación manipulada de identificadores.
 
 ## TASK-017 — Manejar Course inexistente
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -262,7 +262,7 @@ Covers:
 
 ## TASK-018 — Manejar Lesson inexistente
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-018
@@ -271,7 +271,7 @@ Covers:
 
 ## TASK-019 — Implementar templates frontend
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -286,7 +286,7 @@ Templates independientes del theme.
 
 ## TASK-020 — Implementar escaping de salida
 
-Status: Pending
+Status: Done
 
 Covers:
 - seguridad
@@ -305,7 +305,7 @@ Revisar:
 
 ## TASK-021 — Implementar tests Course Access
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -318,7 +318,7 @@ Covers:
 
 ## TASK-022 — Implementar tests Course View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -330,7 +330,7 @@ Covers:
 
 ## TASK-023 — Implementar tests Lesson View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -342,7 +342,7 @@ Covers:
 
 ## TASK-024 — Implementar tests YouTube Player
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -359,7 +359,7 @@ Covers:
 
 ## TASK-025 — Implementar tests de navegación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -380,7 +380,7 @@ Covers:
 
 ## TASK-026 — Implementar tests IDOR
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -396,7 +396,7 @@ Covers:
 
 ## TASK-027 — Implementar tests de contenido inexistente
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -406,7 +406,7 @@ Covers:
 
 ## TASK-028 — Verificar ausencia de escrituras de progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-021
@@ -419,7 +419,7 @@ Abrir Course/Lesson no crea ni modifica progreso.
 
 ## TASK-029 — Revisar performance de Curriculum
 
-Status: Pending
+Status: Done
 
 Covers:
 - RNF-008
@@ -432,7 +432,7 @@ Evitar consultas N+1 innecesarias.
 
 ## TASK-030 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-021
@@ -448,7 +448,7 @@ Covers:
 
 ## TASK-031 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -457,7 +457,7 @@ Covers:
 
 ## TASK-032 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
@@ -466,17 +466,21 @@ Covers:
 
 ## TASK-033 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 Covers:
 - Definition of Done
 
-### Resultado esperado
-
-Solo si todos los gates pasan:
+Resultado:
 
 ```text
-Status: Ready for audit
+Candidate commit: 7ab80cd — test: cubrir rutas protegidas de lecciones
+Status: Ready for code audit
 Ready for audit: Yes
-Current audit round: 1
+Current audit round: 2 (pending)
 ```
+
+### Remediación de auditoría round 1
+
+- CODE-001: Done — se añadieron pruebas de denegación de rutas Lesson para visitante, usuario sin matrícula y matrícula revocada; matrícula de Course A contra Lesson de Course B; y Course publicado sin módulos.
+- CODE-002: Done — el estado del candidato queda versionado en el commit documental separado.

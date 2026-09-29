@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Kaanbal\Enrollment\Infrastructure;
 
-final class EnrollmentRepository
+use Kaanbal\Enrollment\Application\EnrollmentLookup;
+
+final class EnrollmentRepository implements EnrollmentLookup
 {
     private readonly \wpdb $database;
 
@@ -79,6 +81,28 @@ final class EnrollmentRepository
     public function revoke(int $enrollment_id): void
     {
         $this->updateStatus($enrollment_id, 'revoked', current_time('mysql', true));
+    }
+
+    public function completeByUserAndCourse(int $user_id, int $course_id): bool
+    {
+        $now = current_time('mysql', true);
+        $result = $this->database->query(
+            $this->database->prepare(
+                'UPDATE ' . $this->tableName() . ' SET status = %s, completed_at = %s, updated_at = %s WHERE user_id = %d AND course_id = %d AND status = %s',
+                'completed',
+                $now,
+                $now,
+                $user_id,
+                $course_id,
+                'active'
+            )
+        );
+
+        if (false === $result) {
+            throw new \RuntimeException('The enrollment could not be completed.');
+        }
+
+        return 1 === $result;
     }
 
     private function updateStatus(int $enrollment_id, string $status, ?string $revoked_at): void

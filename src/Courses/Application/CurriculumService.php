@@ -15,15 +15,39 @@ final class CurriculumService
     /** @return array{course: \WP_Post, modules: list<array{module: \WP_Post, lessons: list<\WP_Post>}>}|null */
     public function forCourse(int $course_id): ?array
     {
+        return $this->buildCurriculum($course_id, 'any');
+    }
+
+    /** @return array{course: \WP_Post, modules: list<array{module: \WP_Post, lessons: list<\WP_Post>}>}|null */
+    public function forPublishedCourse(int $course_id): ?array
+    {
+        return $this->buildCurriculum($course_id, 'publish');
+    }
+
+    /** @return array{module: \WP_Post, course: \WP_Post}|null */
+    public function hierarchyForLesson(int $lesson_id): ?array
+    {
+        return $this->hierarchyForLessonWithStatus($lesson_id, 'any');
+    }
+
+    /** @return array{module: \WP_Post, course: \WP_Post}|null */
+    public function hierarchyForPublishedLesson(int $lesson_id): ?array
+    {
+        return $this->hierarchyForLessonWithStatus($lesson_id, 'publish');
+    }
+
+    /** @return array{course: \WP_Post, modules: list<array{module: \WP_Post, lessons: list<\WP_Post>}>}|null */
+    private function buildCurriculum(int $course_id, string $post_status): ?array
+    {
         $course = get_post($course_id);
 
-        if (! $course instanceof \WP_Post || 'kaanbal_course' !== $course->post_type) {
+        if (! $course instanceof \WP_Post || 'kaanbal_course' !== $course->post_type || ($post_status !== $course->post_status && 'any' !== $post_status)) {
             return null;
         }
 
-        $modules    = $this->repository->modulesForCourse($course_id);
+        $modules    = $this->repository->modulesForCourse($course_id, $post_status);
         $module_ids = array_map(static fn (\WP_Post $module): int => $module->ID, $modules);
-        $lessons    = $this->repository->lessonsForModules($module_ids);
+        $lessons    = $this->repository->lessonsForModules($module_ids, $post_status);
         $by_module  = array();
 
         foreach ($lessons as $lesson) {
@@ -43,15 +67,15 @@ final class CurriculumService
     }
 
     /** @return array{module: \WP_Post, course: \WP_Post}|null */
-    public function hierarchyForLesson(int $lesson_id): ?array
+    private function hierarchyForLessonWithStatus(int $lesson_id, string $post_status): ?array
     {
-        $module = $this->repository->moduleForLesson($lesson_id);
+        $module = $this->repository->moduleForLesson($lesson_id, $post_status);
 
         if (! $module instanceof \WP_Post) {
             return null;
         }
 
-        $course = $this->repository->courseForModule($module->ID);
+        $course = $this->repository->courseForModule($module->ID, $post_status);
 
         return $course instanceof \WP_Post ? array('module' => $module, 'course' => $course) : null;
     }

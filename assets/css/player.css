@@ -1,0 +1,807 @@
+/**
+ * Public course and lesson player.
+ * Scoped to Kaanbal virtual routes so the active theme remains the owner of
+ * its global design system.
+ */
+
+.kaanbal-course,
+.kaanbal-lesson {
+	--kaanbal-player-shadow: 0 24px 56px rgba(0, 0, 0, 0.28);
+	padding: clamp(32px, 5vw, 72px) 20px clamp(96px, 12vw, 168px);
+	background:
+		radial-gradient(circle at 88% 3%, rgba(118, 87, 255, 0.17), transparent 28rem),
+		linear-gradient(180deg, rgba(0, 37, 154, 0.08), transparent 28rem),
+		var(--ecc-surface, #101211);
+	color: var(--ecc-text, #f4f5f0);
+}
+
+.kaanbal-course *,
+.kaanbal-lesson * {
+	box-sizing: border-box;
+}
+
+.kaanbal-course__shell,
+.kaanbal-lesson__shell {
+	max-width: 1160px;
+	margin: 0 auto;
+}
+
+.kaanbal-course h1,
+.kaanbal-course h2,
+.kaanbal-course h3,
+.kaanbal-lesson h1 {
+	margin-top: 0;
+	font-family: var(--ecc-font-display, sans-serif);
+	font-weight: 800;
+	line-height: 1.06;
+	letter-spacing: 0.01em;
+	color: var(--ecc-text, #f4f5f0);
+}
+
+.kaanbal-course__hero {
+	display: grid;
+	align-items: center;
+	gap: clamp(28px, 5vw, 72px);
+	padding: clamp(28px, 5vw, 64px);
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-card, 20px);
+	background:
+		linear-gradient(135deg, rgba(0, 37, 154, 0.32), rgba(8, 10, 9, 0.15) 55%),
+		var(--ecc-card, #171a18);
+	box-shadow: var(--kaanbal-player-shadow);
+}
+
+.kaanbal-course__eyebrow,
+.kaanbal-lesson__module {
+	margin: 0 0 12px;
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.kaanbal-course h1 {
+	max-width: 12ch;
+	margin-bottom: 24px;
+	font-size: clamp(2.65rem, 5.8vw, 5.35rem);
+}
+
+.kaanbal-course__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.kaanbal-course__meta p {
+	margin: 0;
+	padding: 8px 13px;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: 999px;
+	background: rgba(8, 10, 9, 0.45);
+	color: var(--ecc-text, #f4f5f0);
+	font-size: 0.9rem;
+	font-weight: 700;
+}
+
+.kaanbal-course__image {
+	overflow: hidden;
+	border-radius: calc(var(--ecc-radius-card, 20px) - 4px);
+	box-shadow: 0 18px 38px rgba(0, 0, 0, 0.32);
+}
+
+.kaanbal-course__image img {
+	display: block;
+	width: 100%;
+	height: auto;
+	min-height: 220px;
+	object-fit: cover;
+}
+
+.kaanbal-course__description,
+.kaanbal-curriculum,
+.kaanbal-lesson__content,
+.kaanbal-lesson__navigation {
+	max-width: 940px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.kaanbal-course__description,
+.kaanbal-lesson__content {
+	margin-top: clamp(28px, 4vw, 48px);
+	font-size: 1.06rem;
+	line-height: 1.75;
+	color: var(--ecc-muted, #b5b9b4);
+}
+
+.kaanbal-course__description > :first-child,
+.kaanbal-lesson__content > :first-child {
+	margin-top: 0;
+}
+
+.kaanbal-course__description > :last-child,
+.kaanbal-lesson__content > :last-child {
+	margin-bottom: 0;
+}
+
+.kaanbal-curriculum {
+	margin-top: clamp(40px, 6vw, 72px);
+}
+
+.kaanbal-curriculum > h2 {
+	margin-bottom: 20px;
+	font-size: clamp(1.8rem, 3vw, 2.65rem);
+}
+
+.kaanbal-course__progress {
+	max-width: 520px;
+	margin: -4px 0 24px;
+}
+
+.kaanbal-course__progress p {
+	margin: 0 0 10px;
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 800;
+}
+
+.kaanbal-course__progress-track {
+	height: 10px;
+	overflow: hidden;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.kaanbal-course__progress-track span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: linear-gradient(90deg, #168a4e, #68df9d);
+	box-shadow: 0 0 18px rgba(104, 223, 157, 0.38);
+	transition: width 220ms ease;
+}
+
+.kaanbal-curriculum__module {
+	padding: clamp(20px, 3vw, 32px);
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-card, 20px);
+	background: var(--ecc-card, #171a18);
+	box-shadow: 0 14px 30px rgba(0, 0, 0, 0.13);
+}
+
+.kaanbal-curriculum__module + .kaanbal-curriculum__module {
+	margin-top: 16px;
+}
+
+.kaanbal-curriculum__module h3 {
+	margin-bottom: 18px;
+	font-size: clamp(1.25rem, 2vw, 1.6rem);
+}
+
+.kaanbal-curriculum__module p {
+	margin-bottom: 0;
+	color: var(--ecc-muted, #b5b9b4);
+}
+
+.kaanbal-curriculum__module ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	counter-reset: kaanbal-lesson;
+}
+
+.kaanbal-curriculum__module li {
+	counter-increment: kaanbal-lesson;
+}
+
+.kaanbal-curriculum__module li + li {
+	border-top: 1px solid var(--ecc-border, #2a2f2a);
+}
+
+.kaanbal-curriculum__module a {
+	display: grid;
+	grid-template-columns: 2.1rem minmax(0, 1fr) auto auto;
+	gap: 12px;
+	align-items: center;
+	padding: 15px 0;
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.kaanbal-curriculum__play {
+	padding: 7px 11px;
+	border-radius: 999px;
+	background: rgba(118, 87, 255, 0.16);
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.78rem;
+	font-weight: 800;
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.kaanbal-curriculum__module .is-completed a::before {
+	color: #74e8aa;
+}
+
+.kaanbal-curriculum__module .is-completed .kaanbal-curriculum__play {
+	background: rgba(22, 138, 78, 0.22);
+	color: #8bf0b7;
+}
+
+.kaanbal-curriculum__module a::before {
+	content: counter(kaanbal-lesson, decimal-leading-zero);
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.8rem;
+	font-variant-numeric: tabular-nums;
+}
+
+.kaanbal-curriculum__module a::after {
+	content: '→';
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 1.15rem;
+	transition: transform 160ms ease;
+}
+
+.kaanbal-lesson__header {
+	max-width: 940px;
+	margin: 0 auto clamp(24px, 4vw, 40px);
+}
+
+.kaanbal-lesson__course {
+	margin: 0 0 8px;
+	font-size: 0.94rem;
+	font-weight: 700;
+}
+
+.kaanbal-lesson__course a {
+	color: var(--ecc-text, #f4f5f0);
+	text-decoration-color: var(--ecc-primary-light, #9b8cff);
+	text-decoration-thickness: 2px;
+	text-underline-offset: 4px;
+}
+
+.kaanbal-lesson h1 {
+	max-width: 19ch;
+	margin-bottom: 0;
+	font-size: clamp(2.1rem, 4.4vw, 4.25rem);
+}
+
+.kaanbal-player {
+	position: relative;
+	max-width: 1050px;
+	margin: 0 auto;
+	overflow: hidden;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-card, 20px);
+	background: #050505;
+	box-shadow: var(--kaanbal-player-shadow);
+}
+
+.kaanbal-lesson__learning-area {
+	display: grid;
+	max-width: 1160px;
+	gap: 24px;
+	margin: 0 auto;
+}
+
+.kaanbal-lesson__main-content {
+	min-width: 0;
+}
+
+.kaanbal-lesson__learning-area .kaanbal-player,
+.kaanbal-lesson__learning-area .kaanbal-lesson__content,
+.kaanbal-lesson__learning-area .kaanbal-lesson__navigation {
+	max-width: none;
+}
+
+.kaanbal-lesson__curriculum {
+	padding: 22px;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-card, 20px);
+	background: var(--ecc-card, #171a18);
+	box-shadow: 0 14px 30px rgba(0, 0, 0, 0.13);
+}
+
+.kaanbal-lesson__curriculum h2,
+.kaanbal-lesson__curriculum h3 {
+	font-family: var(--ecc-font-display, sans-serif);
+	color: var(--ecc-text, #f4f5f0);
+}
+
+.kaanbal-lesson__curriculum h2 {
+	margin: 0 0 20px;
+	font-size: 1.35rem;
+	font-weight: 800;
+}
+
+.kaanbal-lesson__curriculum-module + .kaanbal-lesson__curriculum-module {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid var(--ecc-border, #2a2f2a);
+}
+
+.kaanbal-lesson__curriculum-module h3 {
+	margin: 0 0 10px;
+	font-size: 0.82rem;
+	font-weight: 800;
+	line-height: 1.35;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.kaanbal-lesson__curriculum-module ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.kaanbal-lesson__curriculum-module li + li {
+	margin-top: 4px;
+}
+
+.kaanbal-lesson__curriculum-module a {
+	display: block;
+	padding: 10px 12px;
+	border-radius: 8px;
+	color: var(--ecc-muted, #b5b9b4);
+	font-size: 0.92rem;
+	font-weight: 650;
+	line-height: 1.35;
+	text-decoration: none;
+}
+
+.kaanbal-lesson__curriculum-module a:hover {
+	color: var(--ecc-text, #f4f5f0);
+	background: rgba(118, 87, 255, 0.1);
+}
+
+.kaanbal-lesson__curriculum-module .is-current a {
+	position: relative;
+	padding-left: 24px;
+	background: rgba(118, 87, 255, 0.16);
+	color: var(--ecc-text, #f4f5f0);
+}
+
+.kaanbal-lesson__curriculum-module .is-current a::before {
+	position: absolute;
+	top: 50%;
+	left: 10px;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--ecc-primary-light, #9b8cff);
+	content: '';
+	transform: translateY(-50%);
+}
+
+.kaanbal-player::before {
+	display: block;
+	padding-top: 56.25%;
+	content: '';
+}
+
+.kaanbal-player__video {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.kaanbal-lesson__navigation {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+	margin-top: clamp(36px, 5vw, 56px);
+}
+
+.kaanbal-lesson__navigation a {
+	display: flex;
+	min-height: 74px;
+	align-items: center;
+	padding: 16px 20px;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-btn, 10px);
+	background: var(--ecc-card, #171a18);
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 700;
+	line-height: 1.35;
+	text-decoration: none;
+	transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.kaanbal-curriculum__module a:hover::after {
+	transform: translateX(4px);
+}
+
+.kaanbal-curriculum__module a:hover .kaanbal-curriculum__play {
+	background: var(--ecc-primary, #00259a);
+	color: var(--ecc-on-primary, #ffffff);
+}
+
+.kaanbal-curriculum__module a:hover,
+.kaanbal-lesson__course a:hover,
+.kaanbal-lesson__navigation a:hover {
+	color: var(--ecc-primary-light, #9b8cff);
+}
+
+.kaanbal-course a:visited,
+.kaanbal-lesson a:visited {
+	color: #cfe5ff !important;
+}
+
+.kaanbal-lesson__completion {
+	margin-top: 28px;
+}
+
+.kaanbal-lesson__completion p {
+	margin: 0;
+	color: #6ee7a7;
+	font-weight: 800;
+}
+
+.kaanbal-lesson__complete-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 12px 18px;
+	border: 1px solid #42c97a;
+	border-radius: var(--ecc-radius-btn, 10px);
+	background: #168a4e !important;
+	color: #ffffff !important;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.kaanbal-lesson__complete-button:hover {
+	border-color: #72e6a5;
+	background: #0f713e !important;
+	transform: translateY(-2px);
+}
+
+.kaanbal-lesson__complete-button:focus-visible {
+	outline: 3px solid #72e6a5;
+	outline-offset: 4px;
+}
+
+.kaanbal-lesson__navigation a:hover {
+	border-color: var(--ecc-primary-light, #9b8cff);
+	background: rgba(118, 87, 255, 0.1);
+	transform: translateY(-2px);
+}
+
+.kaanbal-course__assessment {
+	max-width: 940px;
+	margin: clamp(56px, 8vw, 96px) auto 0;
+}
+
+.kaanbal-course__assessment > h2 {
+	margin-bottom: 20px;
+	font-size: clamp(1.8rem, 3vw, 2.65rem);
+}
+
+.kaanbal-assessment__card,
+.kaanbal-assessment__result,
+.kaanbal-assessment__locked {
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: var(--ecc-radius-card, 20px);
+	background: var(--ecc-card, #171a18);
+	box-shadow: 0 18px 42px rgba(0, 0, 0, 0.2);
+}
+
+.kaanbal-assessment__card {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: clamp(20px, 3vw, 32px);
+	padding: clamp(24px, 4vw, 40px);
+	border-color: rgba(118, 87, 255, 0.42);
+	background:
+		radial-gradient(circle at 88% 18%, rgba(118, 87, 255, 0.2), transparent 15rem),
+		linear-gradient(135deg, rgba(0, 37, 154, 0.22), rgba(23, 26, 24, 0.75) 62%),
+		var(--ecc-card, #171a18);
+}
+
+.kaanbal-assessment__icon,
+.kaanbal-assessment__result > span,
+.kaanbal-assessment__locked > span {
+	display: grid;
+	width: 50px;
+	height: 50px;
+	place-items: center;
+	border-radius: 16px;
+	background: rgba(118, 87, 255, 0.2);
+	color: #c6bbff;
+	font-size: 1.45rem;
+	font-weight: 900;
+}
+
+.kaanbal-assessment__eyebrow {
+	margin: 0 0 8px;
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.kaanbal-assessment__card h3 {
+	margin-bottom: 10px;
+	font-size: clamp(1.45rem, 2.4vw, 2rem);
+}
+
+.kaanbal-assessment__card-copy > p:not(.kaanbal-assessment__eyebrow),
+.kaanbal-assessment__dialog-intro,
+.kaanbal-assessment__locked p {
+	margin: 0;
+	color: var(--ecc-muted, #b5b9b4);
+	line-height: 1.6;
+}
+
+.kaanbal-assessment__facts {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 20px;
+}
+
+.kaanbal-assessment__facts span {
+	padding: 7px 10px;
+	border: 1px solid rgba(155, 140, 255, 0.25);
+	border-radius: 999px;
+	background: rgba(8, 10, 9, 0.35);
+	color: var(--ecc-text, #f4f5f0);
+	font-size: 0.78rem;
+	font-weight: 800;
+}
+
+.kaanbal-assessment__start,
+.kaanbal-assessment__submit {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	margin-top: 24px;
+	padding: 13px 18px;
+	border: 1px solid #42c97a;
+	border-radius: var(--ecc-radius-btn, 10px);
+	background: #168a4e;
+	color: #ffffff;
+	font: inherit;
+	font-weight: 800;
+	cursor: pointer;
+	transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.kaanbal-assessment__start:hover,
+.kaanbal-assessment__submit:hover {
+	border-color: #72e6a5;
+	background: #0f713e;
+	transform: translateY(-2px);
+}
+
+.kaanbal-assessment__start:focus-visible,
+.kaanbal-assessment__submit:focus-visible,
+.kaanbal-assessment__close:focus-visible,
+.kaanbal-assessment__option input:focus-visible + span {
+	outline: 3px solid #72e6a5;
+	outline-offset: 3px;
+}
+
+.kaanbal-assessment__result,
+.kaanbal-assessment__locked {
+	display: flex;
+	gap: 16px;
+	align-items: flex-start;
+	padding: 24px;
+}
+
+.kaanbal-assessment__result.is-passed {
+	border-color: rgba(104, 223, 157, 0.42);
+}
+
+.kaanbal-assessment__result.is-passed > span {
+	background: rgba(22, 138, 78, 0.22);
+	color: #8bf0b7;
+}
+
+.kaanbal-assessment__result p {
+	margin: 0;
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 700;
+	line-height: 1.55;
+}
+
+.kaanbal-assessment__result p + p {
+	margin-top: 8px;
+	color: var(--ecc-muted, #b5b9b4);
+	font-weight: 500;
+}
+
+.kaanbal-assessment__locked > span {
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--ecc-muted, #b5b9b4);
+}
+
+.kaanbal-assessment__dialog {
+	width: min(720px, calc(100% - 32px));
+	max-height: min(820px, calc(100vh - 32px));
+	padding: clamp(24px, 4vw, 40px);
+	overflow: auto;
+	border: 1px solid rgba(118, 87, 255, 0.5);
+	border-radius: var(--ecc-radius-card, 20px);
+	background: var(--ecc-card, #171a18);
+	color: var(--ecc-text, #f4f5f0);
+	box-shadow: 0 28px 78px rgba(0, 0, 0, 0.58);
+}
+
+.kaanbal-assessment__dialog::backdrop {
+	background: rgba(4, 6, 5, 0.78);
+	backdrop-filter: blur(5px);
+}
+
+.kaanbal-assessment__dialog-header {
+	display: flex;
+	gap: 18px;
+	align-items: flex-start;
+	justify-content: space-between;
+}
+
+.kaanbal-assessment__dialog-header p {
+	margin: 0 0 6px;
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+.kaanbal-assessment__dialog-header h3 {
+	margin: 0;
+	font-size: clamp(1.65rem, 3vw, 2.3rem);
+}
+
+.kaanbal-assessment__close {
+	display: grid;
+	width: 38px;
+	height: 38px;
+	flex: 0 0 auto;
+	place-items: center;
+	padding: 0;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--ecc-text, #f4f5f0);
+	font-size: 1.5rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.kaanbal-assessment__dialog-intro {
+	margin-top: 16px;
+}
+
+.kaanbal-assessment__form {
+	margin-top: 28px;
+}
+
+.kaanbal-assessment__question {
+	margin: 0;
+	padding: 22px 0;
+	border: 0;
+	border-top: 1px solid var(--ecc-border, #2a2f2a);
+}
+
+.kaanbal-assessment__question legend {
+	width: 100%;
+	padding: 0 0 16px;
+	color: var(--ecc-text, #f4f5f0);
+	font-size: clamp(1.1rem, 2vw, 1.35rem);
+	font-weight: 800;
+	line-height: 1.35;
+}
+
+.kaanbal-assessment__question legend span {
+	display: inline-block;
+	margin-right: 10px;
+	color: var(--ecc-primary-light, #9b8cff);
+	font-size: 0.76rem;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: 0.08em;
+	vertical-align: middle;
+}
+
+.kaanbal-assessment__option {
+	display: block;
+	margin-top: 9px;
+	cursor: pointer;
+}
+
+.kaanbal-assessment__option input {
+	position: absolute;
+	opacity: 0;
+}
+
+.kaanbal-assessment__option span {
+	display: block;
+	padding: 13px 15px;
+	border: 1px solid var(--ecc-border, #2a2f2a);
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.035);
+	color: var(--ecc-text, #f4f5f0);
+	font-weight: 700;
+	line-height: 1.35;
+	transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.kaanbal-assessment__option:hover span {
+	border-color: var(--ecc-primary-light, #9b8cff);
+	background: rgba(118, 87, 255, 0.12);
+}
+
+.kaanbal-assessment__option input:checked + span {
+	border-color: #72e6a5;
+	background: rgba(22, 138, 78, 0.2);
+	color: #d9ffeb;
+}
+
+.kaanbal-course a:focus-visible,
+.kaanbal-lesson a:focus-visible {
+	outline: 3px solid var(--ecc-primary-light, #9b8cff);
+	outline-offset: 4px;
+}
+
+@media (min-width: 768px) {
+	.kaanbal-course__hero {
+		grid-template-columns: minmax(0, 1fr) minmax(260px, 0.65fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.kaanbal-lesson__learning-area {
+		grid-template-columns: minmax(0, 1fr) 320px;
+		align-items: start;
+	}
+
+	.kaanbal-lesson__curriculum {
+		position: sticky;
+		top: 104px;
+		max-height: calc(100vh - 128px);
+		overflow-y: auto;
+	}
+}
+
+@media (max-width: 640px) {
+	.kaanbal-course,
+	.kaanbal-lesson {
+		padding-right: 16px;
+		padding-left: 16px;
+	}
+
+	.kaanbal-course__hero {
+		padding: 24px;
+	}
+
+	.kaanbal-course h1 {
+		max-width: none;
+	}
+
+	.kaanbal-curriculum__module a {
+		grid-template-columns: 1.9rem minmax(0, 1fr) auto;
+	}
+
+	.kaanbal-curriculum__module a::after {
+		display: none;
+	}
+
+	.kaanbal-lesson__navigation {
+		grid-template-columns: 1fr;
+	}
+
+	.kaanbal-assessment__card {
+		grid-template-columns: 1fr;
+	}
+}
