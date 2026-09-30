@@ -4,7 +4,7 @@ SPEC: SPEC-008 — Course Administration and Reporting
 
 Branch: feature/spec-008-course-administration-and-reporting
 Base commit: 353f9bd
-Current implementation commit: 42de843
+Current implementation commit: 213ef01
 
 Status: Ready for audit
 Ready for audit: Yes
@@ -237,30 +237,33 @@ Reports are:
 - CODE-002 — `RESOLVED IN CANDIDATE 42de843`: cobertura de visitante, filtros inválidos, quiz reprobado, intentos agotados e ilimitados.
 - CODE-003 — `RESOLVED IN CANDIDATE 42de843`: la búsqueda se codifica antes de generar los enlaces de paginación; la integración cubre `a+b-page`.
 
-### Ronda 2 — abiertos, pendientes de decisión humana
+### Ronda 2 — decisiones posteriores
 
-- CODE-004 — fecha/hora de intentos en UTC.
-- CODE-005 — estado de matrícula completada cuando el quiz continúa pendiente.
-- CODE-006 — empty state para curso sin alumnos.
-- CODE-007 — presentación del filtro cuando el curso no tiene quiz.
-- CODE-008 — localización dinámica de etiquetas.
-- CODE-009 — decisión pendiente sobre publicar o no el reporte.
-- CODE-010 — observaciones de arquitectura y seguridad.
-
-Los CODE-004 a CODE-010 no se modificaron en esta remediación porque no son
-blockers y requieren decisión humana o priorización explícita.
+- CODE-004 — `RESOLVED IN CANDIDATE 213ef01`: la fecha UTC de aprobación se muestra con `wp_date()` y los formatos/zonahoraria configurados en WordPress. La integración fuerza `America/Mexico_City`, comprueba el marcado y restaura la configuración.
+- CODE-005 — `NOT APPLICABLE — decisión humana`: un curso con quiz requiere aprobarlo para completar la matrícula.
+- CODE-006 — `NOT APPLICABLE — decisión humana`: el reporte se muestra únicamente cuando hay alumnos inscritos.
+- CODE-007 — `NOT APPLICABLE — decisión humana`: el reporte se muestra únicamente cuando hay alumnos inscritos.
+- CODE-008 — `NOT APPLICABLE — decisión humana`: los datos del reporte permanecen en inglés por ahora.
+- CODE-009 — `NOT APPLICABLE — decisión humana`: el reporte se publica automáticamente.
+- CODE-010 — `ACCEPTED RISK — decisión humana`: observaciones de arquitectura y seguridad aceptadas para el alcance actual.
 
 ## Remediación de Auditoría — Ronda 2
 
-El candidato `42de843` incorpora CODE-001, CODE-002 y CODE-003. El quality
-gate completo pasa; la evidencia detallada está registrada arriba. La siguiente
-acción es solicitar auditoría de código de ronda 3 sobre ese commit.
+El candidato `213ef01` incorpora CODE-004 sobre la remediación anterior de
+CODE-001, CODE-002 y CODE-003. El quality gate completo vuelve a pasar y la
+siguiente acción es solicitar la auditoría de código de ronda 3.
 
 ---
 
 ## Change Requests
 
-None.
+- CODE-004 — fecha/hora de intentos en UTC: Usar hora de wordpress.
+- CODE-005 — estado de matrícula completada cuando el quiz continúa pendiente: NO Aplicable, los estudiantes deben finalizar el quiz para aprobar el curso.
+- CODE-006 — empty state para curso sin alumnos: NO Aplicable, el reporte solo se muestra si hay alumnos inscritos.
+- CODE-007 — presentación del filtro cuando el curso no tiene quiz: NO Aplicable, el reporte solo se muestra si hay alumnos inscritos.
+- CODE-008 — localización dinámica de etiquetas: NO Aplicable, los datos del reporte se muestran en inglés por ahora.
+- CODE-009 — decisión pendiente sobre publicar o no el reporte: NO Aplicable, el reporte se muestra automáticamente.
+- CODE-010 — observaciones de arquitectura y seguridad: NO Aplicable, el reporte se muestra automáticamente.
 
 ---
 
