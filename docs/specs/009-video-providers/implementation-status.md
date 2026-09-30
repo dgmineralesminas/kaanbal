@@ -5,8 +5,8 @@ SPEC: SPEC-009 — Video Providers
 Branch: feature/spec-009-video-providers
 Current implementation commit: b3d315f
 
-Status: Ready for audit
-Ready for audit: Yes
+Status: Completed
+Ready for audit: No
 Current audit round: 1
 
 ## Human Approval
@@ -241,21 +241,28 @@ None currently recorded.
 
 ## Open Findings
 
-None.
+### Ronda 1 — riesgos aceptados para el merge
 
-No audit round has been executed.
+- CODE-001 — `ACCEPTED RISK — decisión humana`: la UX de fuente inválida conserva el video previo; no afecta la validación ni seguridad.
+- CODE-002 — `ACCEPTED RISK — decisión humana`: la política de privacidad adicional de Vimeo se difiere.
+- CODE-003 — `ACCEPTED RISK — decisión humana`: hardening heredado de normalización YouTube se difiere.
+- CODE-004 y ARCH-001 a ARCH-004 — `ACCEPTED RISK — decisión humana`: observaciones menores de arquitectura, documentación y UX aceptadas para este alcance.
+
+La auditoría de seguridad no reportó findings. Los dictámenes de ronda 1 fueron:
+Claude `PASS WITH RECOMMENDATIONS`, Qwen `PASS` y Mimo `PASS`.
 
 ---
 
 ## Change Requests
 
-None.
+Los findings no bloqueantes de la ronda 1 se aceptan como riesgo para el merge final.
 
 ---
 
 ## Human Review
 
-Pending.
+Daniel confirmó manualmente Vimeo en backend y frontend, y autorizó el cierre
+y merge final después de las auditorías de ronda 1.
 
 ---
 
@@ -264,6 +271,6 @@ Pending.
 SPEC-009 está aprobada para implementación. La inspección inicial confirmó que
 la infraestructura y los metadatos existentes pueden extenderse sin migración.
 
-El commit `b3d315f` es el candidato de implementación para auditoría de ronda 1.
+El commit `b3d315f` fue el candidato de implementación auditado en ronda 1.
 
 Vimeo support in this SPEC covers standard externally hosted Vimeo videos through safe embed URLs. It does not include Vimeo API, authentication, private-video authorization or playback analytics.

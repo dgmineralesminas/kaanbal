@@ -6,8 +6,8 @@ Branch: feature/spec-008-course-administration-and-reporting
 Base commit: 353f9bd
 Current implementation commit: 213ef01
 
-Status: Ready for audit
-Ready for audit: Yes
+Status: Completed
+Ready for audit: No
 Current audit round: 3
 
 ## Human Approval
@@ -231,27 +231,21 @@ Reports are:
 
 ## Open Findings
 
-### Ronda 2 — remediados, pendientes de verificación de ronda 3
+### Rondas 2 y 3 — resueltos
 
-- CODE-001 — `RESOLVED IN CANDIDATE 42de843`: quality gate ejecutado, 43 tareas y 26 criterios actualizados con evidencia real, y aprobación humana versionada.
-- CODE-002 — `RESOLVED IN CANDIDATE 42de843`: cobertura de visitante, filtros inválidos, quiz reprobado, intentos agotados e ilimitados.
-- CODE-003 — `RESOLVED IN CANDIDATE 42de843`: la búsqueda se codifica antes de generar los enlaces de paginación; la integración cubre `a+b-page`.
+- CODE-001 a CODE-004 — `RESOLVED`: la auditoría de código de ronda 3 confirmó la remediación de documentación, cobertura, paginación y formato de fecha.
 
-### Ronda 2 — decisiones posteriores
+### Ronda 3 — riesgos aceptados para el merge
 
-- CODE-004 — `RESOLVED IN CANDIDATE 213ef01`: la fecha UTC de aprobación se muestra con `wp_date()` y los formatos/zonahoraria configurados en WordPress. La integración fuerza `America/Mexico_City`, comprueba el marcado y restaura la configuración.
-- CODE-005 — `NOT APPLICABLE — decisión humana`: un curso con quiz requiere aprobarlo para completar la matrícula.
-- CODE-006 — `NOT APPLICABLE — decisión humana`: el reporte se muestra únicamente cuando hay alumnos inscritos.
-- CODE-007 — `NOT APPLICABLE — decisión humana`: el reporte se muestra únicamente cuando hay alumnos inscritos.
-- CODE-008 — `NOT APPLICABLE — decisión humana`: los datos del reporte permanecen en inglés por ahora.
-- CODE-009 — `NOT APPLICABLE — decisión humana`: el reporte se publica automáticamente.
-- CODE-010 — `ACCEPTED RISK — decisión humana`: observaciones de arquitectura y seguridad aceptadas para el alcance actual.
+- CODE-005 a CODE-010 — `ACCEPTED RISK — decisión humana`: recomendaciones no bloqueantes aceptadas para este alcance.
+- SEC-001 y SEC-REC-001 — `ACCEPTED RISK — decisión humana`: cobertura adicional de escaping y capability dedicada se difieren a una SPEC futura.
+- ARCH-001 a ARCH-003 — `ACCEPTED RISK — decisión humana`: observaciones de arquitectura menores aceptadas para este alcance.
 
 ## Remediación de Auditoría — Ronda 2
 
-El candidato `213ef01` incorpora CODE-004 sobre la remediación anterior de
-CODE-001, CODE-002 y CODE-003. El quality gate completo vuelve a pasar y la
-siguiente acción es solicitar la auditoría de código de ronda 3.
+El candidato `213ef01` incorporó CODE-004 sobre la remediación anterior de
+CODE-001 a CODE-003. La ronda 3 concluyó sin blockers y con los tres dictámenes
+requeridos: Claude `PASS WITH RECOMMENDATIONS`, Qwen `PASS` y Mimo `PASS WITH RECOMMENDATIONS`.
 
 ---
 
@@ -269,12 +263,11 @@ siguiente acción es solicitar la auditoría de código de ronda 3.
 
 ## Human Review
 
-Pending — procede después de los dictámenes de auditoría requeridos.
+Daniel confirmó la revisión humana y autorizó el cierre y merge final después
+de las auditorías de ronda 3.
 
 ---
 
 ## Notes
 
-SPEC-008 fue aprobada para implementación y su estado contractual es
-`Approved` en `spec.md`. Este commit documental registra el candidato
-remediado para la ronda 3.
+SPEC-008 fue aprobada, auditada y aceptada para merge final.
