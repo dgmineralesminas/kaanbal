@@ -13,10 +13,14 @@ require_once rtrim($wordpress_path, DIRECTORY_SEPARATOR) . '/wp-load.php';
 
 $post_ids = array();
 $user_ids = array();
+$original_timezone_string = get_option('timezone_string');
+$original_gmt_offset = get_option('gmt_offset');
 
 try {
     require_once dirname(__DIR__, 2) . '/kaanbal.php';
     do_action('init');
+    update_option('timezone_string', 'America/Mexico_City');
+    update_option('gmt_offset', -6);
 
     $suffix = substr(str_replace('-', '', wp_generate_uuid4()), 0, 12);
     $create_post = static function (string $type, string $title) use (&$post_ids, $suffix): int {
@@ -224,6 +228,15 @@ try {
     if ('En curso' !== $students_by_user[$active_full]['status_label'] || 100 !== $students_by_user[$active_full]['progress_percentage'] || 'Disponible' !== $students_by_user[$active_full]['quiz_label'] || 'En curso' !== $students_by_user[$active_partial]['status_label'] || 50 !== $students_by_user[$active_partial]['progress_percentage'] || 'No presentado' !== $students_by_user[$active_partial]['quiz_label'] || 'Aprobado' !== $students_by_user[$completed]['status_label'] || 'Aprobado' !== $students_by_user[$completed]['quiz_label'] || 1 !== $students_by_user[$completed]['attempts_used'] || 3 !== $students_by_user[$completed]['max_attempts'] || $now !== $students_by_user[$completed]['completed_at'] || 'Revocado' !== $students_by_user[$revoked]['status_label'] || 'Reprobado' !== $students_by_user[$failed]['quiz_label'] || 1 !== $students_by_user[$failed]['attempts_used'] || 'Intentos agotados' !== $students_by_user[$exhausted]['quiz_label'] || 3 !== $students_by_user[$exhausted]['attempts_used']) {
         throw new RuntimeException('The student reporting states are incorrect.');
     }
+    $_GET = array('course_id' => (string) $course);
+    ob_start();
+    $page->render();
+    $detail_markup = (string) ob_get_clean();
+    $_GET = array();
+    $expected_completed_at = wp_date(get_option('date_format') . ' ' . get_option('time_format'), strtotime($now . ' UTC'));
+    if (! str_contains($detail_markup, $expected_completed_at)) {
+        throw new RuntimeException('The approval date did not use the WordPress site timezone and format.');
+    }
 
     $no_quiz_detail = $reporting->detail($without_quiz);
     $no_quiz_filter = $reporting->detail($without_quiz, 1, '', 'all', 'passed');
@@ -322,4 +335,7 @@ try {
             wp_delete_user($user_id);
         }
     }
+
+    update_option('timezone_string', $original_timezone_string);
+    update_option('gmt_offset', $original_gmt_offset);
 }

@@ -135,7 +135,7 @@ final class CourseReportsPage
             echo '<td>' . esc_html($progress) . '</td>';
             echo '<td>' . esc_html((string) $student['quiz_label']) . '</td>';
             echo '<td>' . esc_html($attempts) . '</td>';
-            echo '<td>' . esc_html((string) ($student['completed_at'] ?? '—')) . '</td>';
+            echo '<td>' . esc_html($this->formatDate($student['completed_at'] ?? null)) . '</td>';
             echo '</tr>';
         }
 
@@ -195,6 +195,21 @@ final class CourseReportsPage
         $parameters = array_map(static fn (int|string $value): string => rawurlencode((string) $value), $parameters);
 
         return add_query_arg(array_merge(array('post_type' => 'kaanbal_course', 'page' => self::PAGE_SLUG), $parameters), admin_url('edit.php'));
+    }
+
+    private function formatDate(?string $date): string
+    {
+        if (null === $date || '' === $date) {
+            return '—';
+        }
+
+        $timestamp = strtotime($date . ' UTC');
+
+        if (false === $timestamp) {
+            return '—';
+        }
+
+        return wp_date(get_option('date_format') . ' ' . get_option('time_format'), $timestamp);
     }
 
     private function requestValue(string $key): string
