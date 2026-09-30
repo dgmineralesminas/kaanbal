@@ -3,11 +3,11 @@
 SPEC: SPEC-009 — Video Providers
 
 Branch: feature/spec-009-video-providers
-Current commit: N/A
+Current implementation commit: b3d315f
 
-Status: Ready for implementation
-Ready for audit: No
-Current audit round: 0
+Status: Ready for audit
+Ready for audit: Yes
+Current audit round: 1
 
 ## Human Approval
 
@@ -32,30 +32,30 @@ VERIFIED
 
 Storage format:
 
-`NOT INSPECTED`
+`_kaanbal_video_provider` + `_kaanbal_video_source`; YouTube se guarda como ID normalizado.
 
 Provider implementation:
 
-`NOT INSPECTED`
+`VideoProvider`, `VideoProviders` y `YouTubeVideoProvider` ya existen en `src/Courses/Video/`.
 
 Renderer:
 
-`NOT INSPECTED`
+`VideoEmbedRenderer` resuelve el provider y construye el iframe desde una URL interna controlada.
 
 Migration required:
 
-`UNKNOWN`
+`No — la estructura de metadatos existente admite el provider y el ID normalizado de Vimeo.`
 
 ---
 
 ## Tasks
 
 Total: 34
-Done: 0
+Done: 33
 In Progress: 0
-Pending: 34
+Pending: 0
 Blocked: 0
-Not Applicable: 0
+Not Applicable: 1
 
 ---
 
@@ -63,66 +63,66 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — composer test (108 tests, 145 assertions)`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — composer test:integration, curriculum, player, progress, quiz, dashboard, woocommerce and reporting. El runner de reporting emitió una advertencia no fatal de WordPress core en wp-admin/includes/plugin.php:1873.`
 
 Video Provider Tests:
 
-`NOT RUN`
+`PASS — VideoProviders, YouTubeVideoProvider, VimeoVideoProvider and VideoEmbedRenderer unit coverage; curriculum and player integrations`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — hostile iframe/JavaScript payloads, unknown provider, foreign hosts and incompatible provider/source combinations`
 
 Regression Tests:
 
-`NOT RUN`
+`PASS — existing YouTube player, no-video lesson, progress isolation and course completion integrations`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (0 errors)`
 
 Manual Verification:
 
-`NOT RUN`
+`OBSERVED — Daniel confirmó manualmente que la configuración de Vimeo funciona en backend y que ambos providers renderizan correctamente en frontend.`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED  
-AC-002: NOT IMPLEMENTED  
-AC-003: NOT IMPLEMENTED  
-AC-004: NOT IMPLEMENTED  
-AC-005: NOT IMPLEMENTED  
-AC-006: NOT IMPLEMENTED  
-AC-007: NOT IMPLEMENTED  
-AC-008: NOT IMPLEMENTED  
-AC-009: NOT IMPLEMENTED  
-AC-010: NOT IMPLEMENTED  
-AC-011: NOT IMPLEMENTED  
-AC-012: NOT IMPLEMENTED  
-AC-013: NOT IMPLEMENTED  
-AC-014: NOT IMPLEMENTED  
-AC-015: NOT IMPLEMENTED  
-AC-016: NOT IMPLEMENTED  
-AC-017: NOT IMPLEMENTED  
-AC-018: NOT IMPLEMENTED
+AC-001: IMPLEMENTED — registry resuelve YouTube
+AC-002: IMPLEMENTED — registry resuelve Vimeo
+AC-003: IMPLEMENTED — provider desconocido no se resuelve
+AC-004: IMPLEMENTED — normalización de URL YouTube estándar cubierta por unitarias
+AC-005: IMPLEMENTED — normalización de URL corta YouTube cubierta por unitarias
+AC-006: IMPLEMENTED — URL Vimeo, www, slash final y query string cubiertos por unitarias
+AC-007: IMPLEMENTED — host, scheme y fuentes YouTube inválidas rechazadas
+AC-008: IMPLEMENTED — host, ID y fuentes Vimeo inválidas rechazadas
+AC-009: IMPLEMENTED — player YouTube nocookie cubierto por integración
+AC-010: IMPLEMENTED — player Vimeo con URL interna cubierta por integración
+AC-011: IMPLEMENTED — iframe y JavaScript arbitrarios no se renderizan
+AC-012: IMPLEMENTED — admin normaliza y persiste Vimeo
+AC-013: IMPLEMENTED — admin conserva normalización YouTube
+AC-014: IMPLEMENTED — proveedor vacío limpia metadatos y lección sin video renderiza
+AC-015: IMPLEMENTED — cambio válido a Vimeo e incompatibilidad YouTube/Vimeo cubiertos por integración
+AC-016: IMPLEMENTED — lección YouTube existente continúa renderizando
+AC-017: IMPLEMENTED — Lesson View usa VideoEmbedRenderer y registry común
+AC-018: IMPLEMENTED — renderizar YouTube o Vimeo no crea progreso
 
 ---
 
@@ -261,8 +261,9 @@ Pending.
 
 ## Notes
 
-SPEC-009 has been defined but is not yet approved for implementation.
+SPEC-009 está aprobada para implementación. La inspección inicial confirmó que
+la infraestructura y los metadatos existentes pueden extenderse sin migración.
 
-Implementation must inspect the existing YouTube implementation before changing storage or provider architecture.
+El commit `b3d315f` es el candidato de implementación para auditoría de ronda 1.
 
 Vimeo support in this SPEC covers standard externally hosted Vimeo videos through safe embed URLs. It does not include Vimeo API, authentication, private-video authorization or playback analytics.

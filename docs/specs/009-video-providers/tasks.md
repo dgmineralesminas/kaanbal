@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Ready for audit
 
 Dependencias:
 
@@ -14,7 +14,7 @@ Dependencias:
 
 ## TASK-001 — Auditar implementación actual de YouTube
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -35,7 +35,7 @@ antes de modificar arquitectura.
 
 ## TASK-002 — Definir contrato VideoProvider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -46,7 +46,7 @@ Covers:
 
 ## TASK-003 — Implementar VideoProviderRegistry
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -58,7 +58,7 @@ Covers:
 
 ## TASK-004 — Adaptar YouTubeVideoProvider al nuevo contrato
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -71,7 +71,7 @@ Covers:
 
 ## TASK-005 — Implementar VimeoVideoProvider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-002
@@ -83,7 +83,7 @@ Covers:
 
 ## TASK-006 — Implementar allowlist de hosts YouTube
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -93,7 +93,7 @@ Covers:
 
 ## TASK-007 — Implementar allowlist de hosts Vimeo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -103,7 +103,7 @@ Covers:
 
 ## TASK-008 — Implementar normalización YouTube
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -113,7 +113,7 @@ Covers:
 
 ## TASK-009 — Implementar normalización Vimeo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -122,7 +122,7 @@ Covers:
 
 ## TASK-010 — Implementar Video Embed Renderer común
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -134,7 +134,7 @@ Covers:
 
 ## TASK-011 — Implementar URL de embed YouTube
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -143,7 +143,7 @@ Covers:
 
 ## TASK-012 — Implementar URL de embed Vimeo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -152,7 +152,7 @@ Covers:
 
 ## TASK-013 — Actualizar Lesson Admin UI
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -170,7 +170,7 @@ Covers:
 
 ## TASK-014 — Validar Provider + Source al guardar
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-007
@@ -181,7 +181,7 @@ Covers:
 
 ## TASK-015 — Manejar Sin video
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -190,7 +190,7 @@ Covers:
 
 ## TASK-016 — Actualizar Lesson View
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -205,7 +205,7 @@ Eliminar lógica de provider específica dispersa en presentation.
 
 ## TASK-017 — Evaluar necesidad de migración de datos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -222,7 +222,10 @@ o
 
 ## TASK-018 — Implementar migración si es necesaria
 
-Status: Pending
+Status: Not Applicable
+
+Resultado: No se requiere migración. Las lecciones existentes ya almacenan
+`youtube` y su ID normalizado en los mismos metadatos que utiliza Vimeo.
 
 Covers:
 - AC-016
@@ -237,7 +240,7 @@ Puede marcarse `Not Applicable` si TASK-017 demuestra que no se necesita.
 
 ## TASK-019 — Implementar tests VideoProviderRegistry
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -248,7 +251,7 @@ Covers:
 
 ## TASK-020 — Implementar tests YouTube Provider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -260,7 +263,7 @@ Covers:
 
 ## TASK-021 — Implementar tests Vimeo Provider
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-006
@@ -271,7 +274,7 @@ Covers:
 
 ## TASK-022 — Implementar tests de combinaciones Provider/Source
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -288,7 +291,7 @@ Covers:
 
 ## TASK-023 — Implementar tests de seguridad de sources
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -305,7 +308,7 @@ Covers:
 
 ## TASK-024 — Implementar test lección sin video
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -314,7 +317,7 @@ Covers:
 
 ## TASK-025 — Implementar test de compatibilidad YouTube existente
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-016
@@ -323,7 +326,7 @@ Covers:
 
 ## TASK-026 — Implementar test Lesson View YouTube
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-009
@@ -333,7 +336,7 @@ Covers:
 
 ## TASK-027 — Implementar test Lesson View Vimeo
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-010
@@ -343,7 +346,7 @@ Covers:
 
 ## TASK-028 — Verificar que video no modifica progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-018
@@ -352,7 +355,7 @@ Covers:
 
 ## TASK-029 — Verificar regresión Course Completion
 
-Status: Pending
+Status: Done
 
 ### Objetivo
 
@@ -362,7 +365,7 @@ Confirmar que provider no afecta reglas académicas.
 
 ## TASK-030 — Verificar ausencia de APIs externas
 
-Status: Pending
+Status: Done
 
 ### Confirmar que no se implementa:
 
@@ -375,7 +378,7 @@ Status: Pending
 
 ## TASK-031 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 ### Confirmar ausencia de:
 
@@ -390,19 +393,19 @@ Status: Pending
 
 ## TASK-032 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-033 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-034 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 ### Resultado esperado
 
