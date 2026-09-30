@@ -4,14 +4,15 @@ SPEC: SPEC-008 — Course Administration and Reporting
 
 Branch: feature/spec-008-course-administration-and-reporting
 Base commit: 353f9bd
+Current implementation commit: 42de843
 
 Status: Ready for audit
 Ready for audit: Yes
-Current audit round: 1
+Current audit round: 3
 
 ## Human Approval
 
-SPEC approved for implementation: No
+SPEC approved for implementation: Yes
 
 ---
 
@@ -43,9 +44,9 @@ Completed
 ## Tasks
 
 Total: 43
-Done: 0
+Done: 43
 In Progress: 0
-Pending: 43
+Pending: 0
 Blocked: 0
 Not Applicable: 0
 
@@ -55,74 +56,74 @@ Not Applicable: 0
 
 PHP Syntax:
 
-`NOT RUN`
+`PASS — composer lint`
 
 Unit Tests:
 
-`NOT RUN`
+`PASS — composer test (89 tests, 122 assertions)`
 
 Integration Tests:
 
-`NOT RUN`
+`PASS — composer test:integration, curriculum, player, progress, quiz, dashboard, woocommerce and reporting. El runner de reporting emitió una advertencia no fatal de WordPress core en wp-admin/includes/plugin.php:1873.`
 
 Reporting Tests:
 
-`NOT RUN`
+`PASS — composer test:integration:reporting; summary, detail, filters, pagination and quiz states`
 
 Security Tests:
 
-`NOT RUN`
+`PASS — anonymous and subscriber authorization, invalid search and filters, escaped pagination query; read-only fixture assertion`
 
 Performance Review:
 
-`NOT RUN`
+`PASS — reporting page 1 query budget and 26-student pagination coverage`
 
 Composer Validation:
 
-`NOT RUN`
+`PASS — composer validate --strict`
 
 PHPCS:
 
-`NOT RUN`
+`PASS — composer cs`
 
 PHPStan:
 
-`NOT RUN`
+`PASS — composer analyse (0 errors)`
 
 Manual Verification:
 
-`NOT RUN`
+`OBSERVED — Daniel confirmó que se listan los alumnos inscritos en cada curso.`
 
 ---
 
 ## Acceptance Criteria
 
-AC-001: NOT IMPLEMENTED
-AC-002: NOT IMPLEMENTED
-AC-003: NOT IMPLEMENTED
-AC-004: NOT IMPLEMENTED
-AC-005: NOT IMPLEMENTED
-AC-006: NOT IMPLEMENTED
-AC-007: NOT IMPLEMENTED
-AC-008: NOT IMPLEMENTED
-AC-009: NOT IMPLEMENTED
-AC-010: NOT IMPLEMENTED
-AC-011: NOT IMPLEMENTED
-AC-012: NOT IMPLEMENTED
-AC-013: NOT IMPLEMENTED
-AC-014: NOT IMPLEMENTED
-AC-015: NOT IMPLEMENTED
-AC-016: NOT IMPLEMENTED
-AC-017: NOT IMPLEMENTED
-AC-018: NOT IMPLEMENTED
-AC-019: NOT IMPLEMENTED
-AC-020: NOT IMPLEMENTED
-AC-021: NOT IMPLEMENTED
-AC-022: NOT IMPLEMENTED
-AC-023: NOT IMPLEMENTED
-AC-024: NOT IMPLEMENTED
-AC-025: NOT IMPLEMENTED
-AC-026: NOT IMPLEMENTED
+AC-001: IMPLEMENTED — administración registrada y observada manualmente
+AC-002: IMPLEMENTED — capability para administrador, estudiante y visitante cubierta por integración
+AC-003: IMPLEMENTED — resumen de cursos cubierto por integración
+AC-004: IMPLEMENTED — total de inscritos cubierto por integración
+AC-005: IMPLEMENTED — activos cubiertos por integración
+AC-006: IMPLEMENTED — finalizados cubiertos por integración
+AC-007: IMPLEMENTED — revocados y tasa de aprobación cubiertos por integración
+AC-008: IMPLEMENTED — detalle de inscritos observado manualmente y cubierto por integración
+AC-009: IMPLEMENTED — lista por curso observada manualmente y cubierta por integración
+AC-010: IMPLEMENTED — datos de alumno, búsqueda por email y detalle cubiertos por integración
+AC-011: IMPLEMENTED — estados académicos cubiertos por integración
+AC-012: IMPLEMENTED — progreso por alumno cubierto por integración
+AC-013: IMPLEMENTED — fuente de verdad de matrícula cubierta por integración
+AC-014: IMPLEMENTED — curso sin quiz cubierto por integración
+AC-015: IMPLEMENTED — estados disponible, no presentado y aprobado cubiertos por integración
+AC-016: IMPLEMENTED — estado reprobado cubierto por integración
+AC-017: IMPLEMENTED — intentos usados, agotados e ilimitados cubiertos por integración
+AC-018: IMPLEMENTED — fecha de finalización cubierta por integración
+AC-019: IMPLEMENTED — búsqueda por nombre/email y caracteres `+` cubierta por integración
+AC-020: IMPLEMENTED — filtros válidos e inválidos cubiertos por integración
+AC-021: IMPLEMENTED — paginación server-side y conservación de búsqueda cubiertas por integración
+AC-022: IMPLEMENTED — progreso promedio cubierto por integración
+AC-023: IMPLEMENTED — consulta de reportes de solo lectura cubierta por integración
+AC-024: IMPLEMENTED — autorización, entradas inválidas y escaping cubiertos por integración
+AC-025: IMPLEMENTED — Course ID inválido cubierto por integración
+AC-026: IMPLEMENTED — carga por lotes y presupuesto de consultas cubiertos por integración
 
 ---
 
@@ -230,9 +231,30 @@ Reports are:
 
 ## Open Findings
 
-None.
+### Ronda 2 — remediados, pendientes de verificación de ronda 3
 
-No audit round has been executed.
+- CODE-001 — `RESOLVED IN CANDIDATE 42de843`: quality gate ejecutado, 43 tareas y 26 criterios actualizados con evidencia real, y aprobación humana versionada.
+- CODE-002 — `RESOLVED IN CANDIDATE 42de843`: cobertura de visitante, filtros inválidos, quiz reprobado, intentos agotados e ilimitados.
+- CODE-003 — `RESOLVED IN CANDIDATE 42de843`: la búsqueda se codifica antes de generar los enlaces de paginación; la integración cubre `a+b-page`.
+
+### Ronda 2 — abiertos, pendientes de decisión humana
+
+- CODE-004 — fecha/hora de intentos en UTC.
+- CODE-005 — estado de matrícula completada cuando el quiz continúa pendiente.
+- CODE-006 — empty state para curso sin alumnos.
+- CODE-007 — presentación del filtro cuando el curso no tiene quiz.
+- CODE-008 — localización dinámica de etiquetas.
+- CODE-009 — decisión pendiente sobre publicar o no el reporte.
+- CODE-010 — observaciones de arquitectura y seguridad.
+
+Los CODE-004 a CODE-010 no se modificaron en esta remediación porque no son
+blockers y requieren decisión humana o priorización explícita.
+
+## Remediación de Auditoría — Ronda 2
+
+El candidato `42de843` incorpora CODE-001, CODE-002 y CODE-003. El quality
+gate completo pasa; la evidencia detallada está registrada arriba. La siguiente
+acción es solicitar auditoría de código de ronda 3 sobre ese commit.
 
 ---
 
@@ -244,14 +266,12 @@ None.
 
 ## Human Review
 
-Approved
+Pending — procede después de los dictámenes de auditoría requeridos.
 
 ---
 
 ## Notes
 
-SPEC-008 has been defined but is not yet approved for implementation.
-
-Implementation must not begin until required dependencies are satisfied and SPEC-008 receives explicit human approval.
-
-This SPEC closes the initial administrative reporting scope of the Kaanbal MVP.
+SPEC-008 fue aprobada para implementación y su estado contractual es
+`Approved` en `spec.md`. Este commit documental registra el candidato
+remediado para la ronda 3.

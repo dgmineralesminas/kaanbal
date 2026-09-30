@@ -1,6 +1,6 @@
 # SPEC-008 — Course Administration and Reporting
 
-Status: Draft
+Status: Approved
 
 ## 1. Objetivo
 

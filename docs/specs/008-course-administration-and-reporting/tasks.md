@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Status general: Pending
+Status general: Done
 
 Dependencias:
 
@@ -17,7 +17,7 @@ Dependencias:
 
 ## TASK-001 — Implementar menú/ruta administrativa
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -27,7 +27,7 @@ Covers:
 
 ## TASK-002 — Implementar capability check
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -38,7 +38,7 @@ Covers:
 
 ## TASK-003 — Implementar CourseReportingQuery
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -51,7 +51,7 @@ Covers:
 
 ## TASK-004 — Implementar agregados de Enrollment
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -72,7 +72,7 @@ Calcular:
 
 ## TASK-005 — Implementar Approval Rate
 
-Status: Pending
+Status: Done
 
 Covers:
 - métricas
@@ -85,7 +85,7 @@ Covers:
 
 ## TASK-006 — Implementar progreso promedio
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-022
@@ -98,7 +98,7 @@ Promedio sobre alumnos active.
 
 ## TASK-007 — Implementar vista resumen de cursos
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-003
@@ -111,7 +111,7 @@ Covers:
 
 ## TASK-008 — Implementar CourseStudentsQuery
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -124,7 +124,7 @@ Covers:
 
 ## TASK-009 — Implementar paginación server-side
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-021
@@ -133,7 +133,7 @@ Covers:
 
 ## TASK-010 — Implementar búsqueda por nombre/email
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-019
@@ -142,7 +142,7 @@ Covers:
 
 ## TASK-011 — Implementar filtro de estado
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-020
@@ -158,7 +158,7 @@ Covers:
 
 ## TASK-012 — Implementar filtro básico de quiz
 
-Status: Pending
+Status: Done
 
 Covers:
 - reporting
@@ -167,7 +167,7 @@ Covers:
 
 ## TASK-013 — Batch load de usuarios
 
-Status: Pending
+Status: Done
 
 Covers:
 - performance
@@ -176,7 +176,7 @@ Covers:
 
 ## TASK-014 — Batch load de progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-012
@@ -187,7 +187,7 @@ Covers:
 
 ## TASK-015 — Batch load de estado de quiz
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -200,7 +200,7 @@ Covers:
 
 ## TASK-016 — Implementar estado académico
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-011
@@ -214,7 +214,7 @@ Enrollment es fuente de verdad.
 
 ## TASK-017 — Implementar estado Quiz No aplica
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -223,7 +223,7 @@ Covers:
 
 ## TASK-018 — Implementar Quiz Passed/Not Passed
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-015
@@ -233,7 +233,7 @@ Covers:
 
 ## TASK-019 — Implementar intentos utilizados
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-017
@@ -242,7 +242,7 @@ Covers:
 
 ## TASK-020 — Mostrar completed_at
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-018
@@ -251,7 +251,7 @@ Covers:
 
 ## TASK-021 — Implementar indicador de certificado externo
 
-Status: Pending
+Status: Done
 
 ### Trabajo
 
@@ -263,7 +263,7 @@ No indicar delivery status.
 
 ## TASK-022 — Implementar vista detalle del curso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -276,13 +276,13 @@ Covers:
 
 ## TASK-023 — Implementar empty state para curso sin alumnos
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-024 — Manejar alumno eliminado/inexistente
 
-Status: Pending
+Status: Done
 
 ### Objetivo
 
@@ -292,7 +292,7 @@ Evitar fatal errors.
 
 ## TASK-025 — Manejar Course ID inválido
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-025
@@ -301,7 +301,7 @@ Covers:
 
 ## TASK-026 — Implementar escaping
 
-Status: Pending
+Status: Done
 
 Covers:
 - seguridad
@@ -310,7 +310,7 @@ Covers:
 
 ## TASK-027 — Validar filtros y search
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-019
@@ -321,7 +321,7 @@ Covers:
 
 ## TASK-028 — Implementar tests de autorización
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-001
@@ -332,7 +332,7 @@ Covers:
 
 ## TASK-029 — Implementar tests de agregados
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-004
@@ -344,13 +344,13 @@ Covers:
 
 ## TASK-030 — Implementar tests de Approval Rate
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-031 — Implementar tests de detalle
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-008
@@ -364,7 +364,7 @@ Covers:
 
 ## TASK-032 — Implementar tests de quiz state
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-014
@@ -376,7 +376,7 @@ Covers:
 
 ## TASK-033 — Implementar tests de búsqueda
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-019
@@ -385,7 +385,7 @@ Covers:
 
 ## TASK-034 — Implementar tests de filtros
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-020
@@ -394,7 +394,7 @@ Covers:
 
 ## TASK-035 — Implementar tests de paginación
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-021
@@ -403,7 +403,7 @@ Covers:
 
 ## TASK-036 — Implementar tests de progreso promedio
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-022
@@ -412,7 +412,7 @@ Covers:
 
 ## TASK-037 — Implementar test read-only
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-023
@@ -421,7 +421,7 @@ Covers:
 
 ## TASK-038 — Revisar N+1/query count
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-026
@@ -430,7 +430,7 @@ Covers:
 
 ## TASK-039 — Verificar privacidad de emails/progreso
 
-Status: Pending
+Status: Done
 
 Covers:
 - AC-024
@@ -439,7 +439,7 @@ Covers:
 
 ## TASK-040 — Verificar ausencia de scope creep
 
-Status: Pending
+Status: Done
 
 ### Confirmar ausencia de:
 
@@ -453,19 +453,19 @@ Status: Pending
 
 ## TASK-041 — Ejecutar Quality Gate
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-042 — Actualizar Implementation Status
 
-Status: Pending
+Status: Done
 
 ---
 
 ## TASK-043 — Preparar candidato de auditoría
 
-Status: Pending
+Status: Done
 
 ### Resultado esperado
 
