@@ -67,7 +67,7 @@ get_header();
                 </section>
             <?php endforeach; ?>
         </section>
-        <?php if (is_array($quiz) && $progress instanceof \Kaanbal\Progress\Application\CourseProgress) : ?>
+        <?php if (is_array($quiz) && $progress instanceof \Kaanbal\Progress\Application\CourseProgress && 'invalid_quiz' !== $quiz['result']) : ?>
             <section class="kaanbal-course__assessment" aria-labelledby="kaanbal-assessment-title">
                 <h2 id="kaanbal-assessment-title"><?php echo esc_html($quiz['requires_quiz'] ? __('Evaluación final', 'kaanbal') : __('Curso completado', 'kaanbal')); ?></h2>
                 <?php if (! $quiz['requires_quiz'] && $progress->total_lessons > 0 && $progress->completed_lessons === $progress->total_lessons) : ?>

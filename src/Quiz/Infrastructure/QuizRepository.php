@@ -78,4 +78,52 @@ final class QuizRepository
 
         return '' === $value || null === $value ? null : max(1, (int) $value);
     }
+
+    /** @param list<int> $course_ids
+     * @return array<int, array{required: bool, certificate_enabled: bool, quiz_id: int|null, max_attempts: int|null}>
+     */
+    public function dashboardDetailsForCourses(array $course_ids): array
+    {
+        $course_ids = array_values(array_unique(array_filter(array_map('absint', $course_ids))));
+
+        if (array() === $course_ids) {
+            return array();
+        }
+
+        update_meta_cache('post', $course_ids);
+        $quizzes = get_posts(
+            array(
+                'post_type'      => ContentTypes::QUIZ,
+                'post_status'    => 'publish',
+                'posts_per_page' => -1,
+                'meta_key'       => self::COURSE_ID_META,
+                'meta_value'     => array_map(static fn (int $course_id): string => (string) $course_id, $course_ids),
+                'meta_compare'   => 'IN',
+                'orderby'        => array('ID' => 'ASC'),
+            )
+        );
+        $quiz_by_course = array();
+
+        foreach ($quizzes as $quiz) {
+            $course_id = (int) get_post_meta($quiz->ID, self::COURSE_ID_META, true);
+
+            if (! isset($quiz_by_course[$course_id])) {
+                $quiz_by_course[$course_id] = $quiz;
+            }
+        }
+
+        $details = array();
+
+        foreach ($course_ids as $course_id) {
+            $quiz = $quiz_by_course[$course_id] ?? null;
+            $details[$course_id] = array(
+                'required'            => $this->requiresQuiz($course_id),
+                'certificate_enabled' => $this->certificateEnabled($course_id),
+                'quiz_id'             => $quiz instanceof \WP_Post ? $quiz->ID : null,
+                'max_attempts'        => $quiz instanceof \WP_Post ? $this->maxAttempts($quiz->ID) : null,
+            );
+        }
+
+        return $details;
+    }
 }

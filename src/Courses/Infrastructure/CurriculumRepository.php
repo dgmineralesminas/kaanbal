@@ -15,6 +15,30 @@ final class CurriculumRepository
         return $this->findByRelationship(ContentTypes::MODULE, self::COURSE_ID_META, $course_id, $post_status);
     }
 
+    /** @param list<int> $course_ids
+     * @return list<\WP_Post>
+     */
+    public function modulesForCourses(array $course_ids, string $post_status = 'any'): array
+    {
+        $course_ids = array_values(array_unique(array_filter(array_map('absint', $course_ids))));
+
+        if (array() === $course_ids) {
+            return array();
+        }
+
+        return get_posts(
+            array(
+                'post_type'      => ContentTypes::MODULE,
+                'post_status'    => $post_status,
+                'posts_per_page' => -1,
+                'meta_key'       => self::COURSE_ID_META,
+                'meta_value'     => array_map(static fn (int $course_id): string => (string) $course_id, $course_ids),
+                'meta_compare'   => 'IN',
+                'orderby'        => array('menu_order' => 'ASC', 'ID' => 'ASC'),
+            )
+        );
+    }
+
     /** @return list<\WP_Post> */
     public function lessonsForModule(int $module_id, string $post_status = 'any'): array
     {

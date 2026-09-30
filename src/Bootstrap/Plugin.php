@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kaanbal\Bootstrap;
 
 use Kaanbal\Courses\CoursesModule;
+use Kaanbal\Dashboard\DashboardModule;
 use Kaanbal\Access\PlayerModule;
 use Kaanbal\Progress\ProgressModule;
 use Kaanbal\Quiz\QuizModule;
@@ -40,6 +41,7 @@ final class Plugin
         $services = new ServiceRegistry();
         $services->add(new CoursesModule());
         $services->add(new PlayerModule());
+        $services->add(new DashboardModule());
         $services->add(new ProgressModule());
         $services->add(new QuizModule());
         $services->add(new WooCommerceModule());

@@ -40,6 +40,34 @@ final class EnrollmentRepository implements EnrollmentLookup
         return array('id' => (int) $row['id'], 'status' => (string) $row['status']);
     }
 
+    /** @return list<array{id: int, course_id: int, status: string, completed_at: string|null}> */
+    public function forUser(int $user_id): array
+    {
+        if ($user_id <= 0) {
+            return array();
+        }
+
+        $rows = $this->database->get_results(
+            $this->database->prepare(
+                'SELECT id, course_id, status, completed_at FROM ' . $this->tableName() . ' WHERE user_id = %d AND status IN (%s, %s) ORDER BY id ASC',
+                $user_id,
+                'active',
+                'completed'
+            ),
+            'ARRAY_A'
+        );
+
+        return array_map(
+            static fn (array $row): array => array(
+                'id'           => (int) $row['id'],
+                'course_id'    => (int) $row['course_id'],
+                'status'       => (string) $row['status'],
+                'completed_at' => null === $row['completed_at'] ? null : (string) $row['completed_at'],
+            ),
+            is_array($rows) ? $rows : array()
+        );
+    }
+
     /** @return array{id: int, status: string, created: bool} */
     public function findOrCreate(int $user_id, int $course_id): array
     {
