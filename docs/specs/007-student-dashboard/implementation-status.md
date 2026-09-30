@@ -11,8 +11,8 @@ Round 1 audited commit: d4abd03 (PASS WITH RECOMMENDATIONS)
 Round 1 remediation commit: 4d16911
 Audit commit: 4d16911e8cca8058486bb04cade014b24c22ea96
 
-Status: Ready for audit
-Ready for audit: Yes
+Status: Completed
+Ready for audit: No
 Current audit round: 2
 
 ## Human Approval
@@ -337,6 +337,13 @@ Observaciones menores (helper de `access_url`, temas de bloques sin
 `header.php`, aserción de render de `completed_at`, `update_meta_cache`
 duplicado). No implementado.
 
+### CODE-006 — Deferred by human decision
+
+La página de curso oculta la sección de evaluación cuando el quiz requerido
+deja de ser válido; esto también oculta el mensaje de aprobación previamente
+obtenida. El hallazgo es no bloqueante y su posible ajuste de UX se difiere a
+una SPEC posterior.
+
 ---
 
 ## Human Scope Decisions
@@ -347,6 +354,9 @@ duplicado). No implementado.
   modificar `spec.md`.
 - Diferido a una SPEC posterior: que los botones "Mis cursos" del tema (header,
   tarjeta de compra y CTA del home) apunten a `/mis-cursos/`.
+- 2026-09-30 — Daniel aprueba el cierre de SPEC-007. CODE-004, CODE-005,
+  CODE-006, ARCH-001 a ARCH-003 y SEC-REC-001 se difieren como recomendaciones
+  no bloqueantes; no se autoriza ampliar el alcance de esta SPEC.
 
 ---
 
@@ -366,11 +376,19 @@ Blocking: 0
 
 Round 1 (código):
 
-- CODE-001 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
-- CODE-002 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
-- CODE-003 — Resolved in `4d16911` (pendiente de verificación en ronda 2)
-- CODE-004 — Open, pending human decision
-- CODE-005 — Open, pending human decision
+- CODE-001 — Resolved and verified in round 2
+- CODE-002 — Resolved and verified in round 2
+- CODE-003 — Resolved and verified in round 2
+- CODE-004 — Deferred to a future SPEC by human decision
+- CODE-005 — Deferred to a future SPEC by human decision
+- CODE-006 — Deferred to a future SPEC by human decision
+
+Round 2 (architecture and security):
+
+- ARCH-001 — Deferred as low-priority technical debt by human decision
+- ARCH-002 and ARCH-003 — Informational; no action required
+- SEC-REC-001 — Deferred hardening recommendation; no security vulnerability
+  was found
 
 Candidato de ronda 2: `4d16911`.
 
@@ -384,7 +402,13 @@ None.
 
 ## Human Review
 
-Pendiente (después de la ronda 2).
+- Approved — 2026-09-30.
+- Daniel confirmó que los cursos se listan en "Mi cuenta" y que puede acceder
+  al curso desde ese enlace.
+- Daniel confirmó que, al resolver el quiz, ya no quedan reintentos
+  disponibles.
+- Daniel confirmó que, al aprobar correctamente el curso, se muestra el mensaje
+  correspondiente.
 
 ---
 
