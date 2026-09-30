@@ -192,6 +192,8 @@ final class CourseReportsPage
     /** @param array<string, int|string> $parameters */
     private function url(array $parameters = array()): string
     {
+        $parameters = array_map(static fn (int|string $value): string => rawurlencode((string) $value), $parameters);
+
         return add_query_arg(array_merge(array('post_type' => 'kaanbal_course', 'page' => self::PAGE_SLUG), $parameters), admin_url('edit.php'));
     }
 

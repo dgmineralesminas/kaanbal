@@ -37,12 +37,12 @@ try {
 
         return $post_id;
     };
-    $create_user = static function (string $label, string $role = 'subscriber') use (&$user_ids, $suffix): int {
+    $create_user = static function (string $label, string $role = 'subscriber', ?string $email = null) use (&$user_ids, $suffix): int {
         $user_id = wp_insert_user(
             array(
                 'user_login' => 'reporting-' . $label . '-' . $suffix,
                 'user_pass'  => wp_generate_password(),
-                'user_email' => 'reporting-' . $label . '-' . $suffix . '@example.test',
+                'user_email' => $email ?? 'reporting-' . $label . '-' . $suffix . '@example.test',
                 'role'       => $role,
             )
         );
@@ -74,23 +74,34 @@ try {
     $active_partial = $create_user('active-partial');
     $completed = $create_user('completed');
     $revoked = $create_user('revoked');
+    $failed = $create_user('failed');
+    $exhausted = $create_user('exhausted');
     $no_quiz_student = $create_user('no-quiz');
+    $unlimited_student = $create_user('unlimited');
     $course = $create_post('kaanbal_course', 'Reporting course');
     $without_quiz = $create_post('kaanbal_course', 'Reporting course without quiz');
+    $unlimited_course = $create_post('kaanbal_course', 'Reporting unlimited course');
     $pagination_course = $create_post('kaanbal_course', 'Reporting pagination course');
     $lesson_ids = $create_lessons($course, 'Reporting', 2);
     $no_quiz_lesson_ids = $create_lessons($without_quiz, 'No quiz reporting', 1);
+    $unlimited_lesson_ids = $create_lessons($unlimited_course, 'Unlimited reporting', 1);
     $create_lessons($pagination_course, 'Pagination reporting', 1);
     $quiz = $create_post('kaanbal_quiz', 'Reporting quiz');
+    $unlimited_quiz = $create_post('kaanbal_quiz', 'Reporting unlimited quiz');
     update_post_meta($course, '_kaanbal_requires_final_quiz', '1');
     update_post_meta($course, '_kaanbal_certificate_enabled', '1');
     update_post_meta($quiz, '_kaanbal_course_id', $course);
     update_post_meta($quiz, '_kaanbal_max_attempts', '3');
+    update_post_meta($unlimited_course, '_kaanbal_requires_final_quiz', '1');
+    update_post_meta($unlimited_quiz, '_kaanbal_course_id', $unlimited_course);
     $questions = new Kaanbal\Quiz\Infrastructure\QuestionRepository();
     $question_id = $questions->create($quiz, 'Reporting question', 1);
     $answers = new Kaanbal\Quiz\Infrastructure\AnswerRepository();
     $answers->create($question_id, 'Reporting answer', true, 1);
     $answers->create($question_id, 'Reporting incorrect answer', false, 2);
+    $unlimited_question_id = $questions->create($unlimited_quiz, 'Unlimited reporting question', 1);
+    $answers->create($unlimited_question_id, 'Unlimited reporting answer', true, 1);
+    $answers->create($unlimited_question_id, 'Unlimited reporting incorrect answer', false, 2);
 
     global $wpdb;
     $enrollments_table = $wpdb->prefix . 'kaanbal_enrollments';
@@ -121,8 +132,8 @@ try {
             throw new RuntimeException('The reporting fixture progress could not be created.');
         }
     };
-    $attempt = static function (int $user_id, int $course_id, int $quiz_id, bool $passed) use ($wpdb, $attempts_table, $now): void {
-        if (false === $wpdb->insert($attempts_table, array('user_id' => $user_id, 'course_id' => $course_id, 'quiz_id' => $quiz_id, 'attempt_number' => 1, 'status' => $passed ? 'passed' : 'failed', 'score' => $passed ? '100.00' : '0.00', 'passed' => $passed ? 1 : 0, 'started_at' => $now, 'completed_at' => $now, 'created_at' => $now, 'updated_at' => $now))) {
+    $attempt = static function (int $user_id, int $course_id, int $quiz_id, bool $passed, int $attempt_number = 1) use ($wpdb, $attempts_table, $now): void {
+        if (false === $wpdb->insert($attempts_table, array('user_id' => $user_id, 'course_id' => $course_id, 'quiz_id' => $quiz_id, 'attempt_number' => $attempt_number, 'status' => $passed ? 'passed' : 'failed', 'score' => $passed ? '100.00' : '0.00', 'passed' => $passed ? 1 : 0, 'started_at' => $now, 'completed_at' => $now, 'created_at' => $now, 'updated_at' => $now))) {
             throw new RuntimeException('The reporting fixture attempt could not be created.');
         }
     };
@@ -131,17 +142,31 @@ try {
     $enroll($active_partial, $course, 'active');
     $enroll($completed, $course, 'completed', $now);
     $enroll($revoked, $course, 'revoked');
+    $enroll($failed, $course, 'active');
+    $enroll($exhausted, $course, 'active');
     $enroll($no_quiz_student, $without_quiz, 'active');
+    $enroll($unlimited_student, $unlimited_course, 'active');
     $complete_lesson($active_full, $lesson_ids[0]);
     $complete_lesson($active_full, $lesson_ids[1]);
     $complete_lesson($active_partial, $lesson_ids[0]);
     $complete_lesson($completed, $lesson_ids[0]);
     $complete_lesson($completed, $lesson_ids[1]);
+    $complete_lesson($failed, $lesson_ids[0]);
+    $complete_lesson($failed, $lesson_ids[1]);
+    $complete_lesson($exhausted, $lesson_ids[0]);
+    $complete_lesson($exhausted, $lesson_ids[1]);
     $complete_lesson($no_quiz_student, $no_quiz_lesson_ids[0]);
+    $complete_lesson($unlimited_student, $unlimited_lesson_ids[0]);
     $attempt($completed, $course, $quiz, true);
+    $attempt($failed, $course, $quiz, false);
+    $attempt($exhausted, $course, $quiz, false, 1);
+    $attempt($exhausted, $course, $quiz, false, 2);
+    $attempt($exhausted, $course, $quiz, false, 3);
+    $attempt($unlimited_student, $unlimited_course, $unlimited_quiz, false, 1);
+    $attempt($unlimited_student, $unlimited_course, $unlimited_quiz, false, 2);
 
     for ($number = 1; $number <= 26; $number++) {
-        $page_user = $create_user('page-' . $number);
+        $page_user = $create_user('page-' . $number, 'subscriber', 'a+b-page-' . $number . '-' . $suffix . '@example.test');
         $enroll($page_user, $pagination_course, 'active');
     }
 
@@ -165,6 +190,10 @@ try {
     if ($page->canAccess()) {
         throw new RuntimeException('A student can access the reporting page.');
     }
+    wp_set_current_user(0);
+    if ($page->canAccess()) {
+        throw new RuntimeException('A visitor can access the reporting page.');
+    }
     wp_set_current_user($administrator);
     if (! $page->canAccess()) {
         throw new RuntimeException('An administrator cannot access the reporting page.');
@@ -180,19 +209,19 @@ try {
     foreach ($summary['courses'] as $item) {
         $summary_by_course[$item['course_id']] = $item;
     }
-    if (! isset($summary_by_course[$course]) || 4 !== $summary_by_course[$course]['total'] || 2 !== $summary_by_course[$course]['active'] || 1 !== $summary_by_course[$course]['completed'] || 1 !== $summary_by_course[$course]['revoked'] || 33 !== $summary_by_course[$course]['approval_rate'] || 75 !== $summary_by_course[$course]['average_progress']) {
+    if (! isset($summary_by_course[$course]) || 6 !== $summary_by_course[$course]['total'] || 4 !== $summary_by_course[$course]['active'] || 1 !== $summary_by_course[$course]['completed'] || 1 !== $summary_by_course[$course]['revoked'] || 20 !== $summary_by_course[$course]['approval_rate'] || 88 !== $summary_by_course[$course]['average_progress']) {
         throw new RuntimeException('The course reporting summary metrics are incorrect.');
     }
 
     $detail = $reporting->detail($course);
-    if (! is_array($detail) || 4 !== $detail['total'] || ! $detail['certificate_enabled']) {
+    if (! is_array($detail) || 6 !== $detail['total'] || ! $detail['certificate_enabled']) {
         throw new RuntimeException('The course reporting detail is unavailable.');
     }
     $students_by_user = array();
     foreach ($detail['students'] as $student) {
         $students_by_user[$student['user_id']] = $student;
     }
-    if ('En curso' !== $students_by_user[$active_full]['status_label'] || 100 !== $students_by_user[$active_full]['progress_percentage'] || 'Disponible' !== $students_by_user[$active_full]['quiz_label'] || 'En curso' !== $students_by_user[$active_partial]['status_label'] || 50 !== $students_by_user[$active_partial]['progress_percentage'] || 'No presentado' !== $students_by_user[$active_partial]['quiz_label'] || 'Aprobado' !== $students_by_user[$completed]['status_label'] || 'Aprobado' !== $students_by_user[$completed]['quiz_label'] || 1 !== $students_by_user[$completed]['attempts_used'] || 3 !== $students_by_user[$completed]['max_attempts'] || $now !== $students_by_user[$completed]['completed_at'] || 'Revocado' !== $students_by_user[$revoked]['status_label']) {
+    if ('En curso' !== $students_by_user[$active_full]['status_label'] || 100 !== $students_by_user[$active_full]['progress_percentage'] || 'Disponible' !== $students_by_user[$active_full]['quiz_label'] || 'En curso' !== $students_by_user[$active_partial]['status_label'] || 50 !== $students_by_user[$active_partial]['progress_percentage'] || 'No presentado' !== $students_by_user[$active_partial]['quiz_label'] || 'Aprobado' !== $students_by_user[$completed]['status_label'] || 'Aprobado' !== $students_by_user[$completed]['quiz_label'] || 1 !== $students_by_user[$completed]['attempts_used'] || 3 !== $students_by_user[$completed]['max_attempts'] || $now !== $students_by_user[$completed]['completed_at'] || 'Revocado' !== $students_by_user[$revoked]['status_label'] || 'Reprobado' !== $students_by_user[$failed]['quiz_label'] || 1 !== $students_by_user[$failed]['attempts_used'] || 'Intentos agotados' !== $students_by_user[$exhausted]['quiz_label'] || 3 !== $students_by_user[$exhausted]['attempts_used']) {
         throw new RuntimeException('The student reporting states are incorrect.');
     }
 
@@ -202,12 +231,18 @@ try {
         throw new RuntimeException('A course without quiz did not render the expected report state.');
     }
 
+    $unlimited_detail = $reporting->detail($unlimited_course);
+    if (! is_array($unlimited_detail) || 2 !== $unlimited_detail['students'][0]['attempts_used'] || null !== $unlimited_detail['students'][0]['max_attempts'] || 'Reprobado' !== $unlimited_detail['students'][0]['quiz_label']) {
+        throw new RuntimeException('An unlimited quiz did not render the expected report state.');
+    }
+
     $search = $reporting->detail($course, 1, 'reporting-completed-' . $suffix . '@example.test');
     $completed_filter = $reporting->detail($course, 1, '', 'completed');
     $passed_filter = $reporting->detail($course, 1, '', 'all', 'passed');
     $not_passed_filter = $reporting->detail($course, 1, '', 'all', 'not_passed');
     $invalid_search = $reporting->detail($course, 1, "' OR 1=1 --");
-    if (! is_array($search) || 1 !== $search['total'] || $completed !== $search['students'][0]['user_id'] || ! is_array($completed_filter) || 1 !== $completed_filter['total'] || ! is_array($passed_filter) || 1 !== $passed_filter['total'] || $completed !== $passed_filter['students'][0]['user_id'] || ! is_array($not_passed_filter) || 3 !== $not_passed_filter['total'] || ! is_array($invalid_search) || 0 !== $invalid_search['total']) {
+    $invalid_filters = $reporting->detail($course, 1, '', 'invalid-status', 'invalid-quiz');
+    if (! is_array($search) || 1 !== $search['total'] || $completed !== $search['students'][0]['user_id'] || ! is_array($completed_filter) || 1 !== $completed_filter['total'] || ! is_array($passed_filter) || 1 !== $passed_filter['total'] || $completed !== $passed_filter['students'][0]['user_id'] || ! is_array($not_passed_filter) || 5 !== $not_passed_filter['total'] || ! is_array($invalid_search) || 0 !== $invalid_search['total'] || ! is_array($invalid_filters) || 6 !== $invalid_filters['total'] || 'all' !== $invalid_filters['filters']['status'] || 'all' !== $invalid_filters['filters']['quiz']) {
         throw new RuntimeException('Reporting search or filters are incorrect or unsafe.');
     }
 
@@ -221,6 +256,19 @@ try {
     }
     if ($page_query_count > 16) {
         throw new RuntimeException('The paginated report made too many queries for one page.');
+    }
+
+    $plus_search = $reporting->detail($pagination_course, 1, 'a+b-page');
+    if (! is_array($plus_search) || 26 !== $plus_search['total'] || 2 !== $plus_search['total_pages']) {
+        throw new RuntimeException('The reporting search did not retain plus signs.');
+    }
+    $_GET = array('course_id' => (string) $pagination_course, 'search' => 'a+b-page');
+    ob_start();
+    $page->render();
+    $pagination_markup = (string) ob_get_clean();
+    $_GET = array();
+    if (! str_contains($pagination_markup, 'search=a%2Bb-page')) {
+        throw new RuntimeException('The pagination link did not encode the search filter.');
     }
 
     if (null !== $reporting->detail(999999999)) {
@@ -246,13 +294,15 @@ try {
             $wpdb->delete($wpdb->prefix . 'kaanbal_enrollments', array('user_id' => $user_id));
         }
 
-        if (isset($quiz)) {
-            $wpdb->query(
-                $wpdb->prepare(
-                    'DELETE qa FROM ' . $wpdb->prefix . 'kaanbal_question_answers qa INNER JOIN ' . $wpdb->prefix . 'kaanbal_questions q ON q.id = qa.question_id WHERE q.quiz_id = %d',
-                    $quiz
-                )
-            );
+        if (isset($quiz, $unlimited_quiz)) {
+            foreach (array($quiz, $unlimited_quiz) as $quiz_id) {
+                $wpdb->query(
+                    $wpdb->prepare(
+                        'DELETE qa FROM ' . $wpdb->prefix . 'kaanbal_question_answers qa INNER JOIN ' . $wpdb->prefix . 'kaanbal_questions q ON q.id = qa.question_id WHERE q.quiz_id = %d',
+                        $quiz_id
+                    )
+                );
+            }
         }
 
         foreach ($post_ids as $post_id) {
