@@ -16,7 +16,7 @@ if (! $course instanceof \WP_Post || ! is_array($curriculum) || ! $module instan
 
 $provider = (string) get_post_meta($lesson->ID, '_kaanbal_video_provider', true);
 $source   = (string) get_post_meta($lesson->ID, '_kaanbal_video_source', true);
-$player   = (new \Kaanbal\Access\Application\YouTubeEmbedRenderer())->render($provider, $source, get_the_title($lesson));
+$player   = (new \Kaanbal\Access\Application\VideoEmbedRenderer())->render($provider, $source, get_the_title($lesson));
 $is_completed = $progress instanceof \Kaanbal\Progress\Application\CourseProgress && $progress->isLessonCompleted($lesson->ID);
 
 get_header();

@@ -32,14 +32,21 @@ final class YouTubeVideoProviderTest extends TestCase
         self::assertNull((new YouTubeVideoProvider())->normalize($source));
     }
 
+    public function testItBuildsItsEmbedUrlFromANormalizedId(): void
+    {
+        self::assertSame('https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?modestbranding=1&rel=0&iv_load_policy=3&playsinline=1', (new YouTubeVideoProvider())->embedUrl('dQw4w9WgXcQ'));
+    }
+
     /** @return array<string, array{string}> */
     public static function invalidSources(): array
     {
         return array(
             'empty'          => array(''),
             'wrong host'     => array('https://example.com/watch?v=dQw4w9WgXcQ'),
+            'vimeo url'     => array('https://vimeo.com/123456789'),
             'missing id'     => array('https://www.youtube.com/watch'),
             'invalid id size' => array('short'),
+            'unsupported scheme' => array('ftp://www.youtube.com/watch?v=dQw4w9WgXcQ'),
         );
     }
 }

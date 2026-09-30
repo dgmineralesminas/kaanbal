@@ -9,4 +9,6 @@ interface VideoProvider
     public function key(): string;
 
     public function normalize(string $source): ?string;
+
+    public function embedUrl(string $video_id): string;
 }

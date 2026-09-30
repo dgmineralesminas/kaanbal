@@ -104,6 +104,19 @@ try {
 
     wp_set_current_user((int) $administrator_ids[0]);
     $meta_boxes = new Kaanbal\Courses\Presentation\Admin\CurriculumMetaBoxes();
+    $lesson_post = get_post($lesson_a_id);
+
+    if (! $lesson_post instanceof WP_Post) {
+        throw new RuntimeException('The lesson fixture could not be retrieved for the admin video fields.');
+    }
+
+    ob_start();
+    $meta_boxes->renderLesson($lesson_post);
+    $lesson_fields = (string) ob_get_clean();
+
+    if (! str_contains($lesson_fields, '<option value="vimeo"') || ! str_contains($lesson_fields, 'name="kaanbal_video_source"')) {
+        throw new RuntimeException('The lesson admin fields did not offer Vimeo video configuration.');
+    }
 
     $_POST = array(
         'kaanbal_course_meta_nonce' => wp_create_nonce('kaanbal_save_course_meta'),
@@ -172,6 +185,25 @@ try {
 
     if ((string) $module_a_id !== get_post_meta($lesson_a_id, '_kaanbal_module_id', true) || 'youtube' !== get_post_meta($lesson_a_id, '_kaanbal_video_provider', true)) {
         throw new RuntimeException('Invalid curriculum or video data overwrote the saved lesson metadata.');
+    }
+
+    $_POST = array(
+        'kaanbal_lesson_meta_nonce' => wp_create_nonce('kaanbal_save_lesson_meta'),
+        'kaanbal_module_id'         => (string) $module_a_id,
+        'kaanbal_video_provider'    => 'vimeo',
+        'kaanbal_video_source'      => 'https://vimeo.com/123456789',
+    );
+    $meta_boxes->saveLesson((int) $lesson_a_id);
+
+    if ('vimeo' !== get_post_meta($lesson_a_id, '_kaanbal_video_provider', true) || '123456789' !== get_post_meta($lesson_a_id, '_kaanbal_video_source', true)) {
+        throw new RuntimeException('Vimeo video data was not normalized when saved.');
+    }
+
+    $_POST['kaanbal_video_source'] = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    $meta_boxes->saveLesson((int) $lesson_a_id);
+
+    if ('vimeo' !== get_post_meta($lesson_a_id, '_kaanbal_video_provider', true) || '123456789' !== get_post_meta($lesson_a_id, '_kaanbal_video_source', true)) {
+        throw new RuntimeException('An incompatible video source overwrote the saved Vimeo metadata.');
     }
 
     $_POST = array(

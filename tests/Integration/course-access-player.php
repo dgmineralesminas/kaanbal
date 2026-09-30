@@ -85,6 +85,8 @@ try {
     update_post_meta($lesson_b_id, '_kaanbal_module_id', $module_b_id);
     update_post_meta($lesson_a_one_id, '_kaanbal_video_provider', 'youtube');
     update_post_meta($lesson_a_one_id, '_kaanbal_video_source', 'dQw4w9WgXcQ');
+    update_post_meta($lesson_b_id, '_kaanbal_video_provider', 'vimeo');
+    update_post_meta($lesson_b_id, '_kaanbal_video_source', '123456789');
 
     $active_user = $create_user('active');
     $completed_user = $create_user('completed');
@@ -98,6 +100,7 @@ try {
     }
 
     $enrollments_table = $wpdb->prefix . 'kaanbal_enrollments';
+    $progress_table = $wpdb->prefix . 'kaanbal_lesson_progress';
     $now = current_time('mysql', true);
     $insert_enrollment = static function (int $user_id, int $course_id, string $status) use ($wpdb, $enrollments_table, $now, &$enrollment_user_ids): void {
         $inserted = $wpdb->insert(
@@ -184,15 +187,16 @@ try {
     }
 
     Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($lesson_response['context']);
+    $youtube_progress_before = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $active_user, $lesson_a_one_id));
     ob_start();
     require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
     $lesson_markup = (string) ob_get_clean();
+    $youtube_progress_after = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $progress_table, $active_user, $lesson_a_one_id));
 
-    if (! str_contains($lesson_markup, 'Player lesson A one') || ! str_contains($lesson_markup, 'youtube-nocookie.com/embed/dQw4w9WgXcQ') || ! str_contains($lesson_markup, 'aria-current="page"') || ! str_contains($lesson_markup, 'Player lesson A two') || ! str_contains($lesson_markup, 'name="action" value="kaanbal_complete_lesson"') || ! str_contains($lesson_markup, 'name="_kaanbal_nonce"')) {
+    if (! str_contains($lesson_markup, 'Player lesson A one') || ! str_contains($lesson_markup, 'youtube-nocookie.com/embed/dQw4w9WgXcQ') || ! str_contains($lesson_markup, 'aria-current="page"') || ! str_contains($lesson_markup, 'Player lesson A two') || ! str_contains($lesson_markup, 'name="action" value="kaanbal_complete_lesson"') || ! str_contains($lesson_markup, 'name="_kaanbal_nonce"') || $youtube_progress_before !== $youtube_progress_after) {
         throw new RuntimeException('The authorized lesson template did not render its protected content and video player.');
     }
 
-    $progress_table = $wpdb->prefix . 'kaanbal_lesson_progress';
     $wpdb->insert(
         $progress_table,
         array(
@@ -234,23 +238,25 @@ try {
     require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
     $lesson_two_markup = (string) ob_get_clean();
 
-    if (! str_contains($lesson_two_markup, 'Player lesson A two') || ! str_contains($lesson_two_markup, 'Player module A') || ! str_contains($lesson_two_markup, 'Protected player content.')) {
+    if (! str_contains($lesson_two_markup, 'Player lesson A two') || ! str_contains($lesson_two_markup, 'Player module A') || ! str_contains($lesson_two_markup, 'Protected player content.') || str_contains($lesson_two_markup, 'kaanbal-player__video')) {
         throw new RuntimeException('The second lesson template did not render its title, module and content.');
     }
 
-    $lesson_without_video_response = $router->resolve($course_b->post_name, $lesson_b->post_name, $completed_user);
+    $vimeo_progress_before = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $wpdb->prefix . 'kaanbal_lesson_progress', $completed_user, $lesson_b_id));
+    $vimeo_lesson_response = $router->resolve($course_b->post_name, $lesson_b->post_name, $completed_user);
 
-    if (200 !== $lesson_without_video_response['status'] || 'lesson' !== $lesson_without_video_response['template']) {
-        throw new RuntimeException('A completed enrollment could not open a lesson without video.');
+    if (200 !== $vimeo_lesson_response['status'] || 'lesson' !== $vimeo_lesson_response['template']) {
+        throw new RuntimeException('A completed enrollment could not open a Vimeo lesson.');
     }
 
-    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($lesson_without_video_response['context']);
+    Kaanbal\Access\Presentation\Frontend\TemplateContext::replace($vimeo_lesson_response['context']);
     ob_start();
     require dirname(__DIR__, 2) . '/templates/frontend/lesson.php';
-    $lesson_without_video_markup = (string) ob_get_clean();
+    $vimeo_lesson_markup = (string) ob_get_clean();
+    $vimeo_progress_after = (int) $wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM %i WHERE user_id = %d AND lesson_id = %d', $wpdb->prefix . 'kaanbal_lesson_progress', $completed_user, $lesson_b_id));
 
-    if (! str_contains($lesson_without_video_markup, 'Player lesson B') || str_contains($lesson_without_video_markup, 'kaanbal-player')) {
-        throw new RuntimeException('The lesson template did not render a text-only lesson correctly.');
+    if (! str_contains($vimeo_lesson_markup, 'Player lesson B') || ! str_contains($vimeo_lesson_markup, 'player.vimeo.com/video/123456789') || $vimeo_progress_before !== $vimeo_progress_after) {
+        throw new RuntimeException('The lesson template did not render Vimeo without changing progress.');
     }
 
     $before = $wpdb->get_row(

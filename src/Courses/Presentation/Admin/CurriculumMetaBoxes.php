@@ -60,8 +60,9 @@ final class CurriculumMetaBoxes
         echo '<select class="widefat" id="kaanbal-video-provider" name="kaanbal_video_provider">';
         echo '<option value="">' . esc_html__('No video yet', 'kaanbal') . '</option>';
         echo '<option value="youtube"' . selected('youtube', $provider, false) . '>YouTube</option>';
+        echo '<option value="vimeo"' . selected('vimeo', $provider, false) . '>Vimeo</option>';
         echo '</select></p>';
-        echo '<p><label for="kaanbal-video-source">' . esc_html__('YouTube URL or video ID', 'kaanbal') . '</label><br />';
+        echo '<p><label for="kaanbal-video-source">' . esc_html__('Video URL or ID', 'kaanbal') . '</label><br />';
         echo '<input class="widefat" id="kaanbal-video-source" name="kaanbal_video_source" type="text" value="' . esc_attr($source) . '" /></p>';
         echo '<p>' . esc_html__('Use the WordPress Order field to position this lesson within its module.', 'kaanbal') . '</p>';
     }

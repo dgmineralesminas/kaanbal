@@ -23,7 +23,7 @@ final class YouTubeVideoProvider implements VideoProvider
 
         $url = wp_parse_url($source);
 
-        if (! is_array($url) || empty($url['host'])) {
+        if (! is_array($url) || empty($url['host']) || ! isset($url['scheme']) || ! in_array(strtolower((string) $url['scheme']), array('http', 'https'), true)) {
             return null;
         }
 
@@ -47,5 +47,10 @@ final class YouTubeVideoProvider implements VideoProvider
         }
 
         return is_string($id) && preg_match(self::VIDEO_ID_PATTERN, $id) ? $id : null;
+    }
+
+    public function embedUrl(string $video_id): string
+    {
+        return 'https://www.youtube-nocookie.com/embed/' . rawurlencode($video_id) . '?modestbranding=1&rel=0&iv_load_policy=3&playsinline=1';
     }
 }
