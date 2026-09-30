@@ -31,6 +31,7 @@
     "test:integration:progress": "php tests/Integration/student-progress.php",
     "test:integration:quiz": "php tests/Integration/final-quiz-course-completion.php",
     "test:integration:dashboard": "php tests/Integration/student-dashboard.php",
+    "test:integration:reporting": "php tests/Integration/course-administration-reporting.php",
     "test:integration:woocommerce": "php tests/Integration/woocommerce-enrollment.php",
     "lint": "find src tests -name '*.php' -print0 | xargs -0 -n1 php -l",
     "cs": "phpcs --warning-severity=0 --standard=phpcs.xml.dist",

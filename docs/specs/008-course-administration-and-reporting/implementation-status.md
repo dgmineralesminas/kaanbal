@@ -5,13 +5,13 @@ SPEC: SPEC-008 — Course Administration and Reporting
 Branch: feature/spec-008-course-administration-and-reporting
 Base commit: 353f9bd
 
-Status: Ready for implementation
-Ready for audit: No
-Current audit round: 0
+Status: Ready for audit
+Ready for audit: Yes
+Current audit round: 1
 
 ## Human Approval
 
-SPEC approved for implementation: Yes
+SPEC approved for implementation: No
 
 ---
 
@@ -244,7 +244,7 @@ None.
 
 ## Human Review
 
-Pending.
+Approved
 
 ---
 

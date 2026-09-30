@@ -55,6 +55,33 @@ final class LessonProgressRepository implements LessonProgressStore
         return array_values(array_unique(array_map('intval', $rows)));
     }
 
+    /**
+     * @param list<int> $user_ids
+     * @param list<int> $lesson_ids
+     * @return array<int, list<int>>
+     */
+    public function findCompletedLessonIdsForUsers(array $user_ids, array $lesson_ids): array
+    {
+        $user_ids = array_values(array_unique(array_filter(array_map('absint', $user_ids))));
+        $lesson_ids = array_values(array_unique(array_filter(array_map('absint', $lesson_ids))));
+
+        if (array() === $user_ids || array() === $lesson_ids) {
+            return array();
+        }
+
+        $user_placeholders = implode(', ', array_fill(0, count($user_ids), '%d'));
+        $lesson_placeholders = implode(', ', array_fill(0, count($lesson_ids), '%d'));
+        $query = 'SELECT user_id, lesson_id FROM ' . $this->tableName() . ' WHERE user_id IN (' . $user_placeholders . ') AND lesson_id IN (' . $lesson_placeholders . ')';
+        $rows = $this->database->get_results($this->database->prepare($query, ...$user_ids, ...$lesson_ids), 'ARRAY_A');
+        $completed = array();
+
+        foreach (is_array($rows) ? $rows : array() as $row) {
+            $completed[(int) $row['user_id']][] = (int) $row['lesson_id'];
+        }
+
+        return $completed;
+    }
+
     private function tableName(): string
     {
         return $this->database->prefix . 'kaanbal_lesson_progress';

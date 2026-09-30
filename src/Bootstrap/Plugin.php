@@ -9,6 +9,7 @@ use Kaanbal\Dashboard\DashboardModule;
 use Kaanbal\Access\PlayerModule;
 use Kaanbal\Progress\ProgressModule;
 use Kaanbal\Quiz\QuizModule;
+use Kaanbal\Reporting\ReportingModule;
 use Kaanbal\WooCommerce\WooCommerceModule;
 
 final class Plugin
@@ -44,6 +45,7 @@ final class Plugin
         $services->add(new DashboardModule());
         $services->add(new ProgressModule());
         $services->add(new QuizModule());
+        $services->add(new ReportingModule());
         $services->add(new WooCommerceModule());
         $services->registerAll();
     }

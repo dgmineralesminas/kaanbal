@@ -58,6 +58,36 @@ final class QuizAttemptRepository
     }
 
     /**
+     * @param list<int> $user_ids
+     * @param list<int> $quiz_ids
+     * @return array<int, array<int, array{attempts_used: int, passed: bool}>>
+     */
+    public function summariesForUsersAndQuizzes(array $user_ids, array $quiz_ids): array
+    {
+        $user_ids = array_values(array_unique(array_filter(array_map('absint', $user_ids))));
+        $quiz_ids = array_values(array_unique(array_filter(array_map('absint', $quiz_ids))));
+
+        if (array() === $user_ids || array() === $quiz_ids) {
+            return array();
+        }
+
+        $user_placeholders = implode(', ', array_fill(0, count($user_ids), '%d'));
+        $quiz_placeholders = implode(', ', array_fill(0, count($quiz_ids), '%d'));
+        $query = 'SELECT user_id, quiz_id, COUNT(*) AS attempts_used, MAX(passed) AS passed FROM ' . $this->tableName() . ' WHERE user_id IN (' . $user_placeholders . ') AND quiz_id IN (' . $quiz_placeholders . ') GROUP BY user_id, quiz_id';
+        $rows = $this->database->get_results($this->database->prepare($query, ...$user_ids, ...$quiz_ids), 'ARRAY_A');
+        $summaries = array();
+
+        foreach (is_array($rows) ? $rows : array() as $row) {
+            $summaries[(int) $row['user_id']][(int) $row['quiz_id']] = array(
+                'attempts_used' => (int) $row['attempts_used'],
+                'passed'        => 1 === (int) $row['passed'],
+            );
+        }
+
+        return $summaries;
+    }
+
+    /**
      * @param list<array{question_id: int, answer_id: int, is_correct: bool, question_text: string, answer_text: string}> $answers
      */
     public function record(int $user_id, int $course_id, int $quiz_id, ?int $max_attempts, QuizScore $score, array $answers): int
